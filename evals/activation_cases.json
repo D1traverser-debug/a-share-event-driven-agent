@@ -1,0 +1,13 @@
+{
+  "skill": "a-share-event-driven-agent",
+  "cases": [
+    {"id":"A01","should_activate":true,"prompt":"开始荐股"},
+    {"id":"A02","should_activate":true,"prompt":"开始复盘"},
+    {"id":"A03","should_activate":true,"prompt":"继续昨天没做完的A股荐股"},
+    {"id":"A04","should_activate":true,"prompt":"盘前把所有可能涨停的主板票都召回再筛"},
+    {"id":"N01","should_activate":false,"prompt":"把这篇财经文章写成公众号Word"},
+    {"id":"N02","should_activate":false,"prompt":"解释什么是涨停板"},
+    {"id":"N03","should_activate":false,"prompt":"帮我买一台电脑"},
+    {"id":"N04","should_activate":false,"prompt":"做一张股票海报"}
+  ]
+}

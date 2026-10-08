@@ -1,0 +1,15 @@
+{
+  "runtime": ["stage_order", "checkpointing", "required_outputs", "fail_closed", "completion_authority", "freeze_immutability"],
+  "sources": ["p01_p09_contract", "source_priority", "link_all", "image_completion", "paid_limited_boundary", "five_pool_reuse"],
+  "evidence": ["freeze_time", "premarket_eligibility", "evidence_ledger", "future_information_quarantine"],
+  "research": ["event_ledger", "industry_depth", "node_exhaustion", "transmission_map", "negative_evidence", "counterexamples"],
+  "knowledge": ["stockbase_read", "stockbase_review_write", "stable_vs_ephemeral", "knowledge_conflicts", "writeback_receipts"],
+  "market_structure": ["height_map", "role_hypotheses", "leader_map", "same_height_pk", "rotation", "high_low", "role_vacancy"],
+  "recall": ["u0_mapping", "u1_limit_up_recall", "knowable_recall", "miss_classification"],
+  "execution": ["u2_role_ranking", "u3_execution", "leader_buyability_split", "backup_chain", "no_trade"],
+  "review": ["outcome_reconciliation", "limit_up_attribution", "broken_board", "limit_down_risk", "mention_ledger"],
+  "learning": ["error_ledger", "rule_proposal", "replay_eval", "promotion_policy", "rollback_policy"],
+  "audit": ["source_audit", "universe_audit", "premarket_red_team", "postclose_red_team", "count_reconciliation"],
+  "recovery": ["resume_before_new", "external_authority", "deleted_chat_recovery", "next_exact_action"],
+  "maintenance": ["change_classification", "single_owner_update", "regression_testing", "cutover_policy"]
+}

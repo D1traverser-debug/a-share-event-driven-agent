@@ -1,0 +1,8 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "a-share-event-driven-agent",
+  "version": "0.1.0",
+  "description": "Deterministic A-share premarket recommendation and post-close review runtime with freeze integrity, deep industry recall, leader/role ranking, replay evals, and durable recovery.",
+  "repository": "https://github.com/D1traverser-debug/a-share-event-driven-agent",
+  "keywords": ["a-share", "stock-picking", "post-close-review", "event-driven", "limit-up", "mcp", "agent"]
+}

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a-share-event-driven-agent"
+version = "0.1.0"
+description = "Deterministic A-share event-driven premarket/review runtime with recall-first research and replay-governed learning."
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.7",
+  "mcp>=2.0,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "build>=1.2"]
+
+[project.scripts]
+ashare-event-mcp = "ashare_event_agent.plugin_server:main"
+
+[tool.setuptools.packages.find]
+include = ["ashare_event_agent*"]
+exclude = ["tests*", "evals*", "config*", "references*"]
+
+[tool.setuptools.package-data]
+ashare_event_agent = ["resources/*.json", "resources/references/*.md"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

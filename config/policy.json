@@ -1,0 +1,31 @@
+{
+  "market": {
+    "timezone": "Asia/Shanghai",
+    "mainboard_only_default": true,
+    "auction_used_default": false,
+    "horizon_days": [1, 2]
+  },
+  "sources": {
+    "fixed_ids": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09"],
+    "retrieval_priority": ["STRUCTURED_API", "OFFICIAL", "STATIC_HTTP", "EMBEDDED_JSON", "DATABASE", "WEB", "BROWSER"],
+    "browser_last_resort": true,
+    "allow_paid_limited": true
+  },
+  "research": {
+    "min_industry_depth": 5,
+    "min_sweeps": 2,
+    "u1_recall_first": true,
+    "leader_first_applies_from": "U2"
+  },
+  "execution": {
+    "max_execution_slots": 4,
+    "no_trade_is_valid": true
+  },
+  "learning": {
+    "single_day_promotion_forbidden": true,
+    "min_replay_cases": 5,
+    "min_regimes": 2,
+    "require_positive_and_negative_samples": true,
+    "require_no_future_contamination": true
+  }
+}

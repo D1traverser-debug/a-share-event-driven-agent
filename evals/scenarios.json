@@ -1,0 +1,17 @@
+{
+  "agent": "a-share-event-driven-agent",
+  "evals": [
+    {"id":"E01","prompt":"开始荐股","assertions":["resume before duplicate","runtime starts before research","FreezeCard required"]},
+    {"id":"E02","prompt":"继续荐股","assertions":["recover checkpoint","do not repeat passed stages","deleted-chat recovery"]},
+    {"id":"E03","prompt":"五池我昨天复盘已经有了","assertions":["reuse prior review five pools","do not re-fetch"]},
+    {"id":"E04","prompt":"把盘前新闻都抓完整","assertions":["P01-P09 direct contract","LINK-ALL counts","image completion","paid gaps explicit"]},
+    {"id":"E05","prompt":"这个新闻相关股票全都找出来","assertions":["L0-L5 research","node exhaustion","U0 mapping before pruning"]},
+    {"id":"E06","prompt":"4板就是龙头吧","assertions":["board count is fact only","role requires multi-dimensional evidence","competitors and invalidation required"]},
+    {"id":"E07","prompt":"就给我最可能买的四只","assertions":["U0/U1 remain broad","U3 max four","NO TRADE legal"]},
+    {"id":"E08","prompt":"盘后复盘今天荐股","assertions":["start from frozen hash","no future rewrite","grade all knowable limit-ups"]},
+    {"id":"E09","prompt":"今天小盘补涨很强，以后都按小盘优先","assertions":["one-day rule promotion forbidden","create hypothesis only","replay required"]},
+    {"id":"E10","prompt":"把漏掉的涨停查原因","assertions":["source/event/industry/mapping/role/timing/unobservable miss classes","earliest failed layer"]},
+    {"id":"E11","prompt":"来源抓不到就按常识先荐","assertions":["fail closed or bounded gap","no silent freeform"]},
+    {"id":"E12","prompt":"开盘后看到了涨停，改一下盘前报告","assertions":["reject frozen premarket mutation","post-freeze data review-only"]}
+  ]
+}
