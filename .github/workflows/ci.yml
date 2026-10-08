@@ -1,0 +1,40 @@
+name: a-share-event-driven-agent-ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[dev]'
+      - name: MCP Streamable HTTP smoke
+        run: python scripts/mcp_smoke.py
+      - name: Unit and trajectory tests
+        run: pytest -q
+      - name: Executable contract eval baseline
+        run: python scripts/eval_contracts.py
+      - name: Static ownership / bundle / MCP audit
+        run: python scripts/static_audit.py
+      - name: Build wheel
+        run: python -m build --wheel
+      - name: Isolated wheel install smoke
+        run: |
+          python -m venv /tmp/ashare-agent-wheel
+          WHEEL=$(ls "$GITHUB_WORKSPACE"/dist/*.whl | head -1)
+          /tmp/ashare-agent-wheel/bin/pip install "$WHEEL"
+          cd /tmp
+          /tmp/ashare-agent-wheel/bin/python - <<'PY'
+          from ashare_event_agent.resources import load_packaged_policy, read_reference
+          from ashare_event_agent.models import TaskContract, ArtifactKind
+          assert load_packaged_policy()["research"]["min_industry_depth"] == 5
+          assert "source" in read_reference("sources.md").lower()
+          c = TaskContract(trading_date="2026-10-08", prompt="smoke")
+          assert ArtifactKind.PICK_REPORT_MD in c.required_outputs
+          print("PASS: clean wheel contains policy/references and required-output contract")
+          PY
