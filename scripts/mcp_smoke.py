@@ -14,14 +14,14 @@ from mcp.client.streamable_http import streamable_http_client
 PORT = 8766
 URL = f"http://127.0.0.1:{PORT}/mcp"
 REQUIRED = {
-    "start_market_day","get_market_day","list_recent_market_days","record_governance_context",
+    "start_market_day","get_market_day","list_recent_market_days","list_resumable_tasks","record_governance_context",
     "submit_freeze_card","submit_source_completion","submit_source_audit","submit_event_ledger",
     "submit_industry_research","record_stockbase_context","submit_universe_audit","submit_market_structure",
     "submit_recall_pool","submit_execution_plan","submit_premarket_audit","start_postclose_review",
     "submit_market_outcomes","submit_attribution","submit_recall_grading","submit_learning_audit",
     "submit_rule_proposal","submit_replay_eval","record_review_writeback","submit_final_audit",
 }
-READ_ONLY = {"get_market_day", "list_recent_market_days"}
+READ_ONLY = {"get_market_day", "list_recent_market_days", "list_resumable_tasks"}
 
 
 def wait_port(timeout=15.0):
@@ -55,12 +55,29 @@ async def verify():
                 out = d.get("outputSchema")
                 if not isinstance(out, dict) or out.get("type") != "object":
                     raise RuntimeError(f"missing object output schema: {name}")
+
             result = await session.call_tool("start_market_day", arguments={"trading_date":"2026-10-08","prompt":"smoke only"})
             if result.is_error or not isinstance(result.structured_content, dict):
                 raise RuntimeError(f"start_market_day failed: {result.content}")
             if result.structured_content.get("current_stage") != "FREEZE":
                 raise RuntimeError(f"unexpected start result: {result.structured_content}")
-            print(f"PASS: {len(tools)} typed/annotated MCP tools and structured start result")
+            if result.structured_content.get("task_class") != "USER":
+                raise RuntimeError(f"new task is not continuity USER: {result.structured_content}")
+            if result.structured_content.get("resume_eligible") is not True or result.structured_content.get("resume_visibility") != "DEFAULT":
+                raise RuntimeError(f"new task is not bare-inherit eligible: {result.structured_content}")
+
+            resumable = await session.call_tool("list_resumable_tasks", arguments={"limit":20})
+            if resumable.is_error or not isinstance(resumable.structured_content, dict):
+                raise RuntimeError(f"list_resumable_tasks failed: {resumable.content}")
+            tasks = resumable.structured_content.get("tasks") or []
+            ids = {task.get("task_id") for task in tasks}
+            if result.structured_content.get("task_id") not in ids:
+                raise RuntimeError(f"new USER task missing from resumable discovery: {tasks}")
+            for task in tasks:
+                if task.get("task_class") != "USER" or task.get("resume_eligible") is not True or task.get("resume_visibility") != "DEFAULT":
+                    raise RuntimeError(f"unsafe resumable task leaked: {task}")
+
+            print(f"PASS: {len(tools)} typed/annotated MCP tools, continuity metadata, and safe resumable-task discovery")
 
 
 def main():
@@ -68,7 +85,7 @@ def main():
     env["ASHARE_EVENT_DATA_DIR"] = tempfile.mkdtemp(prefix="ashare-event-mcp-")
     env["MCP_HOST"] = "127.0.0.1"
     env["MCP_PORT"] = str(PORT)
-    proc = subprocess.Popen([sys.executable, "-m", "ashare_event_agent.plugin_server"], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    proc = subprocess.Popen([sys.executable, "-m", "ashare_event_agent.continuity_plugin"], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     try:
         wait_port()
         asyncio.run(verify())
