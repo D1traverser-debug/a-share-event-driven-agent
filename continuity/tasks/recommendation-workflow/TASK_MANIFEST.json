@@ -1,0 +1,22 @@
+{
+  "schema_version": "3.3",
+  "manifest_version": 1,
+  "task_id": "ashare:recommendation",
+  "task_class": "USER",
+  "domain": "A_SHARE_RECOMMENDATION",
+  "title": "A-share recommendation workflow",
+  "display_name_zh": "A股荐股",
+  "status": "ACTIVE",
+  "resume_eligible": true,
+  "resume_visibility": "DEFAULT",
+  "recovery_owner": "A_SHARE_MARKET_AGENT",
+  "updated_at": "2026-10-09T12:58:00Z",
+  "current_stage": "READY_FOR_CURRENT_MARKET_DAY",
+  "next_action": "恢复后解析当前交易日，创建或定位当日 market-day USER task，刷新最新盘前数据并进入现行荐股流程；不得继承历史交易日 FrozenDecision。",
+  "checkpoint_ref": "continuity/tasks/recommendation-workflow/HANDOFF.md",
+  "contract_version": "CONTINUITY_V3_3",
+  "resume_epoch": 0,
+  "active_lease": null,
+  "keywords": ["荐股", "A股荐股", "盘前荐股", "推荐股票"],
+  "artifact_refs": []
+}
