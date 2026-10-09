@@ -8,6 +8,10 @@ from uuid import uuid4
 from pydantic import BaseModel, Field, model_validator
 
 
+CURRENT_CONTRACT_VERSION = "2.0"
+CURRENT_RUNTIME_VERSION = "0.1.0"
+
+
 class Stage(str, Enum):
     INTAKE = "INTAKE"
     FREEZE = "FREEZE"
@@ -46,6 +50,21 @@ class TaskMode(str, Enum):
     HISTORICAL_REPLAY = "HISTORICAL_REPLAY"
 
 
+class TaskClass(str, Enum):
+    USER = "USER"
+    TEST = "TEST"
+    FIXTURE = "FIXTURE"
+    EVAL = "EVAL"
+    SYSTEM_INFRA = "SYSTEM_INFRA"
+    MIGRATION = "MIGRATION"
+
+
+class ResumeVisibility(str, Enum):
+    DEFAULT = "DEFAULT"
+    EXPLICIT_ONLY = "EXPLICIT_ONLY"
+    HIDDEN = "HIDDEN"
+
+
 class ArtifactKind(str, Enum):
     PREMARKET_SNAPSHOT_JSON = "PREMARKET_SNAPSHOT_JSON"
     PICK_REPORT_MD = "PICK_REPORT_MD"
@@ -80,6 +99,16 @@ class TaskContract(BaseModel):
     prior_review_ref: str | None = None
     source_refs: list[str] = Field(default_factory=list)
     required_outputs: list[ArtifactKind] = Field(default_factory=list)
+
+    # Continuity v2 metadata. Defaults are deliberately fail-closed so a legacy
+    # JSON checkpoint that predates these fields cannot silently become a bare-
+    # inherit USER task. New user-facing runtime tasks must set USER explicitly.
+    task_class: TaskClass = TaskClass.MIGRATION
+    resume_eligible: bool = False
+    resume_visibility: ResumeVisibility = ResumeVisibility.EXPLICIT_ONLY
+    contract_version: str = "legacy-unclassified"
+    runtime_version: str | None = None
+    skill_version: str | None = None
 
     @model_validator(mode="after")
     def populate_required_outputs(self):

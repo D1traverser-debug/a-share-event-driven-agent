@@ -4,7 +4,16 @@ import hashlib
 import json
 from typing import Any
 
-from .models import GateStatus, MarketDayState, Stage, TaskContract
+from .models import (
+    CURRENT_CONTRACT_VERSION,
+    CURRENT_RUNTIME_VERSION,
+    GateStatus,
+    MarketDayState,
+    ResumeVisibility,
+    Stage,
+    TaskClass,
+    TaskContract,
+)
 from .store import SQLiteStateStore
 
 
@@ -57,6 +66,19 @@ class MarketDayEngine:
         self.store = store
 
     def start(self, contract: TaskContract) -> MarketDayState:
+        # A contract that reaches engine.start is a newly-created task, not a
+        # checkpoint loaded from durable storage. Promote only the fail-closed
+        # legacy defaults to USER here. Persisted pre-v2 checkpoints bypass
+        # start(), retain MIGRATION/EXPLICIT_ONLY defaults on load, and therefore
+        # cannot leak into ordinary bare-inherit discovery.
+        if contract.task_class == TaskClass.MIGRATION and contract.contract_version == "legacy-unclassified":
+            contract = contract.model_copy(update={
+                "task_class": TaskClass.USER,
+                "resume_eligible": True,
+                "resume_visibility": ResumeVisibility.DEFAULT,
+                "contract_version": CURRENT_CONTRACT_VERSION,
+                "runtime_version": CURRENT_RUNTIME_VERSION,
+            })
         state = MarketDayState(contract=contract)
         state.add_trace("RUNTIME_STARTED", "Market-day TaskContract persisted before research")
         state.set_gate("runtime_initialized", GateStatus.PASS, ["TaskContract exists", "state store active"])
