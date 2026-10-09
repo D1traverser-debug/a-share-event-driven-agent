@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-10-09",
+  "execution_plane": "CANDIDATE_SHADOW_VALIDATION",
+  "runtime_authority_enabled": false,
+  "operational_governance_authority": "NOTION_DRIVE_EXISTING_GOVERNANCE",
+  "candidate_code_authority": "GITHUB_MAIN",
+  "promotion_rule": "runtime_authority_enabled may become true only after every required_gate is independently evidenced PASS",
+  "required_gates": {
+    "historical_multi_regime_frozen_cassette_replay": "PENDING",
+    "real_p01_p09_live_source_adapter_validation": "PENDING",
+    "durable_hosted_checkpoint_artifact_store": "PENDING",
+    "fresh_chat_runtime_restart_recovery": "PENDING",
+    "real_premarket_frozen_postclose_learning_e2e": "PENDING"
+  },
+  "continuity": {
+    "task_class_required": true,
+    "bare_inherit_allowed_task_classes": ["USER"],
+    "exclude_from_bare_inherit": ["TEST", "FIXTURE", "EVAL", "SYSTEM_INFRA"],
+    "resume_requires_contract_compatibility": true
+  },
+  "notes": [
+    "GitHub main remains the candidate executable code/rule authority.",
+    "Until runtime_authority_enabled=true, a Runtime checkpoint must not silently replace the current operational governance plane.",
+    "Changing this file does not itself prove a gate; attach replay/E2E/durability evidence before promotion."
+  ]
+}
