@@ -1,13 +1,19 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, time
 from typing import Literal
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+
+def _require_aware(value: datetime, field_name: str) -> None:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError(f"{field_name} must be timezone-aware")
 
 
 class FreezeCard(StrictModel):
@@ -22,6 +28,21 @@ class FreezeCard(StrictModel):
     def guard_future_use(self):
         if self.post_freeze_data_allowed_for_premarket:
             raise ValueError("premarket research may never use post-freeze data")
+        _require_aware(self.max_public_info_time, "max_public_info_time")
+        _require_aware(self.max_market_data_time, "max_market_data_time")
+        try:
+            zone = ZoneInfo(self.timezone)
+            trade_date = datetime.strptime(self.trading_date, "%Y-%m-%d").date()
+        except Exception as exc:
+            raise ValueError("FreezeCard requires a valid IANA timezone and YYYY-MM-DD trading_date") from exc
+        public_local = self.max_public_info_time.astimezone(zone)
+        market_local = self.max_market_data_time.astimezone(zone)
+        if public_local.date() != trade_date or market_local.date() != trade_date:
+            raise ValueError("FreezeCard cutoffs must belong to the trading date in the configured timezone")
+        cutoff_clock = time(9, 24, 59) if self.auction_used else time(9, 14, 59)
+        cutoff = datetime.combine(trade_date, cutoff_clock, tzinfo=zone)
+        if public_local > cutoff or market_local > cutoff:
+            raise ValueError(f"premarket cutoff exceeds legal freeze boundary {cutoff.isoformat()}")
         return self
 
 
@@ -37,6 +58,7 @@ class SourceReceipt(StrictModel):
     retrieved_at: datetime
     source_refs: list[str] = Field(min_length=1)
     published_at: datetime | None = None
+    content_max_available_at: datetime | None = None
     links_expected: int | None = Field(default=None, ge=0)
     links_fetched: int | None = Field(default=None, ge=0)
     images_expected: int | None = Field(default=None, ge=0)
@@ -46,15 +68,24 @@ class SourceReceipt(StrictModel):
 
     @model_validator(mode="after")
     def counts_reconcile(self):
+        _require_aware(self.retrieved_at, "retrieved_at")
+        if self.published_at is not None:
+            _require_aware(self.published_at, "published_at")
+        if self.content_max_available_at is not None:
+            _require_aware(self.content_max_available_at, "content_max_available_at")
         if self.links_expected is not None and self.links_fetched is not None and self.links_fetched > self.links_expected:
             raise ValueError("links_fetched cannot exceed links_expected")
         if self.images_expected is not None and self.images_read is not None and self.images_read > self.images_expected:
             raise ValueError("images_read cannot exceed images_expected")
         if self.status == "FULL":
-            if self.links_expected is not None and self.links_fetched != self.links_expected:
+            if None in {self.links_expected, self.links_fetched, self.images_expected, self.images_read}:
+                raise ValueError("FULL source requires explicit LINK-ALL and image expected/read counts; use zero when none exist")
+            if self.links_fetched != self.links_expected:
                 raise ValueError("FULL source must reconcile all expected links")
-            if self.images_expected is not None and self.images_read != self.images_expected:
+            if self.images_read != self.images_expected:
                 raise ValueError("FULL source must reconcile all expected images")
+            if self.content_max_available_at is None:
+                raise ValueError("FULL source requires content_max_available_at for point-in-time freeze binding")
         if self.status != "FULL" and not self.gaps:
             raise ValueError("non-FULL source requires explicit gaps")
         return self
@@ -70,6 +101,9 @@ class SourceCompletionPackage(StrictModel):
     def five_pool_rule(self):
         if not self.previous_five_pool_reused or self.repeated_five_pool_fetch_performed:
             raise ValueError("premarket must reuse formal previous-review five-pool snapshot and must not re-fetch it")
+        ids = [r.source_id for r in self.receipts]
+        if len(set(ids)) != len(ids):
+            raise ValueError("source completion receipts must have unique source_id values")
         return self
 
 
@@ -158,9 +192,26 @@ class StockBaseContext(StrictModel):
 class UniversePackage(StrictModel):
     mappings: list[StockMapping] = Field(min_length=1)
     excluded: list[str] = Field(default_factory=list)
+    exclusion_reasons: dict[str, str] = Field(default_factory=dict)
+    node_exclusions: dict[str, str] = Field(default_factory=dict)
     all_event_nodes_exhausted: bool
     omitted_known_candidates: list[str] = Field(default_factory=list)
     stop_reason: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def exclusions_are_auditable(self):
+        tickers = [m.ticker for m in self.mappings]
+        if len(set(tickers)) != len(tickers):
+            raise ValueError("Universe mappings must contain unique tickers")
+        if len(set(self.excluded)) != len(self.excluded):
+            raise ValueError("Universe excluded tickers must be unique")
+        if set(self.exclusion_reasons) != set(self.excluded):
+            raise ValueError("Universe exclusion_reasons must exactly cover excluded tickers")
+        if any(not reason.strip() for reason in self.exclusion_reasons.values()):
+            raise ValueError("Universe exclusion reasons must be non-empty")
+        if any(not reason.strip() for reason in self.node_exclusions.values()):
+            raise ValueError("Universe node exclusion reasons must be non-empty")
+        return self
 
 
 class HeightRecord(StrictModel):
@@ -238,11 +289,11 @@ class ExecutionCandidate(StrictModel):
     ticker: str
     name: str
     slot: Literal["PRIMARY_LEADER", "BACKUP_LEADER", "NEW_THEME_PIONEER", "CAPACITY_ANCHOR"]
-    strategy: str
+    strategy: str = Field(min_length=1)
     trigger: list[str] = Field(min_length=1)
     invalidation: list[str] = Field(min_length=1)
     why_this: list[str] = Field(min_length=1)
-    why_not_peers: list[str] = Field(default_factory=list)
+    why_not_peers: list[str] = Field(min_length=1)
 
 
 class ExecutionPlan(StrictModel):
@@ -250,6 +301,16 @@ class ExecutionPlan(StrictModel):
     no_trade_conditions: list[str] = Field(min_length=1)
     backup_chain: list[str] = Field(min_length=1)
     first_read_answer: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def execution_slots_are_unique(self):
+        tickers = [c.ticker for c in self.candidates]
+        slots = [c.slot for c in self.candidates]
+        if len(set(tickers)) != len(tickers):
+            raise ValueError("Execution candidates must have unique tickers")
+        if len(set(slots)) != len(slots):
+            raise ValueError("Execution candidates must have unique role slots")
+        return self
 
 
 class GateDecision(StrictModel):
@@ -308,6 +369,10 @@ class AttributionRecord(StrictModel):
             raise ValueError("in_u1 requires in_u0")
         if self.miss_class == "G_UNKNOWABLE" and self.knowable_before_freeze:
             raise ValueError("G_UNKNOWABLE requires knowable_before_freeze=false")
+        if not self.knowable_before_freeze and self.miss_class != "G_UNKNOWABLE":
+            raise ValueError("unknowable pre-freeze outcomes must use G_UNKNOWABLE")
+        if self.miss_class == "HIT" and (not self.knowable_before_freeze or not self.in_u0):
+            raise ValueError("HIT requires knowable_before_freeze=true and in_u0=true")
         return self
 
 
@@ -319,10 +384,16 @@ class AttributionPackage(StrictModel):
 
     @model_validator(mode="after")
     def attribution_sets_unique(self):
-        for label, rows in (("actual_limit_ups", self.actual_limit_ups), ("broken_boards", self.broken_boards), ("limit_downs", self.limit_downs)):
+        groups = (("actual_limit_ups", self.actual_limit_ups), ("broken_boards", self.broken_boards), ("limit_downs", self.limit_downs))
+        seen: set[str] = set()
+        for label, rows in groups:
             tickers = [x.ticker for x in rows]
             if len(set(tickers)) != len(tickers):
                 raise ValueError(f"duplicate ticker inside {label}")
+            overlap = sorted(seen.intersection(tickers))
+            if overlap:
+                raise ValueError(f"ticker cannot appear in multiple mutually exclusive attribution outcome sets: {overlap}")
+            seen.update(tickers)
         return self
 
 
@@ -365,6 +436,12 @@ class LearningAudit(StrictModel):
     candidate_hypotheses: list[str] = Field(default_factory=list)
     no_rule_change_reason: str = ""
 
+    @model_validator(mode="after")
+    def no_empty_learning_conclusion(self):
+        if not self.candidate_hypotheses and not self.no_rule_change_reason:
+            raise ValueError("learning audit without candidate hypotheses requires no_rule_change_reason")
+        return self
+
 
 class RuleProposal(StrictModel):
     status: Literal["PROPOSE", "N_A"]
@@ -376,6 +453,7 @@ class RuleProposal(StrictModel):
     applicable_regimes: list[str] = Field(default_factory=list)
     counterexamples: list[str] = Field(default_factory=list)
     replay_case_refs: list[str] = Field(default_factory=list)
+    no_change_reason: str = ""
 
     @model_validator(mode="after")
     def validate_proposal(self):
@@ -384,6 +462,8 @@ class RuleProposal(StrictModel):
                 raise ValueError("PROPOSE requires complete rule hypothesis metadata")
             if not self.applicable_regimes or not self.counterexamples or not self.replay_case_refs:
                 raise ValueError("PROPOSE requires applicable regimes, counterexamples and replay case refs")
+        elif not self.no_change_reason:
+            raise ValueError("N_A rule proposal requires no_change_reason")
         return self
 
 
