@@ -14,6 +14,19 @@ Before choosing an execution plane, read `config/cutover_status.json` from GitHu
 
 A change to documentation or to the cutover flag is not proof of production readiness. Promotion requires the evidence gates recorded in `config/cutover_status.json`.
 
+## Execution readiness handshake
+Before any material stage execution, read `continuity/EXECUTION_CAPABILITIES.json` from current GitHub `main` in addition to the cutover authority. This owner capability manifest defines the maximum assurance the repository can support; it is **not** proof that the current chat/session actually has the runtime, data source, connector, credential or modality needed now.
+
+For the exact current stage / `next_action` only:
+1. identify the required capability or capabilities;
+2. observe current-session availability and assurance;
+3. prefer the owner-native runtime/service when available;
+4. use `CHAT_BRIDGED` only where the capability manifest explicitly lists it as a safe degraded mode, and submit the result through the owner stage/schema contract;
+5. if a hard capability is unavailable, block that exact stage/gate rather than silently free-forming or declaring the whole Agent unusable;
+6. never claim isolated execution unless distinct execution/context/trace evidence actually satisfies the required assurance.
+
+A role description, Skill paragraph, code stub or configured tool name is not execution evidence. A material action is complete only when the owner runtime/state/checkpoint contains the required result and evidence.
+
 ## New task vs continuation
 Apply the global rule: **inherit learning, not unfinished work**.
 
