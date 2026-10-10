@@ -45,8 +45,8 @@ def audit_source_completion(pkg: SourceCompletionPackage, freeze: FreezeCard | N
 def audit_event_times(pkg: EventLedgerPackage, max_public_info_time) -> list[str]:
     errors: list[str] = []
     for event in pkg.events:
-        if event.available_at > max_public_info_time and event.classification not in {"CALENDAR"}:
-            errors.append(f"post-freeze event in premarket ledger: {event.event_id}")
+        if event.available_at > max_public_info_time:
+            errors.append(f"post-freeze event availability in premarket ledger: {event.event_id}")
     for evidence in pkg.evidence_ledger:
         if evidence.available_at > max_public_info_time:
             errors.append(f"post-freeze evidence in premarket ledger: {evidence.claim[:60]}")
