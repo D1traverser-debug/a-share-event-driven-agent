@@ -1,6 +1,6 @@
 {
   "schema_version": "3.7",
-  "manifest_version": 4,
+  "manifest_version": 5,
   "task_id": "ashare:2026-10-12",
   "task_class": "USER",
   "domain": "A_SHARE_MARKET_DAY",
@@ -13,9 +13,9 @@
   "resume_visibility": "EXPLICIT_ONLY",
   "recovery_owner": "A_SHARE_MARKET_AGENT",
   "created_at": "2026-10-10T15:05:53Z",
-  "updated_at": "2026-10-10T15:37:45Z",
+  "updated_at": "2026-10-10T21:14:55Z",
   "current_stage": "GITHUB_CONTROL_PLANE_MIGRATED__PRIOR_DAY_GAP_FILL_COMPLETE__WEEKEND_EVENT_LEDGER_PARTIAL__MONDAY_LIVE_SOURCE_WINDOW_PENDING",
-  "next_action": "Use the persisted 2026-10-09 reconstructed five-pool snapshot and ShortTermCard only as previous-day post-close input; do not reinterpret them as a historical FrozenDecision. Continue weekend deep research and StockBase READ_ONLY recall. During the 2026-10-12 premarket window, complete P01-P09 plus required official/live sources and images, merge/dedupe against weekend evidence, then build Market Regime, HeightMap/RoleMap, Deep Industry, U0/U1/U2/U3 and run MID/FINAL QA. Advance toward FROZEN/FINAL only after all source/count/time/universe/QA gates pass; Runtime-only certification remains blocked until the relevant Runtime capability is session-proven/promoted.",
+  "next_action": "Use the persisted 2026-10-09 reconstructed five-pool snapshot and ShortTermCard only as previous-day post-close input; do not reinterpret them as a historical FrozenDecision. Continue weekend deep research and StockBase READ_ONLY recall. During the 2026-10-12 premarket window, complete P01-P09 plus required official/live sources and images under the hardened point-in-time contract: every non-blocked source needs content_max_available_at, FULL needs explicit reconciled LINK/image counts, and admitted content must be no later than FreezeCard. Merge/dedupe against weekend evidence; preserve IndustryResearch many-to-many mappings, derive the stock-level main-board Universe with explicit ticker/node exclusions, require U0=Universe and U3 subset U1 with why_not_peers, then run Market Regime, HeightMap/RoleMap, MID/FINAL QA. Advance toward FROZEN/FINAL only after all source/time/universe/lineage/QA gates pass; Runtime-only certification remains blocked until the relevant Runtime capability is session-proven/promoted.",
   "checkpoint_ref": "continuity/tasks/2026-10-12-market-day/HANDOFF.md",
   "contract_version": "CONTINUITY_V3_7_GITHUB_GOVERNANCE__RUNTIME_SHADOW",
   "continuity_protocol_version": "3.7",
@@ -33,14 +33,16 @@
   },
   "coverage": {
     "trading_day_resolution": "PASS__LONGBRIDGE_CN_CALENDAR_SESSION_PROVEN",
-    "owner_skill_cutover_capability_contract": "PASS__GITHUB_GOVERNANCE_MIGRATED__CI_SUCCESS_RUN_38063840253",
+    "owner_skill_cutover_capability_contract": "PASS__GITHUB_GOVERNANCE_MIGRATED__RECOMMENDATION_LINEAGE_HARDENED__CI_SUCCESS_RUN_38086880932",
     "start_gate_governance_checkpoint": "PASS__GITHUB_AUTHORITY",
     "stockbase_pointer": "PASS__V1_6_READ_ONLY",
     "prior_trading_day_five_pools_shorttermcard": "PASS_GAP_FILL_RECONSTRUCTED__FORMAL_2026_10_09_ORIGINAL_SNAPSHOT_NOT_LOCATED__PROVENANCE_BOUNDARY_PRESERVED",
     "prior_day_count_reconciliation": "PASS__72_RAW_LIMIT_UP__69_NON_ST__11_LIMIT_DOWN__13_DINGPAN_BROKEN__33_SUPER_STOCK__44_YESTERDAY_LIMIT_UP",
-    "daily_run_freezecard": "PASS_INITIALIZED__NOT_FROZEN__LEGACY_DRIVE_COPY_DEMOTED_TO_MIRROR",
+    "daily_run_freezecard": "PASS_INITIALIZED__NOT_FROZEN__POINT_IN_TIME_SCHEMA_HARDENED__LEGACY_DRIVE_COPY_DEMOTED_TO_MIRROR",
     "weekend_event_ledger": "PARTIAL",
-    "p01_p09_source_completion": "BOUNDARY__PREPUBLICATION_WINDOW",
+    "p01_p09_source_completion": "BOUNDARY__PREPUBLICATION_WINDOW__HARDENED_CONTENT_MAX_AVAILABLE_AT_AND_EXPLICIT_FULL_COUNTS_REQUIRED",
+    "universe_recall_execution_lineage": "CONTRACT_HARDENED__INDUSTRY_TO_UNIVERSE_TO_U0_TO_U1_TO_U3__LIVE_DAY_NOT_YET_EXECUTED",
+    "postclose_attribution_grading_lineage": "CONTRACT_HARDENED__LIVE_POSTCLOSE_NOT_YET_EXECUTED",
     "mid_qa": "NOT_STARTED",
     "final_red_team_qa": "NOT_STARTED"
   },
@@ -48,6 +50,26 @@
     "continuity/tasks/2026-10-12-market-day/evidence/PREVIOUS_DAY_FIVE_POOLS_GAP_FILL_2026-10-09.json",
     "continuity/tasks/2026-10-12-market-day/evidence/PREVIOUS_DAY_SHORT_TERM_CARD_2026-10-09.md"
   ],
+  "system_evolution_evidence_refs": [
+    "audits/2026-10-11_RECOMMENDATION_SYSTEM_EVOLUTION_AUDIT.json",
+    "VALIDATION_REPORT.md"
+  ],
+  "owner_contract_hardening": {
+    "behavioral_head": "faa01b88cc7de476f6d5ffc9ffe18784b73776a8",
+    "github_actions_run_id": 38086880932,
+    "job_id": 114315134039,
+    "result": "SUCCESS",
+    "runtime_authority_promoted": false,
+    "business_stage_advanced_by_maintenance": false,
+    "required_monday_semantics": [
+      "point-in-time FreezeCard and source content availability",
+      "FULL source explicit link/image count reconciliation",
+      "IndustryResearch many-to-many preserved; Universe stock-level inclusion/exclusion accounted",
+      "U0 equals active Universe; U1 subset U0; U3 subset U1",
+      "why_not_peers required for every non-empty execution candidate",
+      "post-close attribution and RecallGrade derived from frozen recall/outcomes"
+    ]
+  },
   "freeze_policy": {
     "timezone": "Asia/Shanghai",
     "target_latest_public_info_time": "2026-10-12T09:14:59+08:00",
