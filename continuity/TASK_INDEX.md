@@ -8,6 +8,10 @@ Adapter: `continuity/UNIVERSAL_PROTOCOL_ADAPTER.json`
 
 - `ashare:recommendation` — **A股荐股** — USER — ACTIVE — stage `READY_FOR_CURRENT_MARKET_DAY` — resume `DEFAULT` — manifest: `continuity/tasks/recommendation-workflow/TASK_MANIFEST.json` — checkpoint: `continuity/tasks/recommendation-workflow/HANDOFF.md`
 
+## Non-default / current market day
+
+- `ashare:2026-10-12` — **A股荐股｜2026-10-12** — USER — ACTIVE — stage `WEEKEND_PREMARKET_RESEARCH_INITIALIZED__MONDAY_LIVE_SOURCE_WINDOW_PENDING` — resume `EXPLICIT_ONLY` — manifest: `continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json` — checkpoint: `continuity/tasks/2026-10-12-market-day/HANDOFF.md`
+
 ## Non-default / historical
 
 - `ashare:2026-10-09` — historical market day — USER — PAUSED — resume `EXPLICIT_ONLY` — checkpoint `continuity/tasks/2026-10-09-market-day/HANDOFF.md`
