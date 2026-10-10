@@ -1,6 +1,6 @@
 {
   "schema_version": "3.7",
-  "manifest_version": 3,
+  "manifest_version": 4,
   "task_id": "ashare:recommendation",
   "task_class": "USER",
   "domain": "A_SHARE_RECOMMENDATION",
@@ -10,9 +10,12 @@
   "resume_eligible": true,
   "resume_visibility": "DEFAULT",
   "recovery_owner": "A_SHARE_MARKET_AGENT",
-  "updated_at": "2026-10-10T15:02:12Z",
-  "current_stage": "READY_FOR_CURRENT_MARKET_DAY",
-  "next_action": "恢复后解析当前交易日，创建或定位当日 market-day USER task，刷新最新盘前数据并进入现行荐股流程；不得继承历史交易日 FrozenDecision。",
+  "updated_at": "2026-10-10T15:10:33Z",
+  "current_stage": "CURRENT_MARKET_DAY_ROUTED_TO_2026_10_12",
+  "next_action": "Continue active child task ashare:2026-10-12 from continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json and its verified Notion/Drive governance run. Do not create a duplicate market-day task and do not inherit any historical FrozenDecision.",
+  "active_child_task_id": "ashare:2026-10-12",
+  "active_child_manifest_ref": "continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json",
+  "active_child_checkpoint_ref": "continuity/tasks/2026-10-12-market-day/HANDOFF.md",
   "checkpoint_ref": "continuity/tasks/recommendation-workflow/HANDOFF.md",
   "contract_version": "CONTINUITY_V3_7",
   "continuity_protocol_version": "3.7",
@@ -30,7 +33,9 @@
     "config/cutover_status.json",
     "config/rule_ownership.json",
     "config/policy.json",
-    "continuity/UNIVERSAL_PROTOCOL_ADAPTER.json"
+    "continuity/UNIVERSAL_PROTOCOL_ADAPTER.json",
+    "continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json",
+    "continuity/tasks/2026-10-12-market-day/HANDOFF.md"
   ],
   "protocol_migration": {
     "from_protocol": "3.3",
