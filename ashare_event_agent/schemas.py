@@ -223,6 +223,14 @@ class RecallPoolPackage(StrictModel):
     def recall_must_not_be_pruned(self):
         if self.early_pruning_applied:
             raise ValueError("Leader-First/execution preferences may not prune U0/U1 recall")
+        if len(set(self.u0_tickers)) != len(self.u0_tickers):
+            raise ValueError("U0 tickers must be unique")
+        u1_tickers = [x.ticker for x in self.u1_candidates]
+        if len(set(u1_tickers)) != len(u1_tickers):
+            raise ValueError("U1 candidates must be unique")
+        missing_from_u0 = sorted(set(u1_tickers) - set(self.u0_tickers))
+        if missing_from_u0:
+            raise ValueError(f"U1 candidates must be a subset of U0: {missing_from_u0}")
         return self
 
 
@@ -273,6 +281,15 @@ class OutcomePackage(StrictModel):
     pool_counts: dict[str, int]
     source_refs: list[str] = Field(min_length=1)
 
+    @model_validator(mode="after")
+    def outcomes_reconcile(self):
+        if any(v < 0 for v in self.pool_counts.values()):
+            raise ValueError("outcome pool counts cannot be negative")
+        tickers = [x.ticker for x in self.outcomes]
+        if len(set(tickers)) != len(tickers):
+            raise ValueError("outcome tickers must be unique")
+        return self
+
 
 class AttributionRecord(StrictModel):
     ticker: str
@@ -285,12 +302,28 @@ class AttributionRecord(StrictModel):
     premarket_evidence: list[str] = Field(default_factory=list)
     postclose_facts: list[str] = Field(default_factory=list)
 
+    @model_validator(mode="after")
+    def attribution_membership_consistent(self):
+        if self.in_u1 and not self.in_u0:
+            raise ValueError("in_u1 requires in_u0")
+        if self.miss_class == "G_UNKNOWABLE" and self.knowable_before_freeze:
+            raise ValueError("G_UNKNOWABLE requires knowable_before_freeze=false")
+        return self
+
 
 class AttributionPackage(StrictModel):
     actual_limit_ups: list[AttributionRecord] = Field(min_length=1)
     broken_boards: list[AttributionRecord] = Field(default_factory=list)
     limit_downs: list[AttributionRecord] = Field(default_factory=list)
     mention_ledger_notes: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def attribution_sets_unique(self):
+        for label, rows in (("actual_limit_ups", self.actual_limit_ups), ("broken_boards", self.broken_boards), ("limit_downs", self.limit_downs)):
+            tickers = [x.ticker for x in rows]
+            if len(set(tickers)) != len(tickers):
+                raise ValueError(f"duplicate ticker inside {label}")
+        return self
 
 
 class RecallGrade(StrictModel):
@@ -303,6 +336,27 @@ class RecallGrade(StrictModel):
     u1_recall: float = Field(ge=0, le=1)
     miss_counts: dict[str, int] = Field(default_factory=dict)
     reconciliation_notes: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def recall_arithmetic_reconciles(self):
+        if self.excluded_scope_total > self.actual_limit_up_total:
+            raise ValueError("excluded_scope_total cannot exceed actual_limit_up_total")
+        in_scope_total = self.actual_limit_up_total - self.excluded_scope_total
+        if self.knowable_limit_up_total > in_scope_total:
+            raise ValueError("knowable_limit_up_total cannot exceed in-scope actual limit-ups")
+        if self.u0_hits > self.knowable_limit_up_total or self.u1_hits > self.knowable_limit_up_total:
+            raise ValueError("recall hits cannot exceed knowable_limit_up_total")
+        if self.u1_hits > self.u0_hits:
+            raise ValueError("U1 hits cannot exceed U0 hits")
+        expected_u0 = self.u0_hits / self.knowable_limit_up_total if self.knowable_limit_up_total else 0.0
+        expected_u1 = self.u1_hits / self.knowable_limit_up_total if self.knowable_limit_up_total else 0.0
+        if abs(self.u0_recall - expected_u0) > 1e-9:
+            raise ValueError("u0_recall must equal u0_hits / knowable_limit_up_total")
+        if abs(self.u1_recall - expected_u1) > 1e-9:
+            raise ValueError("u1_recall must equal u1_hits / knowable_limit_up_total")
+        if any(v < 0 for v in self.miss_counts.values()):
+            raise ValueError("miss counts cannot be negative")
+        return self
 
 
 class LearningAudit(StrictModel):
@@ -328,6 +382,8 @@ class RuleProposal(StrictModel):
         if self.status == "PROPOSE":
             if not all([self.rule_id, self.owner, self.hypothesis, self.detection_rule, self.prevention_rule]):
                 raise ValueError("PROPOSE requires complete rule hypothesis metadata")
+            if not self.applicable_regimes or not self.counterexamples or not self.replay_case_refs:
+                raise ValueError("PROPOSE requires applicable regimes, counterexamples and replay case refs")
         return self
 
 
@@ -342,3 +398,29 @@ class ReplayEval(StrictModel):
     regressions: list[str] = Field(default_factory=list)
     future_contamination_detected: bool = False
     decision_reason: str = Field(min_length=1)
+    mechanical_evidence_refs: list[str] = Field(default_factory=list)
+    cassette_hashes: dict[str, str] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def replay_pass_requires_mechanical_evidence(self):
+        if self.status != "PASS":
+            return self
+        if len(self.case_refs) < 5 or len(set(self.regimes)) < 2:
+            raise ValueError("PASS requires at least five frozen cases across at least two regimes")
+        if self.positive_samples < 1 or self.negative_samples < 1:
+            raise ValueError("PASS requires positive and negative samples")
+        if self.future_contamination_detected:
+            raise ValueError("PASS cannot contain future-information contamination")
+        if self.regressions:
+            raise ValueError("PASS cannot contain material regressions")
+        if not self.baseline_metrics or not self.candidate_metrics:
+            raise ValueError("PASS requires baseline and candidate metrics")
+        if not self.mechanical_evidence_refs:
+            raise ValueError("PASS requires mechanical replay evidence refs")
+        missing_hashes = sorted(set(self.case_refs) - set(self.cassette_hashes))
+        if missing_hashes:
+            raise ValueError(f"PASS requires cassette hashes for every case: {missing_hashes}")
+        for case_ref, digest in self.cassette_hashes.items():
+            if case_ref in self.case_refs and (len(digest) != 64 or any(ch not in "0123456789abcdefABCDEF" for ch in digest)):
+                raise ValueError(f"invalid cassette sha256 for {case_ref}")
+        return self
