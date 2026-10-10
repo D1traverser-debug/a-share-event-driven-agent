@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "owner": "A_SHARE_MARKET_AGENT",
   "current_universal_protocol": "3.7",
   "supported_from": ["3.3", "3.5", "3.6", "3.7"],
@@ -25,31 +25,17 @@
       "artifact_io": {
         "status": "APPLIES",
         "reason": "The owner persists task/checkpoint metadata, frozen market-decision evidence and repository authority, and performs conflict-sensitive reads/writes whose stale or future-contaminated artifacts must be rejected.",
-        "evidence_refs": [
-          "config/cutover_status.json",
-          "continuity/tasks/<task>/TASK_MANIFEST.json",
-          "references/maintenance.md"
-        ]
+        "evidence_refs": ["config/cutover_status.json", "continuity/tasks/<task>/TASK_MANIFEST.json", "references/maintenance.md"]
       },
       "operational_hygiene": {
         "status": "APPLIES",
         "reason": "The owner has durable maintenance, replay/audit incident evidence, stale-rule cleanup and reliability freeze behavior for data/runtime/trajectory defects.",
-        "evidence_refs": [
-          "references/maintenance.md",
-          "evals/scenarios.json",
-          "evals/activation_cases.json",
-          "audits/2026-10-10_FULL_CONTROL_PLANE_SELF_AUDIT.json"
-        ]
+        "evidence_refs": ["references/maintenance.md", "evals/scenarios.json", "evals/activation_cases.json", "audits/2026-10-10_FULL_CONTROL_PLANE_SELF_AUDIT.json"]
       },
       "evolution": {
         "status": "APPLIES",
         "reason": "The owner promotes durable rule changes from provenance-bearing learning proposals only after frozen historical replay and contamination checks.",
-        "evidence_refs": [
-          "references/learning.md",
-          "references/maintenance.md",
-          "evals/scenarios.json",
-          "audits/2026-10-10_FULL_CONTROL_PLANE_SELF_AUDIT.json"
-        ]
+        "evidence_refs": ["references/learning.md", "references/maintenance.md", "evals/scenarios.json", "audits/2026-10-10_FULL_CONTROL_PLANE_SELF_AUDIT.json"]
       }
     },
     "hook_bindings": {
@@ -84,18 +70,22 @@
       "job_id": 114251691457,
       "result": "PASS_MCP_TRAJECTORY_CONTRACT_STATIC_OWNERSHIP_BUNDLE_WHEEL_INSTALL"
     },
-    "operational_status": "ACTION_LEVEL_PROFILE_RUN_AND_INDEPENDENT_EVIDENCE_RECEIPT_REQUIRED",
-    "latest_operational_profile_run": {
+    "operational_status": "CURRENT_UNIVERSAL_RECEIPT_V1_3_ACTION_LEVEL_PASS_NOT_ESTABLISHED__HISTORICAL_SELF_AUDIT_EVIDENCE_RETAINED",
+    "historical_operational_profile_run": {
       "activation_id": "ashare-full-control-plane-self-audit-2026-10-10",
       "required_profiles": ["artifact_io@1.0", "operational_hygiene@1.0", "evolution@1.0"],
       "receipt_ref": "audits/2026-10-10_FULL_CONTROL_PLANE_SELF_AUDIT.json",
-      "evidence_verifier_sources": [
-        "GitHub current-main file reads",
-        "GitHub Actions run 38065329578 / job 114251691457"
-      ],
-      "result": "PASS_FOR_THIS_ACTION_WITH_REMAINING_CAPABILITY_BOUNDARIES"
+      "historical_result": "PASS_UNDER_PRE_V1_3_ACTION_RECEIPT_SEMANTICS",
+      "current_v1_3_admissibility": "NOT_ADMISSIBLE_AS_CURRENT_OPERATIONAL_PASS__MISSING_RECEIPT_CONTRACT_1_3_EXACT_ACTION_BINDING",
+      "evidence_retention": "RETAIN_AS_HISTORICAL_MAINTENANCE_EVIDENCE_NOT_CURRENT_ASSURANCE"
     },
-    "boundary": "Repository declaration, applicability evidence and owner regression do not prove a future live market-day methodology profile executed. The 2026-10-10 self-audit has an action-scoped operational receipt; every future profile activation still requires its own verified evidence."
+    "current_receipt_requirement": {
+      "receipt_contract_version": "1.3",
+      "exact_action_binding": ["task_id", "stage", "action_id", "subject_bindings", "input_bindings"],
+      "independent_evidence_ref_verifier_required": true,
+      "independent_semantic_hook_assessment_verifier_required": true
+    },
+    "boundary": "Repository declaration, applicability evidence and owner regression do not prove a future live market-day methodology profile executed. The 2026-10-10 self-audit remains valid historical maintenance evidence, but its pre-v1.3 profile records cannot be reused as a current Universal operational methodology PASS because they lack receipt-contract 1.3 exact-action binding. Every future activation requires its own v1.3 action-bound evidence and independent verification."
   },
   "universal_policy_refs": [
     "D1traverser-debug/universal-continuity-agent@main/CURRENT_PROTOCOL.json",
