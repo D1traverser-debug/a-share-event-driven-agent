@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "execution_readiness_contract": "1.0",
+  "owner": "A_SHARE_MARKET_AGENT",
+  "repository": "D1traverser-debug/a-share-event-driven-agent",
+  "profile_version": 1,
+  "purpose": "Owner-level execution wiring metadata for the universal dispatcher. This file is not market-day task state and does not replace the owner runtime/checkpoints.",
+  "capabilities": [
+    {
+      "capability_id": "market_day_state_machine",
+      "scope": "ALL_MARKET_DAY_STAGES",
+      "assurance_ceiling": "SESSION_EXECUTABLE",
+      "invocation_path": "ashare_event_agent.runner.AgentRuntime + ashare_event_agent.controller.WorkflowController",
+      "executor_type": "PYTHON_STATE_MACHINE",
+      "executor_ref": "ashare_event_agent/runner.py",
+      "required_tools": ["python_runtime_or_owner_plugin", "sqlite_state_store"],
+      "evidence_contract": ["MarketDayState", "stage trace", "gate state", "checkpoint save"],
+      "side_channel_allowed": false,
+      "safe_degraded_modes": []
+    },
+    {
+      "capability_id": "structured_market_day_runtime_api",
+      "scope": "FREEZE_THROUGH_FINAL_AUDIT",
+      "assurance_ceiling": "SESSION_EXECUTABLE",
+      "invocation_path": "ashare_event_agent.runtime_service + ashare_event_agent.plugin_server",
+      "executor_type": "OWNER_RUNTIME_SERVICE",
+      "executor_ref": "ashare_event_agent/runtime_service.py",
+      "required_tools": ["owner_plugin_or_runtime_service"],
+      "evidence_contract": ["owner stage validation", "saved structured payload", "artifact/checkpoint refs", "next_action"],
+      "side_channel_allowed": false,
+      "safe_degraded_modes": ["CHAT_BRIDGED"]
+    },
+    {
+      "capability_id": "live_source_acquisition",
+      "scope": "SOURCE_COMPLETION_AND_CURRENT_MARKET_INPUTS",
+      "assurance_ceiling": "SESSION_EXECUTABLE",
+      "invocation_path": "owner source contracts/adapters invoked before structured source submission",
+      "executor_type": "EXTERNAL_DATA_AND_WEB_CONNECTORS",
+      "executor_ref": "ashare_event_agent/source_contracts.py",
+      "required_tools": ["current_market_data_sources", "web_or_direct_interfaces", "owner_runtime_submission"],
+      "evidence_contract": ["source completion package", "source refs", "retrieval/audit evidence", "frozen trading-date binding"],
+      "side_channel_allowed": false,
+      "safe_degraded_modes": []
+    },
+    {
+      "capability_id": "analytical_payload_generation",
+      "scope": "EVENT_LEDGER,INDUSTRY_RESEARCH,MARKET_STRUCTURE,RECALL_POOL,EXECUTION_PLAN,ATTRIBUTION,LEARNING",
+      "assurance_ceiling": "SESSION_EXECUTABLE",
+      "invocation_path": "current execution window authors typed owner payloads and submits only through runtime_service/plugin contracts",
+      "executor_type": "CHAT_OR_AGENT_BRIDGED_OWNER_GATED",
+      "executor_ref": "ashare_event_agent/runtime_service.py",
+      "required_tools": ["reasoning_model", "owner_runtime_submission", "current_source_evidence_where_required"],
+      "evidence_contract": ["typed schema-valid payload", "owner stage check", "saved state", "gate/audit evidence"],
+      "side_channel_allowed": false,
+      "safe_degraded_modes": ["CHAT_BRIDGED"]
+    },
+    {
+      "capability_id": "strict_isolated_auditor",
+      "scope": "OPTIONAL_FUTURE_TRUE_ISOLATION",
+      "assurance_ceiling": "DECLARED_ONLY",
+      "invocation_path": "NOT_IMPLEMENTED_AS_ATTESTED_ISOLATED_EXECUTOR",
+      "executor_type": "UNAVAILABLE",
+      "executor_ref": null,
+      "required_tools": ["provider_run_trace_if_future_gate_requires_true_isolation"],
+      "evidence_contract": ["distinct execution identity", "context/trace proof", "frozen artifact binding"],
+      "side_channel_allowed": false,
+      "safe_degraded_modes": []
+    }
+  ],
+  "owner_notes": [
+    "The owner runtime is fail-closed when a required stage executor or structured submission is missing.",
+    "Repository code readiness does not prove the current session has live market-data connectors or owner runtime bindings; the dispatcher must handshake those per market day.",
+    "Analytical authoring may be chat-bridged only when the resulting payload is submitted through the owner stage/schema contracts rather than treated as free-form chat output."
+  ]
+}
