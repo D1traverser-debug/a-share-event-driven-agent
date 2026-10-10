@@ -9,11 +9,7 @@
   "same_chat_preserve_resume_epoch": true,
   "same_chat_preserve_active_lease": true,
   "new_chat_takeover_still_increments_resume_epoch": true,
-  "business_authority_refs": [
-    "config/cutover_status.json",
-    "config/rule_ownership.json",
-    "config/policy.json"
-  ],
+  "business_authority_refs": ["config/cutover_status.json", "config/rule_ownership.json", "config/policy.json"],
   "authority_rule": "config/cutover_status.json selects the operational governance plane. Universal Continuity must not silently promote GitHub runtime authority.",
   "required_current_behaviors": [
     "reconcile task protocol metadata before next material checkpoint/final durable response",
@@ -23,11 +19,7 @@
   ],
   "task_manifest_update_authority": "CURRENT_VALID_TASK_WRITER_OR_NO_ACTIVE_LEASE_MIGRATION_OR_NEW_CHAT_TAKEOVER",
   "methodology": {
-    "profile_refs": {
-      "artifact_io": "1.0",
-      "operational_hygiene": "1.0",
-      "evolution": "1.0"
-    },
+    "profile_refs": {"artifact_io": "1.0", "operational_hygiene": "1.0", "evolution": "1.0"},
     "hook_bindings": {
       "durable_task_state_location": "continuity/tasks/<task>/TASK_MANIFEST.json plus the cutover-status-selected runtime checkpoint when runtime_authority_enabled=true",
       "authoritative_business_evidence_classes": "FrozenDecision/freeze hash, market-day source snapshots, recommendation/review outputs, replay and audit evidence referenced by the owner task",
@@ -49,14 +41,19 @@
       "eval_or_regression_promotion_path": "references/learning.md: replay at least five frozen cases across at least two regimes with positive/negative samples, zero future-information contamination and no material regression",
       "superseded_mechanism_cleanup_rule": "references/maintenance.md: one canonical owner, contradiction scan and removal/demotion of superseded mechanisms after validated promotion"
     },
-    "overrides": {
-      "evaluator_selection": "A-share promotion uses frozen historical replay across regimes and must reject future-information contamination; insufficient evidence remains HOLD/N_A"
-    }
+    "overrides": {"evaluator_selection": "A-share promotion uses frozen historical replay across regimes and must reject future-information contamination; insufficient evidence remains HOLD/N_A"}
   },
   "methodology_assurance": {
-    "declaration_status": "BOUND_EXACT_VERSION",
-    "operational_status": "DECLARATION_BOUND__OWNER_REGRESSION_PENDING_POST_WRITE_CI",
-    "boundary": "Profile binding does not change market-day business authority, current task state, FrozenDecision, or prove a live recommendation/review execution."
+    "declaration_status": "BOUND_EXACT_VERSION__HOOK_COMPLETE",
+    "owner_regression_status": "PASS",
+    "owner_regression_evidence": {
+      "validated_behavioral_head": "fb43eb80d4926d211767c01d272f788ba44b22a2",
+      "github_actions_run_id": 38056263701,
+      "job_id": 114225317385,
+      "result": "PASS_MCP_TRAJECTORY_CONTRACT_STATIC_OWNERSHIP_BUNDLE_WHEEL_INSTALL"
+    },
+    "operational_status": "ACTION_LEVEL_PROFILE_RUN_AND_INDEPENDENT_EVIDENCE_RECEIPT_REQUIRED",
+    "boundary": "Repository declaration and owner regression do not prove a live market-day methodology profile executed; profile activation remains action-scoped and evidence-gated."
   },
   "universal_policy_refs": [
     "D1traverser-debug/universal-continuity-agent@main/CURRENT_PROTOCOL.json",
