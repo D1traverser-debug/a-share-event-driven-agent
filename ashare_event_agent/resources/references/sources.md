@@ -44,9 +44,15 @@ If that formal snapshot is genuinely missing, a later reconstruction is allowed 
 
 A weekend/current page may reflect the last trading day's pool state, but this must be verified from page/API timestamps/date semantics before it is promoted into business evidence.
 
-## P01-P09 and completeness
+## P01-P09 completeness and point-in-time proof
 
-Every source receipt records status, references, retrieval method, timestamps, LINK-ALL counts, image counts, and gaps. FULL requires count reconciliation. PAID_LIMITED/LOGIN_LIMITED are legal only with explicit boundaries; never invent hidden content.
+Every source receipt records status, references, retrieval method, timestamps, LINK-ALL counts, image counts, gaps and `content_max_available_at` — the latest **knowledge-availability time** of any item actually admitted from that source.
+
+`FULL` is not a prose judgment. It requires explicit `links_expected == links_fetched` and `images_expected == images_read`; use zero when the source contains no links/images. `FULL` also requires `content_max_available_at`. A source with unknown completeness must use a bounded non-FULL status and explicit gaps rather than guessing zero.
+
+For premarket use, every non-blocked receipt is checked against the current FreezeCard. `content_max_available_at` and any source `published_at` used as a knowledge timestamp must be no later than the freeze boundary. Retrieval may occur later; late retrieval does not authorize late content.
+
+`available_at` means **when the market could know the fact**, not when a future scheduled event will occur. Calendar occurrence time and information-availability time are separate concepts; a calendar fact first learned after freeze may not influence the frozen premarket decision.
 
 Image-only tables, calendars, leaderboards, seats, and timelines are first-class source data. A text scraper that misses a material image does not satisfy FULL.
 
