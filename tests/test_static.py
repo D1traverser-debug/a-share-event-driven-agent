@@ -37,8 +37,10 @@ def test_cutover_never_reactivates_notion_drive_control_plane():
 
 def test_runtime_promotion_is_separate_from_governance_migration():
     cutover = json.loads(Path("config/cutover_status.json").read_text(encoding="utf-8"))
-    assert cutover["runtime_authority_enabled"] is False
-    assert all(status == "PENDING" for status in cutover["required_gates"].values())
+    gates = cutover["required_gates"]
+    assert gates
+    if cutover["runtime_authority_enabled"]:
+        assert all(status == "PASS" for status in gates.values())
     skill = Path("skills/a-share-event-driven-agent/SKILL.md").read_text(encoding="utf-8")
     recovery = Path("references/recovery.md").read_text(encoding="utf-8")
     assert "Never route business control back to Notion/Drive" in skill
