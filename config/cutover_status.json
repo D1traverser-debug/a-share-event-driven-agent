@@ -17,7 +17,8 @@
     "real_p01_p09_live_source_adapter_validation": "PENDING",
     "durable_hosted_checkpoint_artifact_store": "PENDING",
     "fresh_chat_runtime_restart_recovery": "PENDING",
-    "real_premarket_frozen_postclose_learning_e2e": "PENDING"
+    "real_premarket_frozen_postclose_learning_e2e": "PENDING",
+    "independent_audit_attestation": "PENDING"
   },
   "continuity": {
     "task_class_required": true,
@@ -32,6 +33,7 @@
     "Notion and Google Drive are no longer operating-control authorities; they may supply source, knowledge, artifact or migration-mirror inputs only.",
     "When runtime_authority_enabled=false, TASK_MANIFEST/HANDOFF on GitHub main carry governance-stage, next-action and evidence-reference state; they do not impersonate the owner Runtime state machine.",
     "A Runtime checkpoint becomes executable market-day task authority only after the promotion gates pass and runtime_authority_enabled=true.",
-    "Changing this file does not itself prove a Runtime gate; attach replay/E2E/durability evidence before Runtime promotion."
+    "Changing this file does not itself prove a Runtime gate; attach replay/E2E/durability evidence before Runtime promotion.",
+    "Structured GateDecision payloads are not by themselves evidence of reviewer independence. Source/Universe/Premarket/Final audit independence requires distinct execution/context/trace evidence before independent_audit_attestation can PASS."
   ]
 }
