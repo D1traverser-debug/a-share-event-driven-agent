@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "owner": "A_SHARE_MARKET_AGENT",
   "current_universal_protocol": "3.7",
-  "supported_from": ["3.3", "3.5", "3.6"],
+  "supported_from": ["3.3", "3.5", "3.6", "3.7"],
   "migration_strategy": "ADDITIVE_PROTOCOL_OVERLAY",
   "user_migration_required": false,
   "business_state_rewrite": false,
@@ -22,9 +22,49 @@
     "preserve historical FrozenDecision boundaries"
   ],
   "task_manifest_update_authority": "CURRENT_VALID_TASK_WRITER_OR_NO_ACTIVE_LEASE_MIGRATION_OR_NEW_CHAT_TAKEOVER",
+  "methodology": {
+    "profile_refs": {
+      "artifact_io": "1.0",
+      "operational_hygiene": "1.0",
+      "evolution": "1.0"
+    },
+    "hook_bindings": {
+      "durable_task_state_location": "continuity/tasks/<task>/TASK_MANIFEST.json plus the cutover-status-selected runtime checkpoint when runtime_authority_enabled=true",
+      "authoritative_business_evidence_classes": "FrozenDecision/freeze hash, market-day source snapshots, recommendation/review outputs, replay and audit evidence referenced by the owner task",
+      "canonical_artifact_or_file_stores": "GitHub main for rules/config/continuity metadata; executable task state only from the governance plane selected by config/cutover_status.json",
+      "cache_or_reference_only_stores": "chat memory and undeclared external/derived caches are non-authoritative; a historical checkpoint does not become current authority by presence",
+      "stable_identity_strategy": "stable task_id + market date + freeze hash for market decisions; repository path plus Git blob SHA for GitHub mutations; owner runtime object/version id when runtime authority is enabled",
+      "read_freshness_requirements": "Read config/cutover_status.json first, then current task/checkpoint and exact source evidence needed for the material decision; prior-chat reads and later market outcomes cannot substitute",
+      "mutation_conflict_strategy": "current valid task writer/version guard for task state and GitHub blob-SHA compare-and-swap for repository authority; fail closed on mismatch",
+      "post_write_verification_method": "Re-read the authoritative task/checkpoint or mutated GitHub file and verify intended stage, next_action, freeze boundaries and version before reporting COMMITTED",
+      "upstream_to_downstream_invalidation_rule": "A material upstream source/freeze/research correction invalidates dependent recommendation/review evidence; later outcomes may never be backfilled into an earlier frozen decision",
+      "delete_and_retention_rules": "Preserve FrozenDecision, source/audit/replay evidence and active-task recovery state; delete only superseded non-business mechanisms after stable-identity and dependency checks",
+      "superseded_artifact_cleanup_rule": "references/maintenance.md contradiction/deprecated-wording cleanup with one canonical rule owner; Git history remains the engineering archive",
+      "external_artifact_vault_if_any": "None implicitly authoritative. External stores may be referenced only when the active owner/task explicitly designates evidence with stable provenance.",
+      "observability_or_incident_evidence_location": "evals/scenarios.json, evals/activation_cases.json, VALIDATION_REPORT.md and task-local replay/audit evidence",
+      "self_maintenance_trigger_path": "references/maintenance.md: classify data-quality/runtime/trajectory defects and repair the true rule/runtime owner instead of duplicating prose",
+      "garbage_collection_owner_and_dependency_rule": "references/maintenance.md: search contradictions/deprecated wording and remove or demote superseded mechanisms only after dependency checks",
+      "reliability_or_change_freeze_guard": "A durable behavior change does not promote until relevant unit/static/contract tests and historical replay pass; preserve FrozenDecision boundaries and HOLD when evidence is insufficient",
+      "learning_evidence_location": "references/learning.md durable-rule proposal provenance plus owner replay cases and daily-review hypotheses",
+      "eval_or_regression_promotion_path": "references/learning.md: replay at least five frozen cases across at least two regimes with positive/negative samples, zero future-information contamination and no material regression",
+      "superseded_mechanism_cleanup_rule": "references/maintenance.md: one canonical owner, contradiction scan and removal/demotion of superseded mechanisms after validated promotion"
+    },
+    "overrides": {
+      "evaluator_selection": "A-share promotion uses frozen historical replay across regimes and must reject future-information contamination; insufficient evidence remains HOLD/N_A"
+    }
+  },
+  "methodology_assurance": {
+    "declaration_status": "BOUND_EXACT_VERSION",
+    "operational_status": "DECLARATION_BOUND__OWNER_REGRESSION_PENDING_POST_WRITE_CI",
+    "boundary": "Profile binding does not change market-day business authority, current task state, FrozenDecision, or prove a live recommendation/review execution."
+  },
   "universal_policy_refs": [
     "D1traverser-debug/universal-continuity-agent@main/CURRENT_PROTOCOL.json",
     "D1traverser-debug/universal-continuity-agent@main/LIVE_CHAT_RECONCILIATION_POLICY.json",
-    "D1traverser-debug/universal-continuity-agent@main/PROGRESS_OBSERVABILITY_POLICY.json"
+    "D1traverser-debug/universal-continuity-agent@main/PROGRESS_OBSERVABILITY_POLICY.json",
+    "D1traverser-debug/universal-continuity-agent@main/OWNER_ADAPTER_CONTRACT.json",
+    "D1traverser-debug/universal-continuity-agent@main/ARTIFACT_CONTEXT_GOVERNANCE_POLICY.json",
+    "D1traverser-debug/universal-continuity-agent@main/SYSTEM_MAINTENANCE_POLICY.json",
+    "D1traverser-debug/universal-continuity-agent@main/CONTINUOUS_LEARNING_POLICY.md"
   ]
 }
