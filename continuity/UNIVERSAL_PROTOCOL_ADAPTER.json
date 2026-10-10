@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "owner": "A_SHARE_MARKET_AGENT",
   "current_universal_protocol": "3.7",
   "supported_from": ["3.3", "3.5", "3.6", "3.7"],
@@ -20,6 +20,35 @@
   "task_manifest_update_authority": "CURRENT_VALID_TASK_WRITER_OR_NO_ACTIVE_LEASE_MIGRATION_OR_NEW_CHAT_TAKEOVER",
   "methodology": {
     "profile_refs": {"artifact_io": "1.0", "operational_hygiene": "1.0", "evolution": "1.0"},
+    "profile_applicability": {
+      "artifact_io": {
+        "status": "APPLIES",
+        "reason": "The owner persists task/checkpoint metadata, frozen market-decision evidence and repository authority, and performs conflict-sensitive reads/writes whose stale or future-contaminated artifacts must be rejected.",
+        "evidence_refs": [
+          "config/cutover_status.json",
+          "continuity/tasks/<task>/TASK_MANIFEST.json",
+          "references/maintenance.md"
+        ]
+      },
+      "operational_hygiene": {
+        "status": "APPLIES",
+        "reason": "The owner has durable maintenance, replay/audit incident evidence, stale-rule cleanup and reliability freeze behavior for data/runtime/trajectory defects.",
+        "evidence_refs": [
+          "references/maintenance.md",
+          "evals/scenarios.json",
+          "evals/activation_cases.json"
+        ]
+      },
+      "evolution": {
+        "status": "APPLIES",
+        "reason": "The owner promotes durable rule changes from provenance-bearing learning proposals only after frozen historical replay and contamination checks.",
+        "evidence_refs": [
+          "references/learning.md",
+          "references/maintenance.md",
+          "evals/scenarios.json"
+        ]
+      }
+    },
     "hook_bindings": {
       "durable_task_state_location": "continuity/tasks/<task>/TASK_MANIFEST.json plus the cutover-status-selected runtime checkpoint when runtime_authority_enabled=true",
       "authoritative_business_evidence_classes": "FrozenDecision/freeze hash, market-day source snapshots, recommendation/review outputs, replay and audit evidence referenced by the owner task",
@@ -44,7 +73,7 @@
     "overrides": {"evaluator_selection": "A-share promotion uses frozen historical replay across regimes and must reject future-information contamination; insufficient evidence remains HOLD/N_A"}
   },
   "methodology_assurance": {
-    "declaration_status": "BOUND_EXACT_VERSION__HOOK_COMPLETE",
+    "declaration_status": "BOUND_EXACT_VERSION__HOOK_COMPLETE__APPLICABILITY_EVIDENCE_RECORDED",
     "owner_regression_status": "PASS",
     "owner_regression_evidence": {
       "validated_behavioral_head": "fb43eb80d4926d211767c01d272f788ba44b22a2",
@@ -53,7 +82,7 @@
       "result": "PASS_MCP_TRAJECTORY_CONTRACT_STATIC_OWNERSHIP_BUNDLE_WHEEL_INSTALL"
     },
     "operational_status": "ACTION_LEVEL_PROFILE_RUN_AND_INDEPENDENT_EVIDENCE_RECEIPT_REQUIRED",
-    "boundary": "Repository declaration and owner regression do not prove a live market-day methodology profile executed; profile activation remains action-scoped and evidence-gated."
+    "boundary": "Repository declaration, applicability evidence and owner regression do not prove a live market-day methodology profile executed; profile activation remains action-scoped and evidence-gated."
   },
   "universal_policy_refs": [
     "D1traverser-debug/universal-continuity-agent@main/CURRENT_PROTOCOL.json",
