@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import pytest
 from pydantic import ValidationError
 
-from ashare_event_agent.schemas import RecallPoolPackage, RoleHypothesis, SourceCompletionPackage, SourceReceipt
+from ashare_event_agent.schemas import RecallGrade, RecallPoolPackage, RoleHypothesis, RuleProposal, SourceCompletionPackage, SourceReceipt
 
 
 def receipt(source_id: str, **kw):
@@ -29,3 +29,23 @@ def test_role_cannot_be_proved_by_height_only():
 def test_recall_pool_rejects_leader_first_early_pruning():
     with pytest.raises(ValidationError):
         RecallPoolPackage(u0_tickers=["000001"], u1_candidates=[{"ticker":"000001","name":"测试","tier":"P0","event_ids":["E1"],"limit_up_paths":["1进2"],"knowable_reasoning":["盘前已知事件"]}], early_pruning_applied=True)
+
+
+def test_u1_must_be_subset_of_u0():
+    with pytest.raises(ValidationError):
+        RecallPoolPackage(u0_tickers=["000001"], u1_candidates=[{"ticker":"000002","name":"测试2","tier":"P1","event_ids":["E1"],"limit_up_paths":["首板"],"knowable_reasoning":["盘前已知事件"]}])
+
+
+def test_recall_grade_rejects_inconsistent_arithmetic():
+    with pytest.raises(ValidationError):
+        RecallGrade(actual_limit_up_total=10, excluded_scope_total=2, knowable_limit_up_total=6, u0_hits=3, u1_hits=2, u0_recall=0.9, u1_recall=2/6)
+
+
+def test_recall_grade_accepts_reconciled_arithmetic():
+    grade = RecallGrade(actual_limit_up_total=10, excluded_scope_total=2, knowable_limit_up_total=6, u0_hits=3, u1_hits=2, u0_recall=0.5, u1_recall=2/6)
+    assert grade.u0_recall == 0.5
+
+
+def test_rule_proposal_requires_regimes_counterexamples_and_replay_refs():
+    with pytest.raises(ValidationError):
+        RuleProposal(status="PROPOSE", rule_id="R1", owner="market_structure", hypothesis="h", detection_rule="d", prevention_rule="p")
