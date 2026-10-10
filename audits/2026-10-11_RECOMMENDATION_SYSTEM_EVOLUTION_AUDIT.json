@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "ashare-recommendation-system-evolution-audit-2026-10-11",
+  "audit_type": "FULL_CONTROL_PLANE_OWNER_RECOMMENDATION_SYSTEM_EVOLUTION",
+  "trigger": "USER_EXPLICITLY_REQUESTED_UNIVERSAL_CHALLENGE_DISTILL_LEARN_EVOLVE_AUDIT_OF_A_SHARE_RECOMMENDATION_SYSTEM",
+  "owner": "A_SHARE_MARKET_AGENT",
+  "repository": "D1traverser-debug/a-share-event-driven-agent",
+  "scope": "recommendation/review evidence contracts, point-in-time controls, cross-stage lineage, executable evals and regression guards; active 2026-10-12 business stage/lease are not advanced by this maintenance action",
+  "business_task_ref": "continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json",
+  "problem": [
+    "FreezeCard prohibited explicit future use but did not mechanically reject a caller-supplied public/market cutoff later than the owner premarket boundary.",
+    "SourceReceipt could claim FULL while expected link/image counts were unknown, and source packages lacked a mandatory latest-admitted knowledge-availability timestamp bound to FreezeCard.",
+    "Calendar events were exempted from one event availability guard, conflating future occurrence time with when the market first knew the calendar fact.",
+    "Universe completeness depended materially on all_event_nodes_exhausted and omission booleans without deterministic reconciliation to IndustryResearch nodes and eligible stock mappings.",
+    "U1 subset U0 was protected, but U0 was not mechanically required to equal active Universe and U3 execution candidates were not mechanically required to descend from U1.",
+    "why_not_peers was optional at the final candidate schema even though comparative selection is a durable user requirement.",
+    "Post-close attribution membership and RecallGrade counts could be caller-supplied without recomputation from the frozen recall cassette/outcome package.",
+    "LearningAudit and N_A RuleProposal could close without an explicit reason, and proposal/replay status could be incoherent."
+  ],
+  "root_cause_classes": [
+    "POINT_IN_TIME_BINDING_GAP",
+    "COMPLETENESS_SELF_ATTESTATION_GAP",
+    "CROSS_STAGE_EVIDENCE_LINEAGE_GAP",
+    "POSTCLOSE_SELF_GRADING_GAP",
+    "LEARNING_NO_CHANGE_EVIDENCE_GAP"
+  ],
+  "counterexamples": [
+    "A FreezeCard with 15:00 Asia/Shanghai cutoffs and post_freeze_data_allowed=false could previously satisfy schema shape even though it was not a premarket freeze.",
+    "A FULL P01 receipt could omit expected link/image counts entirely and therefore avoid completeness reconciliation.",
+    "A source retrieved later could admit a 09:15 item without a source-level content_max_available_at field even if the downstream Event Ledger later used time guards.",
+    "Universe could self-report all_event_nodes_exhausted=true while silently omitting an eligible stock mapping discovered in IndustryResearch.",
+    "An execution plan could introduce a ticker that was never in U1, allowing a high-conviction narrative to bypass broad recall.",
+    "Post-close attribution could mark a frozen-U1 ticker as not in U1, or type recall hits independently, contaminating learning metrics.",
+    "The first new integrity test itself used model_copy(update=...) with unvalidated dicts and failed for a fixture-type error; the guard was retained and the test was corrected rather than weakening production logic."
+  ],
+  "external_learning_distillation": [
+    {
+      "source": "OpenAI agent evaluation guidance",
+      "refs": [
+        "https://developers.openai.com/api/docs/guides/agent-evals",
+        "https://developers.openai.com/api/docs/guides/evaluation-best-practices"
+      ],
+      "adopted": "Bind workflow claims to repeatable executable traces/datasets/graders and edge-case tests instead of trusting self-description; implement this locally through executable contract evals and controller tests rather than adding a new SaaS dependency."
+    },
+    {
+      "source": "point-in-time / look-ahead validation discipline for financial decisions",
+      "adopted": "A premarket decision may use only facts knowable by the decision cutoff; retrieval time and event occurrence time are not substitutes for information-availability time."
+    }
+  ],
+  "candidate_comparison": [
+    {
+      "candidate": "add more prose reminders to Skill/references only",
+      "decision": "REJECT",
+      "reason": "The defects were executable proof gaps. More prose would leave self-reported PASS paths intact."
+    },
+    {
+      "candidate": "create a new parallel evaluation/recommendation supervisor",
+      "decision": "REJECT",
+      "reason": "Would split authority and still not establish point-in-time lineage; existing schemas/controller/evals have the correct ownership."
+    },
+    {
+      "candidate": "immediately promote Hosted Runtime and rely on it as the enforcement layer",
+      "decision": "REJECT",
+      "reason": "Replay runner/corpus, independent auditor, live P01-P09 adapters, durability/recovery and full live E2E remain unproven."
+    },
+    {
+      "candidate": "harden existing schemas/checks/controller/integrity/evals/static audit and keep Runtime shadow",
+      "decision": "ADOPT",
+      "reason": "Smallest reversible repair at the current canonical owner; converts key self-attestations into deterministic evidence-lineage checks without changing business authority."
+    }
+  ],
+  "implemented": {
+    "point_in_time": [
+      "FreezeCard requires timezone-aware cutoffs on the trading date and rejects cutoffs after 09:14:59 when auction_used=false or 09:24:59 when auction_used=true.",
+      "FULL SourceReceipt requires explicit link/image expected/read counts and content_max_available_at.",
+      "Source completion can be audited directly against FreezeCard; post-freeze content/published timestamps are rejected.",
+      "Calendar EventCard.available_at is no longer exempt from freeze availability checks."
+    ],
+    "research_and_execution_lineage": [
+      "IndustryResearch remains the many-to-many research substrate; Universe is the stock-level active main-board view.",
+      "Every research node must be mapped or explicitly node-excluded; every eligible mapped ticker must be included or explicitly excluded with reason.",
+      "U0 must equal active Universe; U3 execution candidates must descend from U1.",
+      "Execution candidates require unique ticker/slot and mandatory why_not_peers."
+    ],
+    "review_and_learning_lineage": [
+      "Attribution in_u0/in_u1 flags are checked against frozen RecallPool and outcome-category sets reconcile to MarketOutcome.",
+      "RecallGrade knowable denominator and U0/U1 hits are recomputed from attribution.",
+      "LearningAudit without hypotheses requires no_rule_change_reason; RuleProposal N_A requires no_change_reason; proposal/replay statuses must be coherent."
+    ],
+    "eval_and_regression": [
+      "E04 source completeness/point-in-time, E05 Universe/U0 lineage and E08 review grading moved from SPEC_ONLY to executable contract evals.",
+      "Controller-level tests prove self-reported PASS is forced back to REVISE for post-freeze source content, incomplete Universe and U3 outside U1.",
+      "Static audit now guards point-in-time, Universe/U0/U1/U3, frozen review grading and replay lineage markers in addition to existing authority/mirror/auditor guards."
+    ]
+  },
+  "second_order_challenge": [
+    "Do not collapse IndustryResearch to one row per ticker: cross-event/node mappings are real research evidence. Deduplication belongs to the stock-level active Universe view, while IndustryResearch preserves the many-to-many substrate.",
+    "Do not infer trading performance from stronger contracts. These changes prove integrity of covered decision inputs/lineage, not alpha or profitability.",
+    "The current 09:14:59 no-auction cutoff matches the active owner contract and current task; this audit does not claim that literal time is an immutable exchange rule for every future mode.",
+    "Outcome five-pool semantics may overlap (for example a strong-stock pool can overlap another category), so this repair does not impose naive equality between every pool_count and the exclusive MarketOutcome.result taxonomy.",
+    "Repository tests cannot substitute for a real live-source adapter, independent reviewer, replay runner or durable hosted checkpoint."
+  ],
+  "validation": {
+    "candidate_head": "faa01b88cc7de476f6d5ffc9ffe18784b73776a8",
+    "github_actions_run_id": 38086880932,
+    "job_id": 114315134039,
+    "conclusion": "SUCCESS",
+    "passed_steps": [
+      "dependency install",
+      "MCP Streamable HTTP smoke",
+      "unit and trajectory tests",
+      "executable contract eval baseline",
+      "static ownership/bundle/MCP audit",
+      "wheel build",
+      "isolated wheel install smoke"
+    ],
+    "known_expected_failure_during_iteration": "run 38086612944 exposed an invalid test fixture using unvalidated dicts; production integrity guard was not weakened, fixture was corrected, and later clean-runner validation passed."
+  },
+  "assurance_boundary": {
+    "proven": "repository-level deterministic contract and cross-stage evidence-lineage hardening for the covered cases",
+    "not_proven": [
+      "trading performance or alpha",
+      "strict isolated auditor execution",
+      "first-class mechanical frozen-cassette replay runner/corpus",
+      "real P01-P09 live-source adapter completeness across a live premarket window",
+      "durable hosted Runtime checkpoint/artifact store and restart recovery",
+      "full live premarket-to-postclose-learning E2E",
+      "Hosted Runtime production authority"
+    ]
+  },
+  "runtime_promotion_effect": "NONE__RUNTIME_REMAINS_SHADOW",
+  "business_task_stage_effect": "NONE__ACTIVE_2026_10_12_STAGE_LEASE_AND_RESUME_EPOCH_MUST_BE_PRESERVED"
+}
