@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "owner": "A_SHARE_MARKET_AGENT",
+  "current_universal_protocol": "3.7",
+  "supported_from": ["3.3", "3.5", "3.6"],
+  "migration_strategy": "ADDITIVE_PROTOCOL_OVERLAY",
+  "user_migration_required": false,
+  "business_state_rewrite": false,
+  "same_chat_preserve_resume_epoch": true,
+  "same_chat_preserve_active_lease": true,
+  "new_chat_takeover_still_increments_resume_epoch": true,
+  "business_authority_refs": [
+    "config/cutover_status.json",
+    "config/rule_ownership.json",
+    "config/policy.json"
+  ],
+  "authority_rule": "config/cutover_status.json selects the operational governance plane. Universal Continuity must not silently promote GitHub runtime authority.",
+  "required_current_behaviors": [
+    "reconcile task protocol metadata before next material checkpoint/final durable response",
+    "apply PROGRESS_OBSERVABILITY_POLICY v3.7 semantics",
+    "end every final active-durable-task response with verified progress commit receipt",
+    "preserve historical FrozenDecision boundaries"
+  ],
+  "task_manifest_update_authority": "CURRENT_VALID_TASK_WRITER_OR_NO_ACTIVE_LEASE_MIGRATION_OR_NEW_CHAT_TAKEOVER",
+  "universal_policy_refs": [
+    "D1traverser-debug/universal-continuity-agent@main/CURRENT_PROTOCOL.json",
+    "D1traverser-debug/universal-continuity-agent@main/LIVE_CHAT_RECONCILIATION_POLICY.json",
+    "D1traverser-debug/universal-continuity-agent@main/PROGRESS_OBSERVABILITY_POLICY.json"
+  ]
+}
