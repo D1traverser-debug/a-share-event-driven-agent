@@ -24,3 +24,22 @@ def test_reference_mirrors_are_identical():
 
 def test_policy_mirror_is_identical():
     assert Path("config/policy.json").read_bytes() == Path("ashare_event_agent/resources/policy.json").read_bytes()
+
+
+def test_cutover_never_reactivates_notion_drive_control_plane():
+    cutover = json.loads(Path("config/cutover_status.json").read_text(encoding="utf-8"))
+    assert cutover["operational_governance_authority"] == "GITHUB_MAIN_CONTINUITY"
+    assert cutover["business_checkpoint_authority_when_runtime_disabled"] == "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"
+    assert cutover["continuity"]["external_mirrors_may_not_override_task_state"] is True
+    assert cutover["external_system_roles"]["notion"] == "SOURCE_KNOWLEDGE_MIRROR_ONLY"
+    assert cutover["external_system_roles"]["google_drive"] == "SOURCE_ARTIFACT_MIRROR_ONLY"
+
+
+def test_runtime_promotion_is_separate_from_governance_migration():
+    cutover = json.loads(Path("config/cutover_status.json").read_text(encoding="utf-8"))
+    assert cutover["runtime_authority_enabled"] is False
+    assert all(status == "PENDING" for status in cutover["required_gates"].values())
+    skill = Path("skills/a-share-event-driven-agent/SKILL.md").read_text(encoding="utf-8")
+    recovery = Path("references/recovery.md").read_text(encoding="utf-8")
+    assert "Never route business control back to Notion/Drive" in skill
+    assert "Do not fall back to Notion/Drive as an operating controller" in recovery
