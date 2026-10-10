@@ -1,6 +1,6 @@
 {
   "schema_version": "3.7",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "task_id": "ashare:recommendation",
   "task_class": "USER",
   "domain": "A_SHARE_RECOMMENDATION",
@@ -10,7 +10,7 @@
   "resume_eligible": true,
   "resume_visibility": "DEFAULT",
   "recovery_owner": "A_SHARE_MARKET_AGENT",
-  "updated_at": "2026-10-10T01:20:00Z",
+  "updated_at": "2026-10-10T15:02:12Z",
   "current_stage": "READY_FOR_CURRENT_MARKET_DAY",
   "next_action": "恢复后解析当前交易日，创建或定位当日 market-day USER task，刷新最新盘前数据并进入现行荐股流程；不得继承历史交易日 FrozenDecision。",
   "checkpoint_ref": "continuity/tasks/recommendation-workflow/HANDOFF.md",
@@ -18,8 +18,13 @@
   "continuity_protocol_version": "3.7",
   "domain_contract_version": null,
   "last_protocol_reconciled_at": "2026-10-10T01:20:00Z",
-  "resume_epoch": 0,
-  "active_lease": null,
+  "resume_epoch": 1,
+  "active_lease": {
+    "lease_id": "9ce0bd9e-1459-4a19-86e3-9630f1582e66",
+    "acquired_at": "2026-10-10T15:02:12Z",
+    "supersedes_lease_id": null,
+    "writer": "chatgpt-continuity-v3.7-takeover"
+  },
   "keywords": ["荐股", "A股荐股", "盘前荐股", "推荐股票"],
   "artifact_refs": [
     "config/cutover_status.json",
