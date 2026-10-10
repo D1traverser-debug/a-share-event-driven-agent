@@ -32,6 +32,21 @@ for mirror in [ROOT / "skills/a-share-event-driven-agent/references", ROOT / "as
 if (ROOT / "config/policy.json").read_bytes() != (ROOT / "ashare_event_agent/resources/policy.json").read_bytes():
     fail("policy mirror drift")
 
+cutover = json.loads((ROOT / "config/cutover_status.json").read_text(encoding="utf-8"))
+if cutover.get("operational_governance_authority") != "GITHUB_MAIN_CONTINUITY":
+    fail("cutover drift: GitHub Continuity must remain the governance authority")
+if cutover.get("business_checkpoint_authority_when_runtime_disabled") != "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF":
+    fail("cutover drift: non-runtime checkpoint authority must remain GitHub Continuity")
+if cutover.get("continuity", {}).get("external_mirrors_may_not_override_task_state") is not True:
+    fail("cutover drift: external mirrors may not override GitHub task state")
+roles = cutover.get("external_system_roles", {})
+if roles.get("notion") != "SOURCE_KNOWLEDGE_MIRROR_ONLY" or roles.get("google_drive") != "SOURCE_ARTIFACT_MIRROR_ONLY":
+    fail("cutover drift: Notion/Drive must remain source/mirror inputs, not control authority")
+if cutover.get("runtime_authority_enabled") is not False:
+    fail("runtime promotion must not be enabled without independently evidenced promotion gates")
+if not cutover.get("required_gates") or any(v != "PENDING" for v in cutover["required_gates"].values()):
+    fail("runtime promotion gate status changed without validated cutover evidence")
+
 
 def is_tool_decorator(dec: ast.expr) -> bool:
     target = dec.func if isinstance(dec, ast.Call) else dec
@@ -107,4 +122,4 @@ activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encodin
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation):
     fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; strict freeze/recall/role/required-output guards present")
+print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + strict freeze/recall/role/required-output guards present")
