@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "architecture_contract_version": "1.0",
+  "owner": "A_SHARE_MARKET_AGENT",
+  "owner_kind": "BUSINESS",
+  "skill": {
+    "role": "ROUTER",
+    "entrypoint": "skills/a-share-event-driven-agent/SKILL.md"
+  },
+  "runtime": {
+    "runtime_type": "DETERMINISTIC_WORKFLOW",
+    "entrypoints": [
+      "ashare_event_agent/plugin_server.py",
+      "ashare_event_agent/runner.py",
+      "ashare_event_agent/runtime_service.py"
+    ],
+    "tool_surface_refs": [
+      "ashare_event_agent/plugin_server.py",
+      "ashare_event_agent/mcp_contracts.py"
+    ],
+    "judgment_execution": "CHAT_BRIDGED",
+    "note": "Runtime/state machinery is executable; high-judgment audit independence remains unavailable unless separately attested."
+  },
+  "workflow": {
+    "state_authority_refs": [
+      "ashare_event_agent/store.py",
+      "ashare_event_agent/models.py",
+      "config/cutover_status.json"
+    ],
+    "transition_guard_refs": [
+      "ashare_event_agent/controller.py",
+      "ashare_event_agent/engine.py",
+      "ashare_event_agent/integrity.py"
+    ]
+  },
+  "harness": {
+    "ci_workflow_ref": ".github/workflows/ci.yml",
+    "commands": [
+      "python scripts/mcp_smoke.py",
+      "pytest -q",
+      "python scripts/eval_contracts.py",
+      "python scripts/static_audit.py"
+    ],
+    "suites": ["contract", "trajectory", "replay", "static"]
+  },
+  "references": {
+    "canonical_roots": ["references"],
+    "mirror_policy": "GENERATED_PACKAGE_MIRROR",
+    "package_mirror": "ashare_event_agent/resources/references"
+  },
+  "continuity": {
+    "task_index_ref": "continuity/TASK_INDEX.md",
+    "protocol_adapter_ref": "continuity/UNIVERSAL_PROTOCOL_ADAPTER.json",
+    "execution_capability_ref": "continuity/EXECUTION_CAPABILITIES.json"
+  }
+}
