@@ -45,8 +45,25 @@ if roles.get("notion") != "SOURCE_KNOWLEDGE_MIRROR_ONLY" or roles.get("google_dr
 gates = cutover.get("required_gates") or {}
 if not gates:
     fail("runtime promotion gates missing")
+if "independent_audit_attestation" not in gates:
+    fail("runtime promotion gate missing: independent_audit_attestation")
 if cutover.get("runtime_authority_enabled") and any(v != "PASS" for v in gates.values()):
     fail("runtime authority enabled before all required promotion gates passed")
+
+capability_profile = json.loads((ROOT / "continuity/EXECUTION_CAPABILITIES.json").read_text(encoding="utf-8"))
+capabilities = {row.get("capability_id"): row for row in capability_profile.get("capabilities", [])}
+auditor = capabilities.get("strict_isolated_auditor")
+if not auditor:
+    fail("strict isolated auditor capability missing")
+if auditor.get("assurance_ceiling") != "DECLARED_ONLY" or auditor.get("executor_type") != "UNAVAILABLE":
+    fail("independent auditor must not be advertised as executable without attested executor evidence")
+if auditor.get("safe_degraded_modes"):
+    fail("independent audit must not silently degrade to same-executor chat review")
+if "distinct_reviewer_execution_context" not in auditor.get("required_tools", []):
+    fail("independent audit capability missing distinct reviewer execution requirement")
+for stage in ["SOURCE_AUDIT", "UNIVERSE_AUDIT", "PREMARKET_AUDIT", "FINAL_AUDIT"]:
+    if stage not in auditor.get("scope", ""):
+        fail(f"independent audit capability scope missing {stage}")
 
 
 def is_tool_decorator(dec: ast.expr) -> bool:
@@ -110,7 +127,18 @@ if 'Annotated[CallToolResult, MarketDaySummary]' not in plugin_text:
 
 schema_text = SCHEMAS.read_text(encoding="utf-8")
 model_text = MODELS.read_text(encoding="utf-8")
-for marker in ['ConfigDict(extra="forbid", str_strip_whitespace=True)', "early_pruning_applied", "board count/height alone cannot prove a market role", "premarket must reuse formal previous-review five-pool snapshot", "core industry research below L5"]:
+for marker in [
+    'ConfigDict(extra="forbid", str_strip_whitespace=True)',
+    "early_pruning_applied",
+    "U1 candidates must be a subset of U0",
+    "board count/height alone cannot prove a market role",
+    "premarket must reuse formal previous-review five-pool snapshot",
+    "core industry research below L5",
+    "u0_recall must equal u0_hits / knowable_limit_up_total",
+    "PROPOSE requires applicable regimes, counterexamples and replay case refs",
+    "PASS requires mechanical replay evidence refs",
+    "cassette hashes for every case",
+]:
     if marker not in schema_text:
         fail(f"schema guard missing: {marker}")
 for marker in ["PREMARKET_SNAPSHOT_JSON", "PICK_REPORT_MD", "REVIEW_REPORT_MD", "LEARNING_REPORT_JSON", "required_outputs"]:
@@ -123,4 +151,4 @@ activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encodin
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation):
     fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + runtime-promotion guard + strict freeze/recall/role/required-output guards present")
+print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + runtime-promotion/independent-audit guards + strict freeze/recall/role/replay/required-output guards present")
