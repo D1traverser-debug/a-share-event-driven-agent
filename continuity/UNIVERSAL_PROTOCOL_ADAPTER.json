@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "owner": "A_SHARE_MARKET_AGENT",
   "current_universal_protocol": "3.7",
   "supported_from": ["3.3", "3.5", "3.6", "3.7"],
@@ -10,12 +10,13 @@
   "same_chat_preserve_active_lease": true,
   "new_chat_takeover_still_increments_resume_epoch": true,
   "business_authority_refs": ["config/cutover_status.json", "config/rule_ownership.json", "config/policy.json"],
-  "authority_rule": "config/cutover_status.json selects the operational governance plane. Universal Continuity must not silently promote GitHub runtime authority.",
+  "authority_rule": "GitHub main is the code/rule and Continuity governance authority. config/cutover_status.json only decides whether the owner Runtime is additionally promoted to executable market-day checkpoint authority. When runtime_authority_enabled=false, do not fall back to Notion/Drive business control; use GitHub task metadata for governance state and block only Runtime-dependent certification.",
   "required_current_behaviors": [
     "reconcile task protocol metadata before next material checkpoint/final durable response",
     "apply PROGRESS_OBSERVABILITY_POLICY v3.7 semantics",
     "end every final active-durable-task response with verified progress commit receipt",
-    "preserve historical FrozenDecision boundaries"
+    "preserve historical FrozenDecision boundaries",
+    "never let external mirrors override GitHub continuity task state"
   ],
   "task_manifest_update_authority": "CURRENT_VALID_TASK_WRITER_OR_NO_ACTIVE_LEASE_MIGRATION_OR_NEW_CHAT_TAKEOVER",
   "methodology": {
@@ -50,18 +51,18 @@
       }
     },
     "hook_bindings": {
-      "durable_task_state_location": "continuity/tasks/<task>/TASK_MANIFEST.json plus the cutover-status-selected runtime checkpoint when runtime_authority_enabled=true",
+      "durable_task_state_location": "continuity/tasks/<task>/TASK_MANIFEST.json + HANDOFF.md for governance/recovery state; when runtime_authority_enabled=true, bind the promoted owner Runtime checkpoint as executable market-day state authority",
       "authoritative_business_evidence_classes": "FrozenDecision/freeze hash, market-day source snapshots, recommendation/review outputs, replay and audit evidence referenced by the owner task",
-      "canonical_artifact_or_file_stores": "GitHub main for rules/config/continuity metadata; executable task state only from the governance plane selected by config/cutover_status.json",
-      "cache_or_reference_only_stores": "chat memory and undeclared external/derived caches are non-authoritative; a historical checkpoint does not become current authority by presence",
+      "canonical_artifact_or_file_stores": "GitHub main for rules/config/continuity governance metadata; promoted owner Runtime only for executable market-day state after cutover; external stores are evidence/mirror inputs unless explicitly referenced by the task",
+      "cache_or_reference_only_stores": "chat memory, Notion/Drive mirrors and undeclared external/derived caches are non-authoritative by default; a historical checkpoint does not become current authority by presence",
       "stable_identity_strategy": "stable task_id + market date + freeze hash for market decisions; repository path plus Git blob SHA for GitHub mutations; owner runtime object/version id when runtime authority is enabled",
-      "read_freshness_requirements": "Read config/cutover_status.json first, then current task/checkpoint and exact source evidence needed for the material decision; prior-chat reads and later market outcomes cannot substitute",
-      "mutation_conflict_strategy": "current valid task writer/version guard for task state and GitHub blob-SHA compare-and-swap for repository authority; fail closed on mismatch",
-      "post_write_verification_method": "Re-read the authoritative task/checkpoint or mutated GitHub file and verify intended stage, next_action, freeze boundaries and version before reporting COMMITTED",
+      "read_freshness_requirements": "Read current GitHub task metadata, config/cutover_status.json and the exact source evidence needed for the material decision; if Runtime authority is enabled, also read the current compatible Runtime checkpoint. Prior-chat reads and later market outcomes cannot substitute.",
+      "mutation_conflict_strategy": "current valid task writer/version guard for GitHub task state and GitHub blob-SHA compare-and-swap for repository authority; owner Runtime version guard when promoted; fail closed on mismatch",
+      "post_write_verification_method": "Re-read the authoritative GitHub task/checkpoint or mutated GitHub file and verify intended stage, next_action, freeze boundaries and version; when Runtime authority is promoted, also verify the Runtime checkpoint before reporting COMMITTED",
       "upstream_to_downstream_invalidation_rule": "A material upstream source/freeze/research correction invalidates dependent recommendation/review evidence; later outcomes may never be backfilled into an earlier frozen decision",
       "delete_and_retention_rules": "Preserve FrozenDecision, source/audit/replay evidence and active-task recovery state; delete only superseded non-business mechanisms after stable-identity and dependency checks",
       "superseded_artifact_cleanup_rule": "references/maintenance.md contradiction/deprecated-wording cleanup with one canonical rule owner; Git history remains the engineering archive",
-      "external_artifact_vault_if_any": "None implicitly authoritative. External stores may be referenced only when the active owner/task explicitly designates evidence with stable provenance.",
+      "external_artifact_vault_if_any": "None implicitly authoritative. Notion/Drive or other external stores may be referenced only as source/knowledge/artifact/migration-mirror evidence with stable provenance; they are not runtime/control checkpoints.",
       "observability_or_incident_evidence_location": "evals/scenarios.json, evals/activation_cases.json, VALIDATION_REPORT.md and task-local replay/audit evidence",
       "self_maintenance_trigger_path": "references/maintenance.md: classify data-quality/runtime/trajectory defects and repair the true rule/runtime owner instead of duplicating prose",
       "garbage_collection_owner_and_dependency_rule": "references/maintenance.md: search contradictions/deprecated wording and remove or demote superseded mechanisms only after dependency checks",
