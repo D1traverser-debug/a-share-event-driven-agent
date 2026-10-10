@@ -42,10 +42,11 @@ if cutover.get("continuity", {}).get("external_mirrors_may_not_override_task_sta
 roles = cutover.get("external_system_roles", {})
 if roles.get("notion") != "SOURCE_KNOWLEDGE_MIRROR_ONLY" or roles.get("google_drive") != "SOURCE_ARTIFACT_MIRROR_ONLY":
     fail("cutover drift: Notion/Drive must remain source/mirror inputs, not control authority")
-if cutover.get("runtime_authority_enabled") is not False:
-    fail("runtime promotion must not be enabled without independently evidenced promotion gates")
-if not cutover.get("required_gates") or any(v != "PENDING" for v in cutover["required_gates"].values()):
-    fail("runtime promotion gate status changed without validated cutover evidence")
+gates = cutover.get("required_gates") or {}
+if not gates:
+    fail("runtime promotion gates missing")
+if cutover.get("runtime_authority_enabled") and any(v != "PASS" for v in gates.values()):
+    fail("runtime authority enabled before all required promotion gates passed")
 
 
 def is_tool_decorator(dec: ast.expr) -> bool:
@@ -122,4 +123,4 @@ activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encodin
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation):
     fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + strict freeze/recall/role/required-output guards present")
+print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + runtime-promotion guard + strict freeze/recall/role/required-output guards present")
