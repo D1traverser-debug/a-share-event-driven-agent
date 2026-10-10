@@ -1,0 +1,45 @@
+{
+  "schema_version": "3.7",
+  "manifest_version": 1,
+  "task_id": "ashare:2026-10-12",
+  "task_class": "USER",
+  "domain": "A_SHARE_MARKET_DAY",
+  "title": "A-share premarket recommendation 2026-10-12",
+  "display_name_zh": "A股荐股｜2026-10-12",
+  "parent_task_id": "ashare:recommendation",
+  "trade_date": "2026-10-12",
+  "status": "ACTIVE",
+  "resume_eligible": true,
+  "resume_visibility": "EXPLICIT_ONLY",
+  "recovery_owner": "A_SHARE_MARKET_AGENT",
+  "created_at": "2026-10-10T15:05:53Z",
+  "updated_at": "2026-10-10T15:05:53Z",
+  "current_stage": "WEEKEND_PREMARKET_RESEARCH_INITIALIZED__MONDAY_LIVE_SOURCE_WINDOW_PENDING",
+  "next_action": "Under the cutover-selected Notion/Drive shadow-governance path, resolve the current StockBase pointer read-only and the prior trading-day review assets, create/locate the 2026-10-12 DailyRun + FreezeCard, then refresh P01-P09 and required live/official sources through the 2026-10-12 premarket freeze window. Do not mark Source Completion, FROZEN, or FINAL before all must-pass source/image/time-integrity gates are satisfied; never inherit a historical FrozenDecision.",
+  "checkpoint_ref": "continuity/tasks/2026-10-12-market-day/HANDOFF.md",
+  "contract_version": "CONTINUITY_V3_7_SHADOW_GOVERNANCE",
+  "continuity_protocol_version": "3.7",
+  "operational_governance_authority": "NOTION_DRIVE_EXISTING_GOVERNANCE",
+  "candidate_code_authority": "GITHUB_MAIN",
+  "runtime_authority_enabled": false,
+  "freeze_policy": {
+    "timezone": "Asia/Shanghai",
+    "target_latest_public_info_time": "2026-10-12T09:14:59+08:00",
+    "auction_used": false,
+    "future_function_forbidden": true
+  },
+  "resume_epoch": 0,
+  "active_lease": {
+    "lease_id": "f1a9cc08-0e1f-48ed-a646-c120dcb4bbb1",
+    "acquired_at": "2026-10-10T15:05:53Z",
+    "supersedes_lease_id": null,
+    "writer": "chatgpt-continuity-v3.7-child-init"
+  },
+  "capability_handshake": {
+    "observed_at": "2026-10-10T15:05:53Z",
+    "owner_runtime_state_machine": "NOT_SESSION_PROVEN_AND_NOT_OPERATIONAL_AUTHORITY",
+    "live_source_acquisition": "PARTIAL__WEEKEND_PREPUBLICATION_WINDOW",
+    "strict_isolated_auditor": "NOT_REQUIRED_FOR_CURRENT_STAGE",
+    "business_route": "NOTION_DRIVE_SHADOW_GOVERNANCE"
+  }
+}
