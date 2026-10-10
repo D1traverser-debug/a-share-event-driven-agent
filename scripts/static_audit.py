@@ -9,10 +9,13 @@ PLUGIN = ROOT / "ashare_event_agent" / "plugin_server.py"
 RUNTIME = ROOT / "ashare_event_agent" / "runtime_service.py"
 SCHEMAS = ROOT / "ashare_event_agent" / "schemas.py"
 MODELS = ROOT / "ashare_event_agent" / "models.py"
+CONTROLLER = ROOT / "ashare_event_agent" / "controller.py"
+INTEGRITY = ROOT / "ashare_event_agent" / "integrity.py"
 
 
 def fail(msg: str) -> None:
     raise SystemExit(msg)
+
 
 ownership = json.loads((ROOT / "config" / "rule_ownership.json").read_text(encoding="utf-8"))
 seen: dict[str, str] = {}
@@ -79,6 +82,7 @@ def tool_names(path: Path) -> set[str]:
             names.add(node.name)
     return names
 
+
 plugin_text = PLUGIN.read_text(encoding="utf-8")
 tree = ast.parse(plugin_text)
 tools: list[str] = []
@@ -127,6 +131,8 @@ if 'Annotated[CallToolResult, MarketDaySummary]' not in plugin_text:
 
 schema_text = SCHEMAS.read_text(encoding="utf-8")
 model_text = MODELS.read_text(encoding="utf-8")
+controller_text = CONTROLLER.read_text(encoding="utf-8")
+integrity_text = INTEGRITY.read_text(encoding="utf-8")
 for marker in [
     'ConfigDict(extra="forbid", str_strip_whitespace=True)',
     "early_pruning_applied",
@@ -138,12 +144,38 @@ for marker in [
     "PROPOSE requires applicable regimes, counterexamples and replay case refs",
     "PASS requires mechanical replay evidence refs",
     "cassette hashes for every case",
+    "content_max_available_at",
+    "FULL source requires explicit LINK-ALL and image expected/read counts",
+    "premarket cutoff exceeds legal freeze boundary",
+    "why_not_peers: list[str] = Field(min_length=1)",
+    "Universe exclusion_reasons must exactly cover excluded tickers",
+    "N_A rule proposal requires no_change_reason",
 ]:
     if marker not in schema_text:
         fail(f"schema guard missing: {marker}")
 for marker in ["PREMARKET_SNAPSHOT_JSON", "PICK_REPORT_MD", "REVIEW_REPORT_MD", "LEARNING_REPORT_JSON", "required_outputs"]:
     if marker not in model_text:
         fail(f"required-output contract missing: {marker}")
+for marker in [
+    "universe_integrity_errors",
+    "recall_integrity_errors",
+    "execution_integrity_errors",
+    "attribution_integrity_errors",
+    "recall_grade_integrity_errors",
+    "replay_coherence_errors",
+]:
+    if marker not in controller_text or marker not in integrity_text:
+        fail(f"cross-stage integrity guard missing or unwired: {marker}")
+for marker in [
+    "eligible mapped tickers silently omitted from Universe",
+    "U0 omitted Universe tickers",
+    "U3 execution candidates must descend from U1",
+    "attribution in_u0 disagrees with frozen U0",
+    "knowable_limit_up_total must equal attributed knowable count",
+    "N_A rule proposal requires N_A replay result",
+]:
+    if marker not in integrity_text:
+        fail(f"evidence-lineage guard missing: {marker}")
 if "premarket snapshot mutated after freeze" not in (ROOT / "ashare_event_agent/engine.py").read_text(encoding="utf-8"):
     fail("freeze integrity guard missing")
 
@@ -151,4 +183,8 @@ activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encodin
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation):
     fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; one public MCP surface; GitHub governance cutover + runtime-promotion/independent-audit guards + strict freeze/recall/role/replay/required-output guards present")
+print(
+    f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; "
+    "one public MCP surface; GitHub governance cutover + runtime-promotion/independent-audit guards + "
+    "point-in-time source proof + Universe/U0/U1/U3 lineage + frozen review grading + replay/required-output guards present"
+)
