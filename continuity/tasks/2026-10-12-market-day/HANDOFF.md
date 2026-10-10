@@ -11,8 +11,34 @@
 - GitHub Runtime: candidate shadow only; `runtime_authority_enabled=false`
 - legacy Drive run: source/artifact migration mirror only; it may not override GitHub task state
 - task-local constraint: **TinyFish disabled**
+- resume_epoch: `0` — unchanged by the recommendation-system maintenance audit
+- active lease: `f1a9cc08-0e1f-48ed-a646-c120dcb4bbb1` — unchanged by maintenance
 
-## Authority / evolution audit result
+## 2026-10-11 recommendation-system evolution audit
+
+The user explicitly asked to apply Universal Continuity's challenge/distill/learn/evolve method to the **A-share recommendation system itself**. Universal was the methodology provider, not the audit target.
+
+Durable audit: `audits/2026-10-11_RECOMMENDATION_SYSTEM_EVOLUTION_AUDIT.json`.
+
+The audit found five structural defect classes: point-in-time binding gaps, source-completeness self-attestation, cross-stage evidence-lineage gaps, post-close self-grading gaps, and learning/no-change evidence gaps.
+
+Accepted repair stayed inside the existing owner surfaces (`schemas.py`, `checks.py`, new narrow `integrity.py`, `controller.py`, executable contract evals, tests and static audit). No parallel recommendation/eval Agent was created and Hosted Runtime was not promoted.
+
+Behavioral hardening head `faa01b88cc7de476f6d5ffc9ffe18784b73776a8`, GitHub Actions run `38086880932`, job `114315134039`: **SUCCESS** across MCP smoke, unit/trajectory, executable contract eval, static audit, wheel and isolated install.
+
+### Monday execution contract added by this audit
+
+1. FreezeCard is now mechanically point-in-time bounded. For this task `auction_used=false`, so admitted public/market information must be no later than `2026-10-12T09:14:59+08:00`.
+2. Every non-blocked P01-P09 receipt needs `content_max_available_at`. `FULL` requires explicit LINK-ALL and image expected/read counts; use zero only when it is actually known that none exist. Retrieval after freeze does not authorize content learned after freeze.
+3. `EventCard.available_at` always means when the fact became knowable; a future calendar occurrence time does not exempt a fact first learned after freeze.
+4. IndustryResearch preserves many-to-many event/node/company mappings. Active Universe is the stock-level main-board view. Every eligible mapped ticker is included or explicitly excluded with reason; every research node is mapped or explicitly node-excluded.
+5. U0 must equal active Universe; U1 remains a subset of U0; every U3 execution candidate must descend from U1. Every non-empty final candidate requires `why_this`, `why_not_peers`, trigger and invalidation.
+6. Post-close attribution must reconcile outcome classes and frozen U0/U1 membership. RecallGrade denominator and hit counts are derived from attribution rather than independently typed.
+7. Empty learning closure is illegal: either record candidate hypotheses or an explicit no-rule-change reason. Proposal/replay statuses must be coherent.
+
+These changes improve the integrity of the recommendation evidence chain. They do **not** prove alpha, profitability, independent reviewer execution, live P01-P09 adapter correctness or Runtime production readiness.
+
+## Authority / prior evolution audit result
 
 The 2026-10-10 control-plane audit repaired the old split where `runtime_authority_enabled=false` routed operations back to Notion/Drive.
 
@@ -73,22 +99,32 @@ Quality note: an LLM-based structured extraction returned an impossible `limit_d
 ## CoverageMatrix
 
 - trading-day resolution: PASS — Longbridge CN calendar session-proven.
-- owner Skill / cutover / capability contract: PASS — GitHub governance migration + CI success.
+- owner Skill / cutover / capability contract: PASS — GitHub governance migration + recommendation evidence-lineage CI success.
 - current GitHub START Gate / task checkpoint: PASS.
 - current StockBase pointer: PASS — v1.6, PICK read-only.
 - prior trading-day five-pool / ShortTermCard: **PASS_GAP_FILL_RECONSTRUCTED**, with provenance boundary preserved.
 - prior-day count reconciliation: **PASS**.
-- 2026-10-12 FreezeCard boundary: INITIALIZED / NOT_FROZEN.
+- 2026-10-12 FreezeCard boundary: INITIALIZED / NOT_FROZEN / point-in-time schema hardened.
 - weekend pre-research Event Ledger: PARTIAL.
-- P01-P09 Source Completion including required images: BOUNDARY — Monday premarket publications are still in the future.
+- P01-P09 Source Completion including required images: BOUNDARY — Monday premarket publications are still in the future; hardened `content_max_available_at` + explicit count contract applies.
+- Industry→Universe→U0→U1→U3 lineage: CONTRACT_HARDENED / LIVE DAY NOT YET EXECUTED.
+- post-close Outcome→Attribution→RecallGrade lineage: CONTRACT_HARDENED / NOT YET EXECUTED.
 - Market Regime / RoleMap / Deep Industry / U0-U3: NOT_STARTED for Monday execution.
 - MID QA: NOT_STARTED.
 - FINAL Red-Team QA: NOT_STARTED.
+
+## Still-open owner evidence gates
+
+- strict isolated reviewer execution remains unavailable; GateDecision alone is not independence proof;
+- first-class mechanical frozen-cassette replay runner/corpus is still missing;
+- real P01-P09 live adapters must still prove trustworthy item-level availability timestamps in the actual premarket window;
+- durable Hosted Runtime checkpoint/artifact storage, restart recovery and a full premarket→frozen→postclose→learning live E2E remain unproven;
+- therefore `runtime_authority_enabled=false` remains correct.
 
 ## Next exact action
 
 1. Use the reconstructed 2026-10-09 five pools + ShortTermCard only as previous-day post-close input.
 2. Continue weekend event research, primary-verify hard events, and run StockBase READ ONLY recall where useful.
-3. During the 2026-10-12 premarket window refresh P01-P09 plus required official/live sources and images, merge/dedupe against weekend evidence, and run Source Completion/Omission/Counterexample/Time scans.
-4. Build Market Regime, HeightMap/RoleMap, Deep Industry, U0/U1/U2/U3 and MID/FINAL QA.
-5. Only after all hard gates pass may the task advance toward FROZEN/FINAL. Missing Runtime authority blocks only Runtime-dependent certification, never a fallback to Notion/Drive business control.
+3. During the 2026-10-12 premarket window refresh P01-P09 plus required official/live sources/images. For each source, bind admitted content to `content_max_available_at <= 09:14:59`, reconcile link/image counts, and keep paid/login/unknown gaps explicit.
+4. Merge/dedupe against weekend evidence; build Market Regime, HeightMap/RoleMap and Deep Industry while preserving full many-to-many research mappings. Derive stock-level main-board Universe with explicit ticker/node exclusion reasons, then enforce U0=Universe, U1⊂U0 and U3⊂U1 with comparative `why_not_peers`.
+5. Run MID/FINAL QA. Only after all source/time/universe/lineage/QA gates pass may the task advance toward FROZEN/FINAL. Missing Runtime authority blocks only Runtime-dependent certification, never a fallback to Notion/Drive business control.
