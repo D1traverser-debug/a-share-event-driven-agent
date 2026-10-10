@@ -10,7 +10,7 @@ Adapter: `continuity/UNIVERSAL_PROTOCOL_ADAPTER.json`
 
 ## Non-default / current market day
 
-- `ashare:2026-10-12` — **A股荐股｜2026-10-12** — USER — ACTIVE — stage `START_GATE_PERSISTED__WEEKEND_EVENT_LEDGER_PARTIAL__MONDAY_LIVE_SOURCE_WINDOW_PENDING` — resume `EXPLICIT_ONLY` — manifest: `continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json` — checkpoint: `continuity/tasks/2026-10-12-market-day/HANDOFF.md`
+- `ashare:2026-10-12` — **A股荐股｜2026-10-12** — USER — ACTIVE — stage `GITHUB_CONTROL_PLANE_MIGRATED__PRIOR_DAY_GAP_FILL_COMPLETE__WEEKEND_EVENT_LEDGER_PARTIAL__MONDAY_LIVE_SOURCE_WINDOW_PENDING` — resume `EXPLICIT_ONLY` — manifest: `continuity/tasks/2026-10-12-market-day/TASK_MANIFEST.json` — checkpoint: `continuity/tasks/2026-10-12-market-day/HANDOFF.md`
 
 ## Non-default / historical
 
