@@ -1,6 +1,6 @@
 {
   "schema_version": "3.7",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "task_id": "ashare:2026-10-12",
   "task_class": "USER",
   "domain": "A_SHARE_MARKET_DAY",
@@ -13,29 +13,31 @@
   "resume_visibility": "EXPLICIT_ONLY",
   "recovery_owner": "A_SHARE_MARKET_AGENT",
   "created_at": "2026-10-10T15:05:53Z",
-  "updated_at": "2026-10-10T15:10:33Z",
-  "current_stage": "START_GATE_PERSISTED__WEEKEND_EVENT_LEDGER_PARTIAL__MONDAY_LIVE_SOURCE_WINDOW_PENDING",
-  "next_action": "Continue under the Notion/Drive shadow-governance run: reconcile the missing 2026-10-09 five-pool/ShortTermCard input without fabricating any historical FrozenDecision, read the current StockBase only as needed for event-driven recall, deepen W_EVT_001 and primary-verify W_EVT_007, then refresh P01-P09 plus required official/live sources through the 2026-10-12 premarket freeze window. Advance toward FROZEN/FINAL only after Source Completion, count reconciliation, time-integrity, Universe coverage and QA gates pass.",
+  "updated_at": "2026-10-10T15:27:46Z",
+  "current_stage": "GITHUB_CONTROL_PLANE_MIGRATED__START_GATE_PERSISTED__WEEKEND_EVENT_LEDGER_PARTIAL__MONDAY_LIVE_SOURCE_WINDOW_PENDING",
+  "next_action": "Under GitHub Continuity governance, reconstruct the missing 2026-10-09 five Dingpan pools and ShortTermCard/review input as provenance-labeled GAP_FILL only: prefer Xuangutong direct pool APIs for exact five-pool semantics, verify the weekend/current page corresponds to the 2026-10-09 last trading day, reconcile counts, and use Longbridge/official data only for market-data cross-checks rather than redefining the pools. Then deepen weekend event research and, during the 2026-10-12 premarket window, complete P01-P09 plus required official/live sources. Advance toward FROZEN/FINAL only after Source Completion, count reconciliation, time-integrity, Universe coverage and QA gates pass; Runtime-only certification remains blocked until the relevant Runtime capability is session-proven/promoted.",
   "checkpoint_ref": "continuity/tasks/2026-10-12-market-day/HANDOFF.md",
-  "contract_version": "CONTINUITY_V3_7_SHADOW_GOVERNANCE",
+  "contract_version": "CONTINUITY_V3_7_GITHUB_GOVERNANCE__RUNTIME_SHADOW",
   "continuity_protocol_version": "3.7",
-  "operational_governance_authority": "NOTION_DRIVE_EXISTING_GOVERNANCE",
+  "operational_governance_authority": "GITHUB_MAIN_CONTINUITY",
   "candidate_code_authority": "GITHUB_MAIN",
   "runtime_authority_enabled": false,
-  "governance_run": {
-    "folder_id": "1r9Z8ucYtkJ4f6W60ZScqu3GeBZodSQHC",
-    "document_id": "11bcuTt6OdJc2nXG2QFPNWtFD5A5iUs_VnAMaQy2CFI8",
-    "document_url": "https://docs.google.com/document/d/11bcuTt6OdJc2nXG2QFPNWtFD5A5iUs_VnAMaQy2CFI8/edit?usp=drivesdk",
-    "verified_parent_folder": "30_RUNTIME_运行现场/2026-10-12",
-    "readback_verified": true
+  "external_mirror_refs": {
+    "legacy_drive_folder_id": "1r9Z8ucYtkJ4f6W60ZScqu3GeBZodSQHC",
+    "legacy_drive_document_id": "11bcuTt6OdJc2nXG2QFPNWtFD5A5iUs_VnAMaQy2CFI8",
+    "legacy_drive_document_url": "https://docs.google.com/document/d/11bcuTt6OdJc2nXG2QFPNWtFD5A5iUs_VnAMaQy2CFI8/edit?usp=drivesdk",
+    "role": "SOURCE_ARTIFACT_MIGRATION_MIRROR_ONLY",
+    "last_known_parent_folder": "30_RUNTIME_运行现场/2026-10-12",
+    "historical_readback_verified": true,
+    "may_override_github_task_state": false
   },
   "coverage": {
-    "trading_day_resolution": "PASS",
-    "owner_skill_cutover_capability_contract": "PASS",
-    "shadow_governance_start_gate": "PASS",
+    "trading_day_resolution": "PASS__LONGBRIDGE_CN_CALENDAR_SESSION_PROVEN",
+    "owner_skill_cutover_capability_contract": "PASS__GITHUB_GOVERNANCE_MIGRATED",
+    "start_gate_governance_checkpoint": "PASS__GITHUB_AUTHORITY",
     "stockbase_pointer": "PASS__V1_6_READ_ONLY",
-    "prior_trading_day_five_pools_shorttermcard": "BOUNDARY__NOT_LOCATED_IN_CURRENT_RUNTIME_GOVERNANCE",
-    "daily_run_freezecard": "PASS_INITIALIZED__NOT_FROZEN",
+    "prior_trading_day_five_pools_shorttermcard": "BOUNDARY__FORMAL_2026_10_09_SNAPSHOT_NOT_LOCATED__GAP_FILL_AUTHORIZED_WITH_PROVENANCE",
+    "daily_run_freezecard": "PASS_INITIALIZED__NOT_FROZEN__LEGACY_DRIVE_COPY_DEMOTED_TO_MIRROR",
     "weekend_event_ledger": "PARTIAL",
     "p01_p09_source_completion": "BOUNDARY__PREPUBLICATION_WINDOW",
     "mid_qa": "NOT_STARTED",
@@ -54,11 +56,21 @@
     "supersedes_lease_id": null,
     "writer": "chatgpt-continuity-v3.7-child-init"
   },
+  "task_local_constraints": {
+    "tinyfish_allowed": false,
+    "reason": "Explicit user instruction for this active task/session: do not use TinyFish.",
+    "scope": "ashare:2026-10-12"
+  },
   "capability_handshake": {
-    "observed_at": "2026-10-10T15:05:53Z",
-    "owner_runtime_state_machine": "NOT_SESSION_PROVEN_AND_NOT_OPERATIONAL_AUTHORITY",
+    "observed_at": "2026-10-10T15:27:46Z",
+    "owner_runtime_state_machine": "NOT_SESSION_PROVEN_AND_NOT_PROMOTED_TO_EXECUTABLE_AUTHORITY",
+    "github_continuity_governance": "PASS__CURRENT_SESSION_WRITER",
+    "structured_cn_market_data": "PASS__LONGBRIDGE_SESSION_PROVEN__TRADING_DAYS_AND_2026_10_09_TOP_MOVERS_RETURNED",
+    "xuangutong_five_pool_direct_api": "PASS__ENDPOINTS_DISCOVERED__DATE_STATE_VERIFICATION_PENDING",
+    "browser_fallback": "AVAILABLE__OPERA_CONNECTOR__USE_LAST_RESORT",
+    "metered_extractor": "AVAILABLE__FIRECRAWL_LOW_CREDITS__NON_PRIMARY",
     "live_source_acquisition": "PARTIAL__WEEKEND_PREPUBLICATION_WINDOW",
     "strict_isolated_auditor": "NOT_REQUIRED_FOR_CURRENT_STAGE",
-    "business_route": "NOTION_DRIVE_SHADOW_GOVERNANCE"
+    "business_route": "GITHUB_CONTINUITY_GOVERNANCE__RUNTIME_SHADOW"
   }
 }
