@@ -56,13 +56,13 @@
     },
     {
       "capability_id": "strict_isolated_auditor",
-      "scope": "OPTIONAL_FUTURE_TRUE_ISOLATION",
+      "scope": "SOURCE_AUDIT,UNIVERSE_AUDIT,PREMARKET_AUDIT,FINAL_AUDIT",
       "assurance_ceiling": "DECLARED_ONLY",
       "invocation_path": "NOT_IMPLEMENTED_AS_ATTESTED_ISOLATED_EXECUTOR",
       "executor_type": "UNAVAILABLE",
       "executor_ref": null,
-      "required_tools": ["provider_run_trace_if_future_gate_requires_true_isolation"],
-      "evidence_contract": ["distinct execution identity", "context/trace proof", "frozen artifact binding"],
+      "required_tools": ["distinct_reviewer_execution_context", "independent_review_trace"],
+      "evidence_contract": ["distinct execution identity", "separate context or trace proof", "frozen/task binding", "review decision receipt"],
       "side_channel_allowed": false,
       "safe_degraded_modes": []
     }
@@ -70,6 +70,7 @@
   "owner_notes": [
     "The owner runtime is fail-closed when a required stage executor or structured submission is missing.",
     "Repository code readiness does not prove the current session has live market-data connectors or owner runtime bindings; the dispatcher must handshake those per market day.",
-    "Analytical authoring may be chat-bridged only when the resulting payload is submitted through the owner stage/schema contracts rather than treated as free-form chat output."
+    "Analytical authoring may be chat-bridged only when the resulting payload is submitted through the owner stage/schema contracts rather than treated as free-form chat output.",
+    "The audit contract requires independent judgment, but GateDecision structure alone is not independence evidence. Until strict_isolated_auditor is session-proven with distinct execution/context/trace receipts, independent audit certification and Runtime promotion remain blocked at that exact assurance boundary."
   ]
 }
