@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "artifact_class": "BUSINESS_EVIDENCE",
+  "evidence_type": "GAP_FILL_RECONSTRUCTED_POST_CLOSE_INPUT",
+  "target_trade_date": "2026-10-09",
+  "acquired_for_task": "ashare:2026-10-12",
+  "acquisition_date": "2026-10-10",
+  "source_family": "XUANGUTONG_DINGPAN_DIRECT_API",
+  "acquisition_method": "direct API read executed as pure Python in a connected remote execution environment; counts are len(data[]) and are not LLM-extracted",
+  "not_historical_frozen_decision": true,
+  "record_semantics": "membership snapshot; source endpoints remain the canonical field-level provenance for the captured post-close state",
+  "pool_endpoints": {
+    "limit_up": "https://flash-api.xuangubao.com.cn/api/pool/detail?pool_name=limit_up",
+    "limit_down": "https://flash-api.xuangubao.com.cn/api/pool/detail?pool_name=limit_down",
+    "limit_up_broken": "https://flash-api.xuangubao.com.cn/api/pool/detail?pool_name=limit_up_broken",
+    "super_stock": "https://flash-api.xuangubao.com.cn/api/pool/detail?pool_name=super_stock",
+    "yesterday_limit_up": "https://flash-api.xuangubao.com.cn/api/pool/detail?pool_name=yesterday_limit_up"
+  },
+  "pools": {
+    "limit_up": {
+      "count": 72,
+      "latest_event_time_cn": "2026-10-09T14:52:36+08:00",
+      "stock_type_counts": {"main_or_regular": 62, "chinext": 6, "star": 1, "st": 3},
+      "non_st_count": 69,
+      "st_members": ["*ST四通", "ST万邦", "*ST沐邦"],
+      "members": ["郑中设计","雄韬股份","中红医疗","芒果超媒","吉林化纤","中交发展","大智慧","天融信","金圆股份","*ST四通","科力远","百大集团","九阳股份","妙可蓝多","文投控股","远程股份","慈文传媒","梦天家居","龙版传媒","新筑股份","澳弘电子","众生药业","*ST沐邦","中文在线","新亚强","上工申贝","华北制药","中新赛克","九牧王","德才股份","西部黄金","百洋股份","上海电影","吉视传媒","国光连锁","粤 传 媒","欢瑞世纪","ST万邦","新华文轩","华鑫股份","贝瑞基因","博纳影业","三柏硕","楚环科技","国芳集团","安彩高科","海南橡胶","三人行","振华股份","掌阅科技","东诚药业","麒麟信安","紫竹高科","丰元股份","雷赛智能","汇嘉时代","领湃科技","时代万恒","敦煌种业","红豆股份","丽人丽妆","绿盟科技","格尔软件","晨光新材","安泰集团","华建集团","东岳硅材","新经典","万向德农","金健米业","东亚药业","新华传媒"]
+    },
+    "limit_down": {
+      "count": 11,
+      "latest_event_time_cn": "2026-10-09T15:00:00+08:00",
+      "members": ["泰永长征","华之杰","金安国纪","C力勤","*ST美芝","*ST岭南","彩蝶实业","五方光电","百合花","宏柏新材","大金重工"]
+    },
+    "limit_up_broken": {
+      "count": 13,
+      "latest_event_time_cn": "2026-10-09T14:20:09+08:00",
+      "members": ["信隆健康","拉芳家化","向日葵","科恒股份","海欣食品","孚日股份","阳光乳业","新华百货","世联行","丰山集团","博通集成","园林股份","天赐材料"]
+    },
+    "super_stock": {
+      "count": 33,
+      "latest_event_time_cn": "2026-10-09T14:52:36+08:00",
+      "members": ["均瑶健康","红豆股份","紫竹高科","龙蟠科技","新华传媒","德才股份","华北制药","海南橡胶","大智慧","三柏硕","领湃科技","九阳股份","丰元股份","园林股份","安泰集团","襄阳轴承","雄韬股份","兴业股份","时代万恒","亚邦股份","陆家嘴","楚环科技","雪龙集团","澳弘电子","上海洗霸","掌阅科技","龙版传媒","深物业A","新华文轩","贝瑞基因","善水科技","传艺科技","中新赛克"]
+    },
+    "yesterday_limit_up": {
+      "count": 44,
+      "latest_current_event_time_cn": "2026-10-09T14:46:12+08:00",
+      "members": ["恒尚节能","领湃科技","招商南油","金牛化工","野马电池","快意电梯","联环药业","安泰集团","华北制药","紫竹高科","兴业股份","宁波高发","丰元股份","彩蝶实业","时代万恒","松炀资源","中远海能","乔治白","传艺科技","海欣食品","红豆股份","卓越新能","山东墨龙","陆家嘴","*ST网达","雄韬股份","国新能源","九阳股份","三柏硕","张  裕Ａ","顺灏股份","贝特利","*ST华西","新华传媒","上海洗霸","广西能源","龙蟠科技","世名科技","东贝集团","必得科技","园林股份","楚环科技","金溢科技","金时科技"]
+    }
+  },
+  "reconciliation": {
+    "raw_limit_up_count": 72,
+    "non_st_limit_up_count": 69,
+    "mainboard_non_st_limit_up_count": 62,
+    "raw_limit_down_count": 11,
+    "dingpan_broken_count": 13,
+    "attempted_limit_up_using_dingpan_definition": 85,
+    "dingpan_raw_seal_rate": 0.8471,
+    "dingpan_raw_broken_rate": 0.1529,
+    "why_72_vs_69": "The direct limit_up pool contains exactly three ST members. Removing those three yields the 69-stock non-ST count used by the non-ST market-summary convention.",
+    "external_definition_boundary": "Other market recaps may report a different number of 'failed boards' because their touch-limit universe/definitions differ. The five-pool artifact preserves Xuangutong Dingpan pool semantics rather than rewriting them to match another provider."
+  },
+  "previous_day_feedback": {
+    "yesterday_limit_up_count": 44,
+    "relimit_count_on_2026-10-09": 12,
+    "relimit_members": ["领湃科技","安泰集团","华北制药","紫竹高科","丰元股份","时代万恒","红豆股份","雄韬股份","九阳股份","三柏硕","新华传媒","楚环科技"],
+    "fell_to_limit_down_count": 1,
+    "fell_to_limit_down_members": ["彩蝶实业"],
+    "average_change_pct": 2.606,
+    "positive_count": 27,
+    "negative_count": 17
+  },
+  "height_map": [
+    {"name":"新华传媒","symbol":"600825.SS","consecutive_limit_up_days":9,"boards":9,"window_days":9},
+    {"name":"时代万恒","symbol":"600241.SS","consecutive_limit_up_days":5,"boards":5,"window_days":5},
+    {"name":"九阳股份","symbol":"002242.SZ","consecutive_limit_up_days":5,"boards":5,"window_days":5},
+    {"name":"紫竹高科","symbol":"002058.SZ","consecutive_limit_up_days":4,"boards":4,"window_days":4},
+    {"name":"三柏硕","symbol":"001300.SZ","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"楚环科技","symbol":"001336.SZ","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"安泰集团","symbol":"600408.SS","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"丰元股份","symbol":"002805.SZ","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"红豆股份","symbol":"600400.SS","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"雄韬股份","symbol":"002733.SZ","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"华北制药","symbol":"600812.SS","consecutive_limit_up_days":2,"boards":2,"window_days":2},
+    {"name":"领湃科技","symbol":"300530.SZ","consecutive_limit_up_days":2,"boards":2,"window_days":2}
+  ],
+  "quality_notes": [
+    "A Firecrawl LLM JSON extraction attempt incorrectly reported limit_down exact_count=30 while returning only 11 records; that extraction was rejected and is not business evidence.",
+    "The accepted counts and membership were obtained by direct JSON reads and mechanical len(data[]) execution.",
+    "This artifact reconstructs a missing post-close input after the fact and must never be represented as the original 2026-10-09 premarket FrozenDecision."
+  ]
+}
