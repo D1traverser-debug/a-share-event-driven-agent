@@ -16,6 +16,7 @@ Adapter: `continuity/UNIVERSAL_PROTOCOL_ADAPTER.json`
 
 - 裸“继承”只能从 `Default USER candidates` 读取候选。
 - “荐股 / A股荐股 / 开始荐股 / 继续荐股”恢复 `ashare:recommendation`，然后解析当前交易日并创建或定位当天 market-day USER task。
+- 在任何 material market-day stage/next_action 执行前，读取当前 `skills/a-share-event-driven-agent/SKILL.md`、`config/cutover_status.json` 与 `continuity/EXECUTION_CAPABILITIES.json`，只对当前步骤所需能力做 session handshake；仓库代码存在不等于本聊天已具备实时数据/runtime binding。
 - 历史 market-day task 不得因为恢复长期荐股入口而自动续跑，也不得把历史 FrozenDecision 带入新的交易日。
 - Operational authority由 `config/cutover_status.json` 选择；当前 Universal Continuity 不得把候选 GitHub Runtime 静默提升为运营治理权威。
 - No later outcome may be used to fabricate an earlier frozen decision.
