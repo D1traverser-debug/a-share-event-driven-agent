@@ -78,7 +78,17 @@ def test_universe_can_explicitly_exclude_eligible_ticker_with_reason():
 
 
 def test_node_without_any_mapping_requires_explicit_node_exclusion():
-    base = industry().model_copy(update={"mappings":[mapping("000001", "N1")]})
+    base = IndustryResearchPackage(
+        nodes=[
+            {"node_id":"N1","event_id":"E1","level":5,"name":"node1","economics":"x","direction":"BENEFIT"},
+            {"node_id":"N2","event_id":"E1","level":5,"name":"node2","economics":"y","direction":"BENEFIT"},
+        ],
+        transmission_paths=["path"],
+        mappings=[mapping("000001", "N1")],
+        max_depth_by_event={"E1":5},
+        sweeps_completed=2,
+        stop_reason="done",
+    )
     pkg = UniversePackage(
         mappings=[mapping("000001", "N1")],
         all_event_nodes_exhausted=True,
