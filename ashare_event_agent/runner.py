@@ -1,10 +1,18 @@
+"""Offline/test harness for injected stage executors.
+
+This module is intentionally not the hosted/public business entrypoint. It proves
+fail-closed orchestration behavior for explicitly supplied executors; it does not
+provide or attest live P01-P09/source executors. The canonical MCP surface is
+`ashare_event_agent.plugin_server`.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Protocol
 
 from .controller import WorkflowController
-from .engine import MarketDayEngine, WorkflowError
+from .engine import MarketDayEngine
 from .models import MarketDayState, Stage, TaskContract
 from .store import SQLiteStateStore
 
