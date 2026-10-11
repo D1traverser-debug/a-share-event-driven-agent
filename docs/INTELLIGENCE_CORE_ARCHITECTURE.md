@@ -1,6 +1,6 @@
 # A-share Intelligence Core Architecture
 
-Status: architecture boundary for staged migration. This document does **not** promote the candidate Runtime to operational authority; `config/cutover_status.json` remains the only cutover switch.
+Status: **future architecture boundary / non-executable design**. This document does not create a Core, change current business authority, or promote the candidate Runtime. `config/cutover_status.json` remains the only Runtime cutover switch, and current GitHub Continuity task state remains authoritative while Runtime authority is disabled.
 
 ## 1. Purpose
 
@@ -21,7 +21,7 @@ Universal Continuity Layer
           A-share Intelligence Core
 ```
 
-The Core must make the system broadly knowledgeable without forcing every task to load every Notion/Drive document into model context. Knowledge is comprehensive at rest and retrieved selectively at execution time.
+The Core should make the system broadly knowledgeable without forcing every task to load an entire legacy/source corpus into model context. Knowledge is comprehensive at rest and retrieved selectively at execution time.
 
 ## 2. Reuse what already exists
 
@@ -138,17 +138,17 @@ Reads the immutable premarket snapshot plus actual outcomes. It may propose know
 ### Financial Writing Agent
 Reads shared intelligence and may submit KnowledgeCandidates discovered during research. It owns article cognition, structure, title, hook, human voice, delivery and writing-specific learning. It must not mutate Market Agent execution rules.
 
-## 9. Storage roles during migration
+## 9. Storage and authority roles during migration
 
-- **GitHub**: schema/code/Skill/tests/evals/rule ownership.
-- **Runtime durable store**: task/checkpoint/freeze/gates/artifact identity/version.
-- **Notion**: human-readable knowledge/navigation/dashboard/mirror.
-- **Google Drive**: raw source documents, large artifacts, reports, historical snapshots.
-- **ChatGPT Library Continuity v2**: task discovery/routing pointers, not a second A-share database.
+- **GitHub `main`**: current schema/code/Skill/tests/evals/rule authority and owner Continuity governance.
+- **Owner Runtime durable store**: future executable task/checkpoint/freeze/gate/artifact identity/version authority only after explicit promotion.
+- **StockBase/current knowledge sources**: current shared company-knowledge inputs under their own read/write receipt boundaries.
+- **Notion / Google Drive / other external stores**: optional source, knowledge, raw artifact and migration-mirror inputs only. They are not task/control authorities and cannot override GitHub task state.
+- **Universal Continuity**: cross-agent discovery/routing/takeover/progress protocol. Owner task identity and business state remain in the owner’s authoritative surfaces; no separate “Library database” is introduced by this design.
 
 ## 10. Migration order
 
-1. Keep existing production/shadow governance intact; no premature cutover.
+1. Keep existing governance/cutover boundaries intact; no premature Runtime/Core authority promotion.
 2. Add explicit KnowledgeCandidate schema and tests without changing StockBase write authority.
 3. Map current EventBase/IndustryBase/StockBase fields into Core primitives; do not create duplicate truth stores.
 4. Build read-only Core query/package interface first.
@@ -164,4 +164,4 @@ Reads shared intelligence and may submit KnowledgeCandidates discovered during r
 - No loading the full knowledge base into every prompt.
 - No direct consumer writes to canonical durable truth without validation.
 - No promotion of post-close hindsight into premarket facts.
-- No Runtime authority change merely because this architecture document exists.
+- No Runtime/Core authority change merely because this architecture document exists.
