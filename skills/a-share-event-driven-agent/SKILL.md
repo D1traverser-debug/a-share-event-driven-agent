@@ -19,6 +19,8 @@ A documentation or cutover-file change is not proof that Runtime promotion gates
 ## Execution readiness handshake
 Before any material stage execution, read `continuity/EXECUTION_CAPABILITIES.json` from current GitHub `main` in addition to the cutover authority. This owner capability manifest defines the maximum assurance the repository can support; it is **not** proof that the current chat/session actually has the runtime, data source, connector, credential or modality needed now.
 
+The canonical public MCP/runtime surface is `ashare_event_agent/plugin_server.py`. `runtime_service.py`, `controller.py`, `engine.py` and `store.py` are internal components. `runner.AgentRuntime` is only a test/offline injected-executor harness; it is not the hosted business entrypoint and may not be used as evidence that live stage executors exist. `source_contracts.py` defines source contracts, not a native P01-P09 acquisition executor.
+
 For the exact current stage / `next_action` only:
 1. identify the required capability or capabilities;
 2. observe current-session availability and assurance;
@@ -27,7 +29,7 @@ For the exact current stage / `next_action` only:
 5. if a hard capability is unavailable, block that exact stage/gate rather than silently free-forming or declaring the whole Agent unusable;
 6. never claim isolated execution unless distinct execution/context/trace evidence actually satisfies the required assurance.
 
-A role description, Skill paragraph, code stub or configured tool name is not execution evidence. An owner-Runtime stage is complete only when the owner runtime/state/checkpoint contains the required result and evidence. Governance-only progress is complete only after the corresponding GitHub Continuity checkpoint is written and reread.
+A role description, Skill paragraph, code stub, configured tool name, `GateDecision`, or audit-tool call is not execution/independence evidence. An owner-Runtime stage is complete only when the owner runtime/state/checkpoint contains the required result and evidence. Governance-only progress is complete only after the corresponding GitHub Continuity checkpoint is written and reread.
 
 ## New task vs continuation
 Apply the global rule: **inherit learning, not unfinished work**.
@@ -47,11 +49,11 @@ Always recover through GitHub Continuity first:
 6. Create/maintain FreezeCard boundaries before finalizing dynamic premarket data; never skip a gate.
 
 ## Premarket cognition
-Read `references/sources.md`, `research.md`, `industry.md`, `market_structure.md`, `execution.md`, `audit.md` progressively as stages require.
+Read the canonical root `references/sources.md`, `research.md`, `industry.md`, `market_structure.md`, `execution.md`, `audit.md` progressively as stages require. Copies under `skills/a-share-event-driven-agent/references/` and `ashare_event_agent/resources/references/` are generated distribution mirrors for Skill/wheel packaging, not additional rule owners.
 
 Research is recall-first: build U0/U1 broadly, then role-rank U2 and narrow U3. Do not let Leader-First prune the research universe.
 
-The research substrate is intended to evolve toward a shared A-share Intelligence Core: event/catalyst, concept/industry graph, detailed value-chain nodes, company mapping, operating/financial realization, market role/position, future events, counterevidence and provenance. Premarket and post-close may reuse this intelligence, but their executable state remains the market-day task lifecycle.
+The research substrate is intended to evolve toward a shared A-share Intelligence Core: event/catalyst, concept/industry graph, detailed value-chain nodes, company mapping, operating/financial realization, market role/position, future events, counterevidence and provenance. Premarket and post-close may reuse this intelligence, but their executable state remains the market-day task lifecycle. Architecture documents describing a future Core are non-executable design until explicit implementation/cutover evidence exists.
 
 ## Post-close
 Continue the same FROZEN market-day task when the execution plane is authoritative and compatible. Read `references/review.md` and `learning.md`. Grade knowable recall against the immutable premarket snapshot. Never backfill post-close facts into FrozenPremarketDecision.
@@ -68,4 +70,4 @@ Read `references/maintenance.md`. A documentation edit is not proof of executed 
 
 When a `PROPOSE` rule receives replay `PASS`, treat it as **promotion-eligible**, not silently promoted. Use the connected GitHub workflow to change only the canonical rule owner, add/update regression and replay cases, run CI/static/contract tests, independently review the diff, and merge only when the promotion criteria remain satisfied. Record/retain external mirror evidence only when useful; mirrors do not become control authority. A failed/HOLD replay must not alter durable executable policy.
 
-System defects should be repaired at the unique owner: `detect → classify root cause → repair code/Skill/contract → add regression/replay → CI → independent review → promote`. Do not solve repeated execution failures by copying more prose into Notion/Drive.
+System defects should be repaired at the unique owner: `detect → classify root cause → repair code/Skill/contract → add regression/replay → CI → independent review → promote`. Do not solve repeated execution failures by copying more prose into Notion/Drive or by creating a second harness/Skill/rule surface.
