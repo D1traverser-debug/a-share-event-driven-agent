@@ -77,7 +77,7 @@ async def verify():
                 if task.get("task_class") != "USER" or task.get("resume_eligible") is not True or task.get("resume_visibility") != "DEFAULT":
                     raise RuntimeError(f"unsafe resumable task leaked: {task}")
 
-            print(f"PASS: {len(tools)} typed/annotated MCP tools, continuity metadata, and safe resumable-task discovery")
+            print(f"PASS: {len(tools)} typed/annotated tools on one MCP surface, continuity metadata, and safe resumable-task discovery")
 
 
 def main():
@@ -85,15 +85,17 @@ def main():
     env["ASHARE_EVENT_DATA_DIR"] = tempfile.mkdtemp(prefix="ashare-event-mcp-")
     env["MCP_HOST"] = "127.0.0.1"
     env["MCP_PORT"] = str(PORT)
-    proc = subprocess.Popen([sys.executable, "-m", "ashare_event_agent.continuity_plugin"], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    proc = subprocess.Popen([sys.executable, "-m", "ashare_event_agent.plugin_server"], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     try:
         wait_port()
         asyncio.run(verify())
     finally:
         proc.terminate()
-        try: proc.wait(timeout=5)
+        try:
+            proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
-            proc.kill(); proc.wait(timeout=5)
+            proc.kill()
+            proc.wait(timeout=5)
         if proc.returncode not in {0, -15} and proc.stdout:
             print(proc.stdout.read())
 
