@@ -190,6 +190,31 @@ package_init = (ROOT / "ashare_event_agent/__init__.py").read_text(encoding="utf
 if "AgentRuntime" in package_init:
     fail("reference AgentRuntime must not be promoted through the package public API")
 
+# Active explanatory/control surfaces must not revive known superseded vocabulary.
+# Historical audits are deliberately excluded because evidence archives retain the
+# terminology that actually existed at the time.
+active_semantic_surfaces = [
+    ROOT / "README.md",
+    ROOT / "ashare_event_agent/models.py",
+    ROOT / "ashare_event_agent/mcp_contracts.py",
+    ROOT / "ashare_event_agent/continuity.py",
+    ROOT / "ashare_event_agent/plugin_server.py",
+    ROOT / "ashare_event_agent/runner.py",
+    ROOT / "ashare_event_agent/source_contracts.py",
+    ROOT / "skills/a-share-event-driven-agent/SKILL.md",
+    ROOT / "continuity/AGENT_MANIFEST.json",
+    ROOT / "continuity/EXECUTION_CAPABILITIES.json",
+    ROOT / "deploy/chatgpt-site/SITE_SPEC.md",
+    ROOT / "docs/architecture.md",
+    ROOT / "docs/INTELLIGENCE_CORE_ARCHITECTURE.md",
+    ROOT / "docs/provenance_and_cutover.md",
+]
+for path in active_semantic_surfaces:
+    text = path.read_text(encoding="utf-8")
+    for obsolete in ["Continuity v2", "ChatGPT Library", "real 9/30 regression cassette"]:
+        if obsolete in text:
+            fail(f"obsolete active-surface vocabulary reappeared: {obsolete} in {path.relative_to(ROOT)}")
+
 schema_text = SCHEMAS.read_text(encoding="utf-8")
 model_text = MODELS.read_text(encoding="utf-8")
 controller_text = CONTROLLER.read_text(encoding="utf-8")
@@ -246,6 +271,7 @@ if len(activation) < 8 or not any(x.get("should_activate") for x in activation) 
 
 print(
     f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized canonical-reference files across two declared distribution mirrors; "
-    f"{len(tools)} typed tools on one public MCP surface; test harnesses/mocks demoted; GitHub governance + runtime-promotion/independent-audit guards + "
-    "point-in-time source proof + Universe/U0/U1/U3 lineage + frozen review grading + replay/required-output guards present"
+    f"{len(tools)} typed tools on one public MCP surface; test harnesses/mocks demoted; active legacy vocabulary blocked; "
+    "GitHub governance + runtime-promotion/independent-audit guards + point-in-time source proof + Universe/U0/U1/U3 lineage + "
+    "frozen review grading + replay/required-output guards present"
 )
