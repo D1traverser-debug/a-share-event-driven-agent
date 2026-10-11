@@ -100,9 +100,10 @@ class TaskContract(BaseModel):
     source_refs: list[str] = Field(default_factory=list)
     required_outputs: list[ArtifactKind] = Field(default_factory=list)
 
-    # Continuity v2 metadata. Defaults are deliberately fail-closed so a legacy
-    # JSON checkpoint that predates these fields cannot silently become a bare-
-    # inherit USER task. New user-facing runtime tasks must set USER explicitly.
+    # Owner-runtime continuity metadata. Defaults are deliberately fail-closed so
+    # a legacy JSON checkpoint that predates these fields cannot silently become
+    # a bare-inherit USER task. This owner contract version is independent from
+    # the global Universal Continuity protocol version.
     task_class: TaskClass = TaskClass.MIGRATION
     resume_eligible: bool = False
     resume_visibility: ResumeVisibility = ResumeVisibility.EXPLICIT_ONLY
