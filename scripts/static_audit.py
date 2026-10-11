@@ -7,10 +7,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "ashare_event_agent" / "plugin_server.py"
 RUNTIME = ROOT / "ashare_event_agent" / "runtime_service.py"
+RUNNER = ROOT / "ashare_event_agent" / "runner.py"
 SCHEMAS = ROOT / "ashare_event_agent" / "schemas.py"
 MODELS = ROOT / "ashare_event_agent" / "models.py"
 CONTROLLER = ROOT / "ashare_event_agent" / "controller.py"
 INTEGRITY = ROOT / "ashare_event_agent" / "integrity.py"
+PYPROJECT = ROOT / "pyproject.toml"
+AGENT_MANIFEST = ROOT / "continuity" / "AGENT_MANIFEST.json"
+CAPABILITIES = ROOT / "continuity" / "EXECUTION_CAPABILITIES.json"
 
 
 def fail(msg: str) -> None:
@@ -25,17 +29,52 @@ for owner, keys in ownership.items():
             fail(f"duplicate rule owner {key}: {seen[key]} / {owner}")
         seen[key] = owner
 
+# Root references/config are canonical. Skill and wheel copies are distribution
+# mirrors only; byte drift would create a second rule surface.
 src = {p.name for p in (ROOT / "references").glob("*.md")}
-for mirror in [ROOT / "skills/a-share-event-driven-agent/references", ROOT / "ashare_event_agent/resources/references"]:
+reference_mirrors = [
+    ROOT / "skills/a-share-event-driven-agent/references",
+    ROOT / "ashare_event_agent/resources/references",
+]
+for mirror in reference_mirrors:
     if src != {p.name for p in mirror.glob("*.md")}:
-        fail("reference set drift")
+        fail(f"reference set drift: {mirror}")
     for name in src:
         if (ROOT / "references" / name).read_bytes() != (mirror / name).read_bytes():
-            fail(f"reference drift: {name}")
+            fail(f"reference drift: {mirror}/{name}")
 if (ROOT / "config/policy.json").read_bytes() != (ROOT / "ashare_event_agent/resources/policy.json").read_bytes():
     fail("policy mirror drift")
 
-cutover = json.loads((ROOT / "config/cutover_status.json").read_text(encoding="utf-8"))
+# Fail closed if test-only mocks or the retired continuity wrapper leak back into
+# the production package.
+if (ROOT / "ashare_event_agent/adapters/mock.py").exists():
+    fail("test-only mock adapter leaked into production package")
+if (ROOT / "ashare_event_agent/continuity_plugin.py").exists():
+    fail("retired second MCP/continuity wrapper reappeared")
+
+pyproject_text = PYPROJECT.read_text(encoding="utf-8")
+if 'ashare-event-mcp = "ashare_event_agent.plugin_server:main"' not in pyproject_text:
+    fail("package MCP entrypoint must point directly to plugin_server:main")
+if "continuity_plugin" in pyproject_text:
+    fail("retired continuity_plugin remains referenced by package metadata")
+
+agent_manifest = json.loads(AGENT_MANIFEST.read_text(encoding="utf-8"))
+runtime_manifest = agent_manifest.get("runtime") or {}
+if runtime_manifest.get("public_entrypoint") != "ashare_event_agent/plugin_server.py":
+    fail("agent manifest must declare plugin_server.py as the single public runtime entrypoint")
+harness_manifest = (agent_manifest.get("harness") or {}).get("reference_executor_harness") or {}
+if harness_manifest.get("ref") != "ashare_event_agent/runner.py" or harness_manifest.get("production_entrypoint") is not False:
+    fail("runner.py must remain explicitly classified as non-production reference/test harness")
+refs_manifest = agent_manifest.get("references") or {}
+if refs_manifest.get("canonical_root") != "references":
+    fail("reference authority drift: root references must remain canonical")
+if set(refs_manifest.get("generated_mirrors") or []) != {
+    "skills/a-share-event-driven-agent/references",
+    "ashare_event_agent/resources/references",
+}:
+    fail("reference mirror manifest must name both Skill and wheel distribution mirrors")
+
+cutover = json.loads((ROOT / "config" / "cutover_status.json").read_text(encoding="utf-8"))
 if cutover.get("operational_governance_authority") != "GITHUB_MAIN_CONTINUITY":
     fail("cutover drift: GitHub Continuity must remain the governance authority")
 if cutover.get("business_checkpoint_authority_when_runtime_disabled") != "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF":
@@ -53,8 +92,20 @@ if "independent_audit_attestation" not in gates:
 if cutover.get("runtime_authority_enabled") and any(v != "PASS" for v in gates.values()):
     fail("runtime authority enabled before all required promotion gates passed")
 
-capability_profile = json.loads((ROOT / "continuity/EXECUTION_CAPABILITIES.json").read_text(encoding="utf-8"))
+capability_profile = json.loads(CAPABILITIES.read_text(encoding="utf-8"))
 capabilities = {row.get("capability_id"): row for row in capability_profile.get("capabilities", [])}
+state_machine = capabilities.get("market_day_state_machine") or {}
+if state_machine.get("executor_ref") != "ashare_event_agent/plugin_server.py":
+    fail("market-day state-machine capability must bind to the canonical owner MCP surface")
+if "runner.AgentRuntime" in state_machine.get("invocation_path", "") or state_machine.get("executor_ref") == "ashare_event_agent/runner.py":
+    fail("reference runner must not be advertised as the production state-machine executor")
+live_source = capabilities.get("live_source_acquisition") or {}
+if live_source.get("executor_ref") is not None:
+    fail("live source acquisition must not advertise a native executor before one exists")
+if live_source.get("contract_ref") != "ashare_event_agent/source_contracts.py":
+    fail("live source capability must distinguish source contract metadata from executor implementation")
+if live_source.get("executor_type") != "EXTERNAL_SESSION_CONNECTORS":
+    fail("live source capability must remain session-external until native adapters exist")
 auditor = capabilities.get("strict_isolated_auditor")
 if not auditor:
     fail("strict isolated auditor capability missing")
@@ -111,7 +162,7 @@ for node in tree.body:
         fail(f"weak public output type: {node.name} -> {rendered}")
 
 required = {
-    "start_market_day", "get_market_day", "list_recent_market_days", "record_governance_context",
+    "start_market_day", "get_market_day", "list_recent_market_days", "list_resumable_tasks", "record_governance_context",
     "submit_freeze_card", "submit_source_completion", "submit_source_audit", "submit_event_ledger",
     "submit_industry_research", "record_stockbase_context", "submit_universe_audit", "submit_market_structure",
     "submit_recall_pool", "submit_execution_plan", "submit_premarket_audit", "start_postclose_review",
@@ -122,12 +173,22 @@ if set(tools) != required:
     fail(f"MCP inventory mismatch missing={required-set(tools)} extra={set(tools)-required}")
 if tool_names(RUNTIME):
     fail("runtime_service.py must not register MCP tools")
+if tool_names(RUNNER):
+    fail("runner.py reference harness must not register MCP tools")
 if plugin_text.count("MCPServer(") != 1:
     fail("plugin_server.py must own exactly one MCP server")
 if 'ashare-artifact://{task_id}/{kind}' not in plugin_text:
     fail("artifact resource template missing")
 if 'Annotated[CallToolResult, MarketDaySummary]' not in plugin_text:
     fail("artifact-returning premarket audit must expose structured MarketDaySummary output")
+if "continuity_metadata" not in plugin_text or "list_resumable_states" not in plugin_text:
+    fail("canonical MCP surface must own continuity metadata and resumable discovery directly")
+if "audit-tool call" not in plugin_text or "does not by itself prove reviewer independence" not in plugin_text:
+    fail("MCP instructions must not overclaim independent audit assurance")
+
+package_init = (ROOT / "ashare_event_agent/__init__.py").read_text(encoding="utf-8")
+if "AgentRuntime" in package_init:
+    fail("reference AgentRuntime must not be promoted through the package public API")
 
 schema_text = SCHEMAS.read_text(encoding="utf-8")
 model_text = MODELS.read_text(encoding="utf-8")
@@ -184,7 +245,7 @@ if len(activation) < 8 or not any(x.get("should_activate") for x in activation) 
     fail("activation inventory must contain enough positive and negative cases")
 
 print(
-    f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized references; {len(tools)} typed MCP tools; "
-    "one public MCP surface; GitHub governance cutover + runtime-promotion/independent-audit guards + "
+    f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized canonical-reference files across two declared distribution mirrors; "
+    f"{len(tools)} typed tools on one public MCP surface; test harnesses/mocks demoted; GitHub governance + runtime-promotion/independent-audit guards + "
     "point-in-time source proof + Universe/U0/U1/U3 lineage + frozen review grading + replay/required-output guards present"
 )
