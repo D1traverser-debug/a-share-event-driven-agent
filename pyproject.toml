@@ -16,7 +16,7 @@ dependencies = [
 dev = ["pytest>=8", "build>=1.2"]
 
 [project.scripts]
-ashare-event-mcp = "ashare_event_agent.continuity_plugin:main"
+ashare-event-mcp = "ashare_event_agent.plugin_server:main"
 
 [tool.setuptools.packages.find]
 include = ["ashare_event_agent*"]
