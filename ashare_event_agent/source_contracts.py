@@ -1,3 +1,10 @@
+"""P01-P09 acquisition contracts and preferred method metadata.
+
+This module does not fetch live data. A current-session external source capability
+must execute acquisition and bind returned evidence into SourceReceipt/Event
+contracts before the owner runtime may treat a source as observed.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
