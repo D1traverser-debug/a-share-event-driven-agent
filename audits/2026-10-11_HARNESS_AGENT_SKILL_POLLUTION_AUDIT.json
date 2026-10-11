@@ -1,0 +1,230 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "ashare-harness-agent-skill-pollution-audit-2026-10-11",
+  "audit_type": "OWNER_ARCHITECTURE_HARNESS_SKILL_SUPERSESSION_AUDIT",
+  "trigger": "USER_EXPLICITLY_REQUESTED_HARNESS_AGENT_SKILL_OBSOLETE_REDUNDANT_POLLUTION_AUDIT",
+  "owner": "A_SHARE_MARKET_AGENT",
+  "repository": "D1traverser-debug/a-share-event-driven-agent",
+  "scope": [
+    "public/runtime harness entrypoints",
+    "AgentRuntime and StageExecutor harness role",
+    "MCP registration and package startup surface",
+    "Skill routing/policy boundaries",
+    "execution capability declarations",
+    "source-contract versus source-executor semantics",
+    "reference/config distribution mirrors",
+    "test-only package pollution",
+    "deployment/future-architecture documents",
+    "legacy Continuity/Library/platform terminology",
+    "static/eval/CI anti-regression coverage"
+  ],
+  "maintenance_method": {
+    "authority": "D1traverser-debug/universal-continuity-agent@main/SYSTEM_MAINTENANCE_POLICY.json",
+    "policy_version_observed": "1.6",
+    "applied_principles": [
+      "inspect authoritative state before write",
+      "prefer deletion/consolidation over new parallel authority",
+      "remove or demote superseded active mechanisms when safe",
+      "distinguish configured/declared capability from executed capability",
+      "add regression guards for testable cleanup",
+      "calibrate closure claims to inspected scope"
+    ],
+    "operational_methodology_attestation": "NOT_CLAIMED",
+    "reason": "This owner audit used the Universal maintenance method, but no distinct independent verifier was available to satisfy the current Universal action-receipt independent-verification requirement. The audit is durable owner maintenance evidence, not an independently attested Universal operational PASS."
+  },
+  "root_cause_classes": [
+    "DUAL_PUBLIC_HARNESS_SURFACE_DRIFT",
+    "REFERENCE_HARNESS_PRODUCTION_IDENTITY_LEAK",
+    "CONTRACT_METADATA_EXECUTOR_OVERCLAIM",
+    "AUDIT_ASSURANCE_WORDING_OVERCLAIM",
+    "TEST_FIXTURE_PACKAGE_POLLUTION",
+    "DISTRIBUTION_MIRROR_ROLE_AMBIGUITY",
+    "STALE_MIGRATION_AND_FUTURE_ARCHITECTURE_TERMINOLOGY"
+  ],
+  "findings": [
+    {
+      "id": "H01",
+      "severity": "HIGH",
+      "finding": "Package startup pointed to continuity_plugin.py while AGENT_MANIFEST omitted that actual wrapper and static audit treated plugin_server.py as the sole MCP surface. Tool registration was split: plugin_server owned business tools while continuity_plugin monkey-patched summary behavior and added resumable discovery.",
+      "risk": "Future edits could update one surface but not the other, producing tool-inventory, Continuity metadata, or startup drift."
+    },
+    {
+      "id": "H02",
+      "severity": "HIGH",
+      "finding": "runner.AgentRuntime was exported from package __init__ and advertised as a runtime/state-machine entrypoint even though it only orchestrates injected StageExecutors and the repository contained no real live stage executor set.",
+      "risk": "A test/offline harness could be mistaken for hosted business execution or live-source wiring."
+    },
+    {
+      "id": "H03",
+      "severity": "HIGH",
+      "finding": "live_source_acquisition capability named source_contracts.py as executor_ref although source_contracts.py only defines P01-P09 metadata and preferred methods.",
+      "risk": "Contract existence could be mistaken for a native live adapter implementation or current-session source execution proof."
+    },
+    {
+      "id": "H04",
+      "severity": "HIGH",
+      "finding": "MCP audit tool descriptions used independent-audit wording while strict_isolated_auditor was explicitly DECLARED_ONLY/UNAVAILABLE.",
+      "risk": "Same-context GateDecision submission could be misread as independent assurance."
+    },
+    {
+      "id": "H05",
+      "severity": "MEDIUM",
+      "finding": "ashare_event_agent/adapters/mock.py contained only test stubs but lived inside the production package namespace.",
+      "risk": "Production package contents implied an adapter layer that did not exist and increased the chance of mock/test symbols leaking into runtime reasoning."
+    },
+    {
+      "id": "H06",
+      "severity": "MEDIUM",
+      "finding": "Canonical root references had two byte-identical distribution copies, but AGENT_MANIFEST documented only the package mirror and did not explicitly classify the Skill mirror.",
+      "risk": "Legitimate packaging duplication could be mistaken for multiple rule authorities, or a future mirror could drift without clear ownership semantics."
+    },
+    {
+      "id": "H07",
+      "severity": "MEDIUM",
+      "finding": "Continuity v2 / ChatGPT Library / legacy deployment assumptions and a specific 9/30 cassette promotion target remained in lower-authority code comments or design/deployment documents.",
+      "risk": "Future agents could infer obsolete storage, recovery, or promotion semantics from stale documents."
+    }
+  ],
+  "alternative_analysis": [
+    {
+      "candidate": "Keep continuity_plugin wrapper and simply document it better",
+      "decision": "REJECT",
+      "reason": "It preserves split registration/monkey-patch behavior and a second public startup surface without a unique responsibility."
+    },
+    {
+      "candidate": "Delete runner.py and all packaged reference mirrors",
+      "decision": "REJECT",
+      "reason": "runner.py still provides deterministic fail-closed injected-executor regression value; package references/policy are consumed by isolated wheel validation; Skill references are a distribution bundle. Their problem was role ambiguity, not existence."
+    },
+    {
+      "candidate": "Create a new supervisor/harness registry to reconcile surfaces",
+      "decision": "REJECT",
+      "reason": "Would add another authority layer. Existing plugin_server, AGENT_MANIFEST, capability manifest and static audit can own the invariant directly."
+    },
+    {
+      "candidate": "Collapse to one public MCP surface, demote reference harnesses, delete test-only package pollution, classify mirrors explicitly and add static/test guards",
+      "decision": "ADOPT",
+      "reason": "Smallest safe consolidation that lowers authority count and capability ambiguity without removing useful test/packaging roles."
+    }
+  ],
+  "deleted_as_superseded_or_polluting": [
+    {
+      "path": "ashare_event_agent/continuity_plugin.py",
+      "reason": "Superseded second MCP/startup wrapper; Continuity metadata and resumable discovery now live directly in plugin_server.py."
+    },
+    {
+      "path": "ashare_event_agent/adapters/mock.py",
+      "reason": "Test-only mock executor leaked into production package; failure stub moved into tests/test_runner.py."
+    }
+  ],
+  "demoted_or_reclassified": [
+    {
+      "surface": "ashare_event_agent/runner.py",
+      "new_role": "TEST_AND_OFFLINE_INJECTED_EXECUTOR_HARNESS",
+      "production_entrypoint": false,
+      "live_adapter_evidence": false
+    },
+    {
+      "surface": "ashare_event_agent/source_contracts.py",
+      "new_role": "SOURCE_CONTRACT_METADATA_ONLY",
+      "native_live_executor": false
+    },
+    {
+      "surface": "skills/a-share-event-driven-agent/references",
+      "new_role": "GENERATED_SKILL_DISTRIBUTION_MIRROR"
+    },
+    {
+      "surface": "ashare_event_agent/resources/references + resources/policy.json",
+      "new_role": "GENERATED_WHEEL_DISTRIBUTION_MIRROR"
+    },
+    {
+      "surface": "deploy/chatgpt-site/SITE_SPEC.md",
+      "new_role": "FUTURE_DEPLOYMENT_TARGET_SPEC__NOT_DEPLOYMENT_EVIDENCE"
+    },
+    {
+      "surface": "docs/INTELLIGENCE_CORE_ARCHITECTURE.md",
+      "new_role": "FUTURE_NON_EXECUTABLE_ARCHITECTURE_BOUNDARY"
+    }
+  ],
+  "retained_with_reason": [
+    {
+      "surface": "ashare_event_agent/runner.py",
+      "reason": "Deterministic negative/fail-closed injected-executor harness remains useful for trajectory tests when its non-production role is explicit."
+    },
+    {
+      "surface": "ashare_event_agent/resources.py and packaged resources",
+      "reason": "Isolated wheel CI consumes these to prove distribution completeness; they are not dead code."
+    },
+    {
+      "surface": "audits/",
+      "reason": "Historical maintenance evidence is an engineering audit trail, not an active authority surface."
+    },
+    {
+      "surface": "plugin.json",
+      "reason": "Simple plugin metadata; no conflicting runtime registration or authority semantics found."
+    },
+    {
+      "surface": "docs/architecture.md and docs/provenance_and_cutover.md",
+      "reason": "Current authority/cutover semantics were aligned and did not reactivate legacy external control."
+    }
+  ],
+  "implemented_changes": [
+    "plugin_server.py now owns the complete 25-tool MCP surface, Continuity metadata projection and resumable-task discovery directly",
+    "pyproject console script and mcp smoke launch plugin_server.py directly",
+    "package __init__ no longer exports AgentRuntime",
+    "AGENT_MANIFEST 1.1 declares one public runtime entrypoint and explicitly classifies runner and both distribution mirrors",
+    "EXECUTION_CAPABILITIES 1.1/profile 2 binds the state machine to plugin_server and classifies live source acquisition as EXTERNAL_SESSION_CONNECTORS with source_contracts as contract_ref, not executor_ref",
+    "audit tool descriptions and MCP instructions explicitly separate decision submission from independent-review assurance",
+    "test-only mock adapter removed from production package",
+    "Skill explicitly documents single runtime surface, harness/source-contract limits, generated mirrors and non-executable future architecture",
+    "deployment and Intelligence Core documents were recalibrated to current GitHub governance and evidence-gated Runtime/Core promotion semantics",
+    "static audit prevents recurrence of retired wrapper/mock, entrypoint drift, runner/source overclaim, mirror ambiguity and independent-audit wording drift",
+    "capability unit tests verify the single public entrypoint and external-source capability truth"
+  ],
+  "complexity_efficiency_effect": {
+    "new_authority_surfaces": 0,
+    "removed_active_surfaces": ["continuity_plugin wrapper", "production-package mock adapter"],
+    "public_mcp_surfaces_before": 2,
+    "public_mcp_surfaces_after": 1,
+    "startup_wrapper_hops_before": 1,
+    "startup_wrapper_hops_after": 0,
+    "duplicate_rule_authorities_added": 0,
+    "distribution_mirrors_removed": 0,
+    "reason_mirrors_retained": "Both have explicit Skill/wheel distribution roles and byte-equality regression guards."
+  },
+  "validation": {
+    "behavioral_hygiene_head": "666c77a3ae4b5d266865a2829b63e2497531c69c",
+    "github_actions_run_id": 38108315217,
+    "job_id": 114378419576,
+    "conclusion": "SUCCESS",
+    "passed_steps": [
+      "dependency install",
+      "MCP Streamable HTTP smoke against plugin_server directly",
+      "unit and trajectory tests",
+      "executable contract eval baseline",
+      "static ownership/bundle/MCP/harness hygiene audit",
+      "wheel build",
+      "isolated wheel install smoke"
+    ]
+  },
+  "business_task_effect": {
+    "task_id": "ashare:2026-10-12",
+    "business_stage_advanced": false,
+    "resume_epoch_change_allowed": false,
+    "lease_change_allowed": false,
+    "runtime_authority_promoted": false
+  },
+  "assurance_boundary": {
+    "proven": "Repository-level consolidation and anti-regression for the inspected harness/Agent/Skill/MCP/capability/mirror/pollution surfaces, plus clean wheel/runtime startup at the validated behavioral head.",
+    "not_proven": [
+      "global absence of every possible obsolete or redundant artifact outside the inspected repository surfaces",
+      "strict isolated reviewer execution",
+      "native live P01-P09 adapter implementation",
+      "mechanical multi-regime frozen-cassette replay runner/corpus",
+      "durable hosted Runtime storage/restart recovery",
+      "live premarket-to-postclose E2E",
+      "trading alpha or profitability"
+    ]
+  },
+  "next_owner_hygiene_rule": "When adding a harness, adapter, Skill mirror, deployment document or capability pointer, require a unique runtime/distribution responsibility and a mechanical consumer/evidence path. Configured names, contracts, wrappers and test harnesses must never be promoted to executed business capability by presence alone."
+}
