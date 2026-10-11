@@ -16,7 +16,7 @@ def is_bare_inherit_candidate(state: MarketDayState) -> bool:
 
 
 def list_resumable_states(store: SQLiteStateStore, limit: int = 20) -> list[MarketDayState]:
-    """Continuity v2 owner-adapter read path.
+    """Universal Continuity owner-adapter read path.
 
     The store may contain legacy, test, replay, fixture or migration checkpoints.
     Only explicit USER/default-visible/incomplete tasks are returned. The caller
