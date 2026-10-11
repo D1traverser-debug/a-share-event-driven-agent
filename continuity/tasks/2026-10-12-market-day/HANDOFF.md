@@ -11,8 +11,36 @@
 - GitHub Runtime: candidate shadow only; `runtime_authority_enabled=false`
 - legacy Drive run: source/artifact migration mirror only; it may not override GitHub task state
 - task-local constraint: **TinyFish disabled**
-- resume_epoch: `0` — unchanged by the recommendation-system maintenance audit
-- active lease: `f1a9cc08-0e1f-48ed-a646-c120dcb4bbb1` — unchanged by maintenance
+- resume_epoch: `0` — unchanged by system maintenance
+- active lease: `f1a9cc08-0e1f-48ed-a646-c120dcb4bbb1` — unchanged by system maintenance
+
+## 2026-10-11 harness / Agent / Skill / pollution audit
+
+Durable audit: `audits/2026-10-11_HARNESS_AGENT_SKILL_POLLUTION_AUDIT.json`.
+
+The repository was challenged for duplicate runtime/harness surfaces, test fixtures leaking into production identity, fake adapter wiring, stale Skill/capability semantics, mirror ambiguity and obsolete migration/deployment concepts.
+
+Accepted cleanup:
+- `ashare_event_agent/plugin_server.py` is now the **single public MCP registration/startup surface** and directly owns all 25 tools, Continuity metadata projection and resumable-task discovery;
+- the superseded `continuity_plugin.py` wrapper was deleted; the package command and MCP smoke now launch `plugin_server.py` directly;
+- `runner.AgentRuntime` remains only an offline/test injected-executor harness and is no longer exported as package public API or advertised as the production state-machine entrypoint;
+- the test-only `adapters/mock.py` was removed from the production package and its failure stub moved into tests;
+- `source_contracts.py` is explicitly P01-P09 contract metadata, **not** a native live acquisition executor; current-day acquisition requires session-proven external market-data/web/browser capabilities plus owner receipts;
+- Source/Universe/Premarket/Final audit tool calls submit decisions but do not themselves prove reviewer independence; strict isolated review remains a separate unavailable capability;
+- root `references/` is canonical; Skill and wheel reference copies are generated distribution mirrors only and remain byte-equality guarded;
+- Site/Intelligence-Core documents are future/non-executable specifications and may not override current GitHub governance or capability truth.
+
+Validated behavioral/hygiene head `666c77a3ae4b5d266865a2829b63e2497531c69c`, GitHub Actions run `38108315217`, job `114378419576`: **SUCCESS** across direct-plugin MCP smoke, unit/trajectory, executable contract eval, static harness/ownership/bundle audit, wheel build and isolated install.
+
+This maintenance does **not** advance the market-day business stage, change lease/resume epoch, promote Hosted Runtime, create native live adapters, or provide an independent reviewer.
+
+### Monday execution implications
+
+1. Use only the canonical owner MCP surface `plugin_server.py` if the owner Runtime is actually available/session-proven. Do not treat `runner.AgentRuntime`, a code stub, or package presence as execution proof.
+2. P01-P09 source acquisition is external-session capability work. `source_contracts.py` tells us what/where/how to retrieve; it does not prove anything was retrieved.
+3. Installed/configured applications remain non-evidence until current-session execution returns data/receipts.
+4. `GateDecision` or calling an audit tool is not independent review evidence. At Source/Universe/Premarket/Final audit assurance gates, block independent certification unless a distinct reviewer execution/context/trace is actually available.
+5. Generated Skill/wheel mirrors may be read for distribution convenience but cannot override canonical root references/config.
 
 ## 2026-10-11 recommendation-system evolution audit
 
@@ -22,15 +50,15 @@ Durable audit: `audits/2026-10-11_RECOMMENDATION_SYSTEM_EVOLUTION_AUDIT.json`.
 
 The audit found five structural defect classes: point-in-time binding gaps, source-completeness self-attestation, cross-stage evidence-lineage gaps, post-close self-grading gaps, and learning/no-change evidence gaps.
 
-Accepted repair stayed inside the existing owner surfaces (`schemas.py`, `checks.py`, new narrow `integrity.py`, `controller.py`, executable contract evals, tests and static audit). No parallel recommendation/eval Agent was created and Hosted Runtime was not promoted.
+Accepted repair stayed inside the existing owner surfaces (`schemas.py`, `checks.py`, narrow `integrity.py`, `controller.py`, executable contract evals, tests and static audit). No parallel recommendation/eval Agent was created and Hosted Runtime was not promoted.
 
 Behavioral hardening head `faa01b88cc7de476f6d5ffc9ffe18784b73776a8`, GitHub Actions run `38086880932`, job `114315134039`: **SUCCESS** across MCP smoke, unit/trajectory, executable contract eval, static audit, wheel and isolated install.
 
-### Monday execution contract added by this audit
+### Monday recommendation evidence contract
 
-1. FreezeCard is now mechanically point-in-time bounded. For this task `auction_used=false`, so admitted public/market information must be no later than `2026-10-12T09:14:59+08:00`.
+1. FreezeCard is mechanically point-in-time bounded. For this task `auction_used=false`, so admitted public/market information must be no later than `2026-10-12T09:14:59+08:00`.
 2. Every non-blocked P01-P09 receipt needs `content_max_available_at`. `FULL` requires explicit LINK-ALL and image expected/read counts; use zero only when it is actually known that none exist. Retrieval after freeze does not authorize content learned after freeze.
-3. `EventCard.available_at` always means when the fact became knowable; a future calendar occurrence time does not exempt a fact first learned after freeze.
+3. `EventCard.available_at` means when the fact became knowable; a future calendar occurrence time does not exempt a fact first learned after freeze.
 4. IndustryResearch preserves many-to-many event/node/company mappings. Active Universe is the stock-level main-board view. Every eligible mapped ticker is included or explicitly excluded with reason; every research node is mapped or explicitly node-excluded.
 5. U0 must equal active Universe; U1 remains a subset of U0; every U3 execution candidate must descend from U1. Every non-empty final candidate requires `why_this`, `why_not_peers`, trigger and invalidation.
 6. Post-close attribution must reconcile outcome classes and frozen U0/U1 membership. RecallGrade denominator and hit counts are derived from attribution rather than independently typed.
@@ -51,8 +79,6 @@ Current split:
 
 The source/application owner was also evolved: official first-party facts and direct domain APIs first; session-proven structured market-data connectors next; generic web for discovery/corroboration; browser only for login/JS/image gaps. Longbridge is current structured CN-market-data lane; Xuangutong direct APIs own five-pool semantics; Opera is not currently connected and therefore is not treated as executed capability; Firecrawl is metered/low-credit and non-primary; TinyFish is disabled for this task.
 
-GitHub Actions run `38063840253` on behavioral head `f4b3ce9d7b420d98d03137c74fd0a9d806c65d97` completed **SUCCESS** after the authority/cutover regression changes.
-
 ## TaskContract / START Gate
 
 - task_type: PREMARKET_RECOMMENDATION
@@ -65,7 +91,7 @@ GitHub Actions run `38063840253` on behavioral head `f4b3ce9d7b420d98d03137c74fd
 
 ## Previous-day gap fill — COMPLETE
 
-The missing 2026-10-09 formal review/five-pool file was not located in the legacy runtime surface. Under the updated owner rule, it has now been reconstructed strictly as post-close input, not as historical premarket state.
+The missing 2026-10-09 formal review/five-pool file was not located in the legacy runtime surface. Under the updated owner rule, it has been reconstructed strictly as post-close input, not as historical premarket state.
 
 Persisted business evidence:
 - `evidence/PREVIOUS_DAY_FIVE_POOLS_GAP_FILL_2026-10-09.json`
@@ -99,14 +125,15 @@ Quality note: an LLM-based structured extraction returned an impossible `limit_d
 ## CoverageMatrix
 
 - trading-day resolution: PASS — Longbridge CN calendar session-proven.
-- owner Skill / cutover / capability contract: PASS — GitHub governance migration + recommendation evidence-lineage CI success.
+- owner Skill / cutover / capability contract: PASS — GitHub governance + recommendation lineage hardening + harness/Skill cleanup CI success.
 - current GitHub START Gate / task checkpoint: PASS.
 - current StockBase pointer: PASS — v1.6, PICK read-only.
 - prior trading-day five-pool / ShortTermCard: **PASS_GAP_FILL_RECONSTRUCTED**, with provenance boundary preserved.
 - prior-day count reconciliation: **PASS**.
+- owner harness: **PASS — single public MCP surface; runner test/offline only; retired wrapper/mock removed**.
 - 2026-10-12 FreezeCard boundary: INITIALIZED / NOT_FROZEN / point-in-time schema hardened.
 - weekend pre-research Event Ledger: PARTIAL.
-- P01-P09 Source Completion including required images: BOUNDARY — Monday premarket publications are still in the future; hardened `content_max_available_at` + explicit count contract applies.
+- P01-P09 Source Completion including required images: BOUNDARY — Monday premarket publications are still in the future; hardened `content_max_available_at` + explicit count contract applies; no native owner live-adapter execution is claimed.
 - Industry→Universe→U0→U1→U3 lineage: CONTRACT_HARDENED / LIVE DAY NOT YET EXECUTED.
 - post-close Outcome→Attribution→RecallGrade lineage: CONTRACT_HARDENED / NOT YET EXECUTED.
 - Market Regime / RoleMap / Deep Industry / U0-U3: NOT_STARTED for Monday execution.
@@ -115,9 +142,10 @@ Quality note: an LLM-based structured extraction returned an impossible `limit_d
 
 ## Still-open owner evidence gates
 
-- strict isolated reviewer execution remains unavailable; GateDecision alone is not independence proof;
+- strict isolated reviewer execution remains unavailable; GateDecision/audit-tool calls alone are not independence proof;
 - first-class mechanical frozen-cassette replay runner/corpus is still missing;
-- real P01-P09 live adapters must still prove trustworthy item-level availability timestamps in the actual premarket window;
+- real P01-P09 live acquisition must still prove current-session retrieval plus trustworthy item-level availability timestamps in the actual premarket window;
+- there is no first-class native owner P01-P09 live adapter executor today;
 - durable Hosted Runtime checkpoint/artifact storage, restart recovery and a full premarket→frozen→postclose→learning live E2E remain unproven;
 - therefore `runtime_authority_enabled=false` remains correct.
 
@@ -125,6 +153,6 @@ Quality note: an LLM-based structured extraction returned an impossible `limit_d
 
 1. Use the reconstructed 2026-10-09 five pools + ShortTermCard only as previous-day post-close input.
 2. Continue weekend event research, primary-verify hard events, and run StockBase READ ONLY recall where useful.
-3. During the 2026-10-12 premarket window refresh P01-P09 plus required official/live sources/images. For each source, bind admitted content to `content_max_available_at <= 09:14:59`, reconcile link/image counts, and keep paid/login/unknown gaps explicit.
+3. During the 2026-10-12 premarket window refresh P01-P09 plus required official/live sources/images using current-session proven external source capabilities. For each source, bind admitted content to `content_max_available_at <= 09:14:59`, reconcile link/image counts, and keep paid/login/unknown gaps explicit. Do not treat `source_contracts.py`, an installed app, or a configured connector name as retrieval evidence.
 4. Merge/dedupe against weekend evidence; build Market Regime, HeightMap/RoleMap and Deep Industry while preserving full many-to-many research mappings. Derive stock-level main-board Universe with explicit ticker/node exclusion reasons, then enforce U0=Universe, U1⊂U0 and U3⊂U1 with comparative `why_not_peers`.
-5. Run MID/FINAL QA. Only after all source/time/universe/lineage/QA gates pass may the task advance toward FROZEN/FINAL. Missing Runtime authority blocks only Runtime-dependent certification, never a fallback to Notion/Drive business control.
+5. Run MID/FINAL QA. Independent certification at the designated audit gates requires an actually distinct reviewer execution/context/trace. Only after all source/time/universe/lineage/QA gates pass may the task advance toward FROZEN/FINAL. Missing Runtime authority blocks only Runtime-dependent certification, never a fallback to Notion/Drive business control.
