@@ -34,7 +34,8 @@ class MarketDaySummary(PublicModel):
     next_action: str
     artifacts: dict[str, ArtifactSummary] | None = None
 
-    # Universal Continuity v2 owner-adapter metadata.
+    # Universal Continuity owner-adapter metadata. Runtime contract versioning
+    # is intentionally separate from the global Universal protocol version.
     task_class: Literal["USER", "TEST", "FIXTURE", "EVAL", "SYSTEM_INFRA", "MIGRATION"] = "MIGRATION"
     resume_eligible: bool = False
     resume_visibility: Literal["DEFAULT", "EXPLICIT_ONLY", "HIDDEN"] = "EXPLICIT_ONLY"
