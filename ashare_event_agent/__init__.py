@@ -1,5 +1,5 @@
-"""Deterministic A-share event-driven runtime."""
-from .models import GateStatus, MarketDayState, Stage, TaskContract, TaskMode
-from .runner import AgentRuntime
+"""Deterministic A-share event-driven workflow contracts."""
 
-__all__ = ["AgentRuntime", "GateStatus", "MarketDayState", "Stage", "TaskContract", "TaskMode"]
+from .models import GateStatus, MarketDayState, Stage, TaskContract, TaskMode
+
+__all__ = ["GateStatus", "MarketDayState", "Stage", "TaskContract", "TaskMode"]
