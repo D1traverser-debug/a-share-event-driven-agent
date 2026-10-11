@@ -1,6 +1,10 @@
-from ashare_event_agent.adapters.mock import ExplodingExecutor
 from ashare_event_agent.models import Stage, TaskContract
 from ashare_event_agent.runner import AgentRuntime
+
+
+class ExplodingExecutor:
+    def execute(self, state):
+        raise RuntimeError("simulated failure")
 
 
 def test_missing_executor_blocks_not_freeform(tmp_path):
