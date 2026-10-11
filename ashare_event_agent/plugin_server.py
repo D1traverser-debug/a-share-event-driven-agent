@@ -9,6 +9,7 @@ from mcp.types import CallToolResult, ResourceLink, TextContent
 from pydantic import Field
 
 from . import runtime_service as impl
+from .continuity import continuity_metadata, list_resumable_states
 from .mcp_contracts import MarketDayList, MarketDaySummary, READ_ONLY_TOOL, STATE_WRITE_TOOL
 from .models import ArtifactKind
 from .schemas import (
@@ -40,7 +41,15 @@ def _publicize(raw: dict) -> dict:
 
 
 def _summary(raw: dict) -> MarketDaySummary:
-    return MarketDaySummary.model_validate(_publicize(raw))
+    clean = _publicize(raw)
+    task_id = clean.get("task_id")
+    if task_id:
+        clean.update(continuity_metadata(impl._load(task_id)))
+    return MarketDaySummary.model_validate(clean)
+
+
+def _summary_from_state(state) -> MarketDaySummary:
+    return _summary(impl._summary(state, detail=False))
 
 
 def _result(raw: dict) -> CallToolResult:
@@ -71,7 +80,8 @@ mcp = MCPServer(
         "Use for A-share premarket stock-recommendation research, post-close review, recall grading, and replay-governed learning. "
         "Resume persisted market-day tasks before starting duplicates. Follow next_action exactly. "
         "The runtime owns freeze integrity, legal transitions, schemas, StockBase permission boundaries, recall/completion gates, and rule-promotion eligibility. "
-        "The model owns public research, industry reasoning, role hypotheses, red-team judgments, and attribution within those contracts."
+        "The model owns public research, industry reasoning, role hypotheses, red-team judgments, and attribution within those contracts. "
+        "An audit-tool call records an audit decision but does not by itself prove reviewer independence."
     ),
 )
 
@@ -102,13 +112,20 @@ def get_market_day(task_id: str, detail: bool = True) -> MarketDaySummary:
 
 @mcp.tool(title="List Recent A-share Market Days", annotations=READ_ONLY_TOOL, structured_output=True)
 def list_recent_market_days(limit: int = 20, include_complete: bool = False) -> MarketDayList:
-    """List recent durable A-share market-day checkpoints so continuation can recover state without asking the user to repeat prior work."""
+    """List recent durable A-share market-day checkpoints so explicit continuation can inspect known tasks without relying on chat memory."""
     return MarketDayList(tasks=[_summary(x) for x in impl.list_recent_market_days(limit, include_complete)])
+
+
+@mcp.tool(title="List Resumable A-share Tasks", annotations=READ_ONLY_TOOL, structured_output=True)
+def list_resumable_tasks(limit: int = 20) -> MarketDayList:
+    """List only USER/default-visible/incomplete tasks eligible for ordinary bare-inherit discovery; test, migration, hidden and explicit-only tasks are excluded."""
+    states = list_resumable_states(impl.store, limit)
+    return MarketDayList(tasks=[_summary_from_state(state) for state in states])
 
 
 @mcp.tool(title="Record Governance Context", annotations=STATE_WRITE_TOOL, structured_output=True)
 def record_governance_context(task_id: str, refs: list[str], notes: list[str] | None = None) -> MarketDaySummary:
-    """Record actual Notion/Drive/GitHub governance and pointer references loaded before execution, so recovery and rule provenance never depend on chat memory."""
+    """Record GitHub governance refs plus any external source/mirror pointers loaded for this task; external mirrors never become control authority by being recorded here."""
     return _summary(impl.record_governance_context(task_id, refs, notes))
 
 
@@ -120,13 +137,13 @@ def submit_freeze_card(task_id: str, payload: FreezeCard) -> MarketDaySummary:
 
 @mcp.tool(title="Submit Source Completion", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_source_completion(task_id: str, payload: SourceCompletionPackage) -> MarketDaySummary:
-    """Record P01-P09 source completion, LINK-ALL and image counts, retrieval methods, explicit gaps, and prior-review five-pool reuse receipts."""
+    """Record P01-P09 source completion, LINK-ALL and image counts, retrieval methods, explicit gaps, point-in-time availability, and prior-review five-pool reuse receipts."""
     return _summary(impl.submit_source_completion(task_id, payload.model_dump(mode="json")))
 
 
 @mcp.tool(title="Submit Source Audit", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_source_audit(task_id: str, decision: GateDecision) -> MarketDaySummary:
-    """Independently audit source completion. PASS only when material source/image/count gaps are bounded; otherwise revise or fail closed."""
+    """Submit a source-completion audit decision. PASS must satisfy source/image/count/time contracts; independent certification additionally requires a distinct reviewer execution receipt."""
     return _summary(impl.submit_source_audit(task_id, decision.model_dump(mode="json")))
 
 
@@ -150,7 +167,7 @@ def record_stockbase_context(task_id: str, payload: StockBaseContext) -> MarketD
 
 @mcp.tool(title="Submit Universe Audit", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_universe_audit(task_id: str, universe: UniversePackage, decision: GateDecision) -> MarketDaySummary:
-    """Audit exhaustive Event×industry-node×stock recall. PASS is illegal while known candidates are omitted or material nodes remain unexhausted."""
+    """Submit Universe plus its audit decision. PASS is illegal while eligible mapped stocks or research nodes are silently omitted; independent certification needs separate reviewer evidence."""
     return _summary(impl.submit_universe_audit(task_id, universe.model_dump(mode="json"), decision.model_dump(mode="json")))
 
 
@@ -168,13 +185,13 @@ def submit_recall_pool(task_id: str, payload: RecallPoolPackage) -> MarketDaySum
 
 @mcp.tool(title="Submit Execution Plan", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_execution_plan(task_id: str, payload: ExecutionPlan) -> MarketDaySummary:
-    """Submit the narrow U3 plan: at most four execution roles with triggers, invalidations, legal backup chain, first-read answer, and explicit NO TRADE conditions."""
+    """Submit the narrow U3 plan: at most four execution roles with triggers, invalidations, comparative why-not-peers evidence, backup chain, and explicit NO TRADE conditions."""
     return _summary(impl.submit_execution_plan(task_id, payload.model_dump(mode="json")))
 
 
 @mcp.tool(title="Submit Premarket Red-Team Audit", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_premarket_audit(task_id: str, decision: GateDecision) -> Annotated[CallToolResult, MarketDaySummary]:
-    """Independently red-team the entire premarket package. PASS cryptographically freezes the premarket snapshot so post-close results cannot rewrite it."""
+    """Submit the premarket red-team decision. PASS freezes the snapshot cryptographically; the call alone does not establish independent-review assurance."""
     return _result(impl.submit_premarket_audit(task_id, decision.model_dump(mode="json")))
 
 
@@ -198,7 +215,7 @@ def submit_attribution(task_id: str, payload: AttributionPackage) -> MarketDaySu
 
 @mcp.tool(title="Submit Recall Grading", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_recall_grading(task_id: str, payload: RecallGrade) -> MarketDaySummary:
-    """Grade knowable limit-up recall for U0/U1 and reconcile miss classes. This is the primary research-quality KPI, separate from execution precision."""
+    """Grade knowable limit-up recall for U0/U1 and reconcile miss classes against frozen attribution rather than accepting independent self-scored hit counts."""
     return _summary(impl.submit_recall_grading(task_id, payload.model_dump(mode="json")))
 
 
@@ -210,13 +227,13 @@ def submit_learning_audit(task_id: str, payload: LearningAudit) -> MarketDaySumm
 
 @mcp.tool(title="Submit Rule Proposal", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_rule_proposal(task_id: str, payload: RuleProposal) -> MarketDaySummary:
-    """Record one bounded rule hypothesis with single owner, detection/prevention logic, regimes, counterexamples, or explicit N_A. One day never auto-promotes a rule."""
+    """Record one bounded rule hypothesis with single owner, detection/prevention logic, regimes, counterexamples, or explicit reasoned N_A. One day never auto-promotes a rule."""
     return _summary(impl.submit_rule_proposal(task_id, payload.model_dump(mode="json")))
 
 
 @mcp.tool(title="Submit Replay Evaluation", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_replay_eval(task_id: str, payload: ReplayEval) -> MarketDaySummary:
-    """Evaluate a rule proposal across historical frozen cassettes. Promotion eligibility requires multiple cases/regimes, positive and negative samples, no future contamination, and no regression."""
+    """Evaluate a rule proposal across frozen historical cases. Promotion eligibility requires mechanical evidence, multiple cases/regimes, positive/negative samples, no future contamination, and no regression."""
     return _summary(impl.submit_replay_eval(task_id, payload.model_dump(mode="json")))
 
 
@@ -228,7 +245,7 @@ def record_review_writeback(task_id: str, status: str, refs: list[str] | None = 
 
 @mcp.tool(title="Submit Final Review Audit", annotations=STATE_WRITE_TOOL, structured_output=True)
 def submit_final_audit(task_id: str, decision: GateDecision) -> MarketDaySummary:
-    """Perform the independent final audit of review, recall grading, learning boundaries, and frozen-integrity before the market-day loop can complete."""
+    """Submit the final review decision over frozen integrity, attribution, grading and learning boundaries; independent certification still requires attested reviewer execution evidence."""
     return _summary(impl.submit_final_audit(task_id, decision.model_dump(mode="json")))
 
 
