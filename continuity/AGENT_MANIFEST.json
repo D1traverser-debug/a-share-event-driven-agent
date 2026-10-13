@@ -1,8 +1,14 @@
 {
   "schema_version": "1.1",
-  "architecture_contract_version": "1.1",
+  "architecture_contract_version": "1.2",
   "owner": "A_SHARE_MARKET_AGENT",
   "owner_kind": "BUSINESS",
+  "product_interface": {
+    "interaction_surface": "CHATGPT",
+    "entry_model": "SINGLE_OWNER_ENTRY",
+    "execution_mode_selection": "SYSTEM_INTERNAL",
+    "business_contract_model": "SINGLE_CANONICAL_OWNER_WORKFLOW"
+  },
   "skill": {
     "role": "ROUTER_AND_PROGRESSIVE_POLICY_ENTRYPOINT",
     "entrypoint": "skills/a-share-event-driven-agent/SKILL.md",
@@ -11,39 +17,18 @@
   "runtime": {
     "runtime_type": "DETERMINISTIC_WORKFLOW",
     "public_entrypoint": "ashare_event_agent/plugin_server.py",
-    "internal_components": [
-      "ashare_event_agent/runtime_service.py",
-      "ashare_event_agent/controller.py",
-      "ashare_event_agent/engine.py",
-      "ashare_event_agent/store.py"
-    ],
-    "tool_surface_refs": [
-      "ashare_event_agent/plugin_server.py",
-      "ashare_event_agent/mcp_contracts.py"
-    ],
+    "internal_components": ["ashare_event_agent/runtime_service.py", "ashare_event_agent/controller.py", "ashare_event_agent/engine.py", "ashare_event_agent/store.py"],
+    "tool_surface_refs": ["ashare_event_agent/plugin_server.py", "ashare_event_agent/mcp_contracts.py"],
     "judgment_execution": "CHAT_BRIDGED_OWNER_GATED",
-    "note": "plugin_server.py is the only public MCP registration/startup surface. Internal state machinery is executable; high-judgment independent audit remains unavailable unless separately attested."
+    "note": "plugin_server.py is the public MCP registration/startup surface when exposed. Runtime/chat execution labels are internal dispatch/evidence metadata for one A-share product entry; normal users are not asked to choose them. Internal state machinery is executable; high-judgment independent audit remains unavailable unless separately attested."
   },
   "workflow": {
-    "state_authority_refs": [
-      "ashare_event_agent/store.py",
-      "ashare_event_agent/models.py",
-      "config/cutover_status.json"
-    ],
-    "transition_guard_refs": [
-      "ashare_event_agent/controller.py",
-      "ashare_event_agent/engine.py",
-      "ashare_event_agent/integrity.py"
-    ]
+    "state_authority_refs": ["ashare_event_agent/store.py", "ashare_event_agent/models.py", "config/cutover_status.json"],
+    "transition_guard_refs": ["ashare_event_agent/controller.py", "ashare_event_agent/engine.py", "ashare_event_agent/integrity.py"]
   },
   "harness": {
     "ci_workflow_ref": ".github/workflows/ci.yml",
-    "commands": [
-      "python scripts/mcp_smoke.py",
-      "pytest -q",
-      "python scripts/eval_contracts.py",
-      "python scripts/static_audit.py"
-    ],
+    "commands": ["python scripts/mcp_smoke.py", "pytest -q", "python scripts/eval_contracts.py", "python scripts/static_audit.py"],
     "suites": ["contract", "trajectory", "replay", "static"],
     "reference_executor_harness": {
       "ref": "ashare_event_agent/runner.py",
@@ -56,10 +41,7 @@
   "references": {
     "canonical_root": "references",
     "mirror_policy": "GENERATED_DISTRIBUTION_MIRRORS_ONLY",
-    "generated_mirrors": [
-      "skills/a-share-event-driven-agent/references",
-      "ashare_event_agent/resources/references"
-    ],
+    "generated_mirrors": ["skills/a-share-event-driven-agent/references", "ashare_event_agent/resources/references"],
     "package_policy_mirror": "ashare_event_agent/resources/policy.json",
     "note": "Canonical edits happen only in root references/config. Mirrors are byte-equality distribution artifacts for Skill and wheel packaging and are protected by static audit."
   },
