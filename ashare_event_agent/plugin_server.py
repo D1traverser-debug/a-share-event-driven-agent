@@ -78,8 +78,8 @@ mcp = MCPServer(
     "A-share Event-Driven Agent",
     instructions=(
         "Use for A-share premarket stock-recommendation research, post-close review, recall grading, and replay-governed learning. "
-        "UAOS owns cross-domain task identity and continuation; this runtime exposes domain-local market-day checkpoints only. "
-        "Follow the current UAOS task plus domain next_action exactly after current trading-day reconciliation. "
+        "UAOS is the cross-domain parent control plane; this runtime owns its child market-day task identity and business checkpoint state. "
+        "After the A-share domain resolves the current or exact historical trading-day semantics, follow the child market-day next_action exactly. "
         "The runtime owns freeze integrity, legal transitions, schemas, StockBase permission boundaries, recall/completion gates, and rule-promotion eligibility. "
         "The model owns public research, industry reasoning, role hypotheses, red-team judgments, and attribution within those contracts. "
         "An audit-tool call records an audit decision but does not by itself prove reviewer independence."
@@ -101,7 +101,7 @@ def start_market_day(
     prior_review_ref: str | None = None,
     mode: str = "LIVE_DAY",
 ) -> MarketDaySummary:
-    """Start a durable domain market-day runtime after UAOS resolves the current task/trading day."""
+    """Start a child-owned market-day runtime after the A-share domain resolves the current trading day."""
     return _summary(impl.start_market_day(trading_date, prompt, stockbase_ref, prior_review_ref, mode))
 
 
@@ -119,7 +119,7 @@ def list_recent_market_days(limit: int = 20, include_complete: bool = False) -> 
 
 @mcp.tool(title="List Resumable A-share Tasks", annotations=READ_ONLY_TOOL, structured_output=True)
 def list_resumable_tasks(limit: int = 20) -> MarketDayList:
-    """List safe domain-local runtime candidates for UAOS reconciliation; this is not a cross-domain task registry."""
+    """List safe child market-day runtime candidates for A-share reconciliation; this is not a parent/cross-domain task registry."""
     states = list_resumable_states(impl.store, limit)
     return MarketDayList(tasks=[_summary_from_state(state) for state in states])
 
