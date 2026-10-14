@@ -1,6 +1,6 @@
 {
-  "schema_version":"3.0",
-  "profile_version":4,
+  "schema_version":"3.1",
+  "profile_version":5,
   "domain_id":"ashare",
   "policy":"CURRENT_SESSION_HANDSHAKE__POINT_IN_TIME_DATA__FAIL_CLOSED_ON_MISSING_HARD_INPUTS",
   "uaos_common_capabilities_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_CAPABILITIES.json",
@@ -13,16 +13,18 @@
   "problem_response_rule":"EVERY_DETECTED_PROBLEM_REQUIRES_RESEARCH_AND_REFLECTION__FAMILIARITY_IS_NOT_A_WAIVER__RISK_ADDS_COUNTEREXAMPLE_AND_INDEPENDENT_VERIFICATION_DEPTH",
   "product_governance_ref":"docs/product_requirements.md",
   "domain_orchestration_ref":"config/MARKET_DAY_ORCHESTRATION.json",
-  "updated_at":"2026-10-15T03:45:00+08:00",
+  "updated_at":"2026-10-15T04:24:00+08:00",
   "capabilities":[
     {"capability_id":"market_day_identity_and_freeze","scope":"CURRENT_OR_EXPLICIT_MARKET_DAY","required":["current_china_trading_day_resolution","child_owned_task_contract","freeze_card"],"side_channel_allowed":false},
     {"capability_id":"premarket_research_and_freeze","scope":"PREMARKET","required":["current_sources","timestamped_evidence","source_reconciliation","frozen_snapshot"],"side_channel_allowed":false},
     {"capability_id":"ashare_market_day_orchestration","scope":"PREMARKET_AND_POST_CLOSE","required":["explicit_dependency_graph","bounded_artifact_handoffs","authorized_adjudication"],"side_channel_allowed":false},
+    {"capability_id":"opportunity_risk_separation","scope":"FINAL_RECOMMENDATION","required":["u1_bounded_opportunity_views","all_u1_risk_assessments","hard_veto_enforcement","single_final_adjudicator"],"side_channel_allowed":false},
     {"capability_id":"preferred_market_microstructure","scope":"MARKET_STATE_AND_BUYABILITY","required":["session_proven_preferred_or_explicitly_degraded_lane"],"preferred_lane":"TONGHUASHUN_LEVEL2","side_channel_allowed":false},
     {"capability_id":"dingpan_five_pool_reconciliation","scope":"PREMARKET_PRIOR_SNAPSHOT_AND_POST_CLOSE","required":["xuangutong_pool_semantics","trading_date_reconciliation","count_reconciliation"],"side_channel_allowed":false},
-    {"capability_id":"postclose_review","scope":"POST_CLOSE","required":["complete_postclose_data","frozen_premarket_snapshot","attribution","recall_grading"],"side_channel_allowed":false},
+    {"capability_id":"postclose_selection_quality","scope":"POST_CLOSE","required":["frozen_final_plan","trigger_review","execution_feasibility_evidence","selection_quality_grade"],"side_channel_allowed":false},
+    {"capability_id":"postclose_review","scope":"POST_CLOSE","required":["complete_postclose_data","frozen_premarket_snapshot","attribution","recall_grading","selection_quality_grading"],"side_channel_allowed":false},
     {"capability_id":"source_reconciliation","scope":"SOURCE_CONFLICTS","required":["provenance","time_semantics","fact_owner_semantics"],"side_channel_allowed":false},
     {"capability_id":"runtime_execution","scope":"HOSTED_OWNER_RUNTIME","required":["runtime_authority_enabled","current_session_runtime_proof"],"side_channel_allowed":false},
-    {"capability_id":"learning_promotion","scope":"POSTMORTEM_TO_RULE","required":["problem_research_reflection","replay_or_cross_case_evidence","regression_ci"],"side_channel_allowed":false}
+    {"capability_id":"learning_promotion","scope":"POSTMORTEM_TO_RULE","required":["problem_research_reflection","replay_or_cross_case_evidence","recall_selection_execution_metrics","regression_ci"],"side_channel_allowed":false}
   ]
 }
