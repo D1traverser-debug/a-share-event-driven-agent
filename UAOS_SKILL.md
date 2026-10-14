@@ -7,6 +7,7 @@ scope: A-share premarket recommendation, post-close review and replay-governed l
 
 Parent control plane: `D1traverser-debug/universal-agent-os@main`.
 Domain repository: `D1traverser-debug/a-share-event-driven-agent@main`.
+Authority Context: `DOMAIN:ashare`.
 
 When this domain is selected in a chat, the current work plane is **A-share**, not a live UAOS business proxy. UAOS supplies cross-domain routing, common cognition/evolution/product-governance method and optional parent guidance. This repository owns A-share product requirements, market-day/run identity, business state, trading-day workflow, source/data contracts, recommendation/review rules, internal work graph, evidence and domain learning.
 
