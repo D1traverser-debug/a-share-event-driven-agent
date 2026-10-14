@@ -82,8 +82,32 @@ def recall_integrity_errors(universe: UniversePackage, recall: RecallPoolPackage
 def execution_integrity_errors(recall: RecallPoolPackage, plan: ExecutionPlan) -> list[str]:
     u1 = {candidate.ticker for candidate in recall.u1_candidates}
     execution = {candidate.ticker for candidate in plan.candidates}
+    errors: list[str] = []
     outside = sorted(execution - u1)
-    return [f"U3 execution candidates must descend from U1: {outside}"] if outside else []
+    if outside:
+        errors.append(f"U3 execution candidates must descend from U1: {outside}")
+
+    assessed = {row.ticker for row in plan.risk_assessments}
+    missing_assessments = sorted(u1 - assessed)
+    unknown_assessments = sorted(assessed - u1)
+    if missing_assessments:
+        errors.append(f"every U1 candidate requires explicit risk/buyability assessment before U3 adjudication: {missing_assessments}")
+    if unknown_assessments:
+        errors.append(f"risk assessments contain tickers outside frozen U1: {unknown_assessments}")
+
+    blocked = {row.ticker for row in plan.risk_assessments if row.decision == "BLOCK"}
+    selected_blocked = sorted(execution & blocked)
+    if selected_blocked:
+        errors.append(f"hard-risk-veto candidates cannot enter U3: {selected_blocked}")
+
+    risk_by_ticker = {row.ticker: row for row in plan.risk_assessments}
+    selected_without_assessment = sorted(ticker for ticker in execution if ticker not in risk_by_ticker)
+    if selected_without_assessment:
+        errors.append(f"selected candidates missing risk assessment: {selected_without_assessment}")
+
+    if not plan.preferred_microstructure_observed and plan.assurance != "DEGRADED":
+        errors.append("missing preferred Level-2/microstructure evidence requires DEGRADED execution assurance")
+    return errors
 
 
 def attribution_integrity_errors(
@@ -124,14 +148,17 @@ def attribution_integrity_errors(
     return errors
 
 
-def recall_grade_integrity_errors(attribution: AttributionPackage, grade: RecallGrade) -> list[str]:
+def recall_grade_integrity_errors(
+    attribution: AttributionPackage,
+    grade: RecallGrade,
+    plan: ExecutionPlan | None = None,
+    outcomes: OutcomePackage | None = None,
+) -> list[str]:
     rows = attribution.actual_limit_ups
     errors: list[str] = []
     in_scope = len(rows)
     if grade.actual_limit_up_total - grade.excluded_scope_total != in_scope:
-        errors.append(
-            "RecallGrade in-scope denominator must equal the number of attributed in-scope actual limit-ups"
-        )
+        errors.append("RecallGrade in-scope denominator must equal the number of attributed in-scope actual limit-ups")
     knowable = sum(1 for row in rows if row.knowable_before_freeze)
     u0_hits = sum(1 for row in rows if row.knowable_before_freeze and row.in_u0)
     u1_hits = sum(1 for row in rows if row.knowable_before_freeze and row.in_u1)
@@ -141,6 +168,54 @@ def recall_grade_integrity_errors(attribution: AttributionPackage, grade: Recall
         errors.append(f"u0_hits must equal frozen-attribution hit count {u0_hits}")
     if grade.u1_hits != u1_hits:
         errors.append(f"u1_hits must equal frozen-attribution hit count {u1_hits}")
+
+    if plan is None or outcomes is None:
+        return errors
+
+    selected = [candidate.ticker for candidate in plan.candidates]
+    outcome_by_ticker = {row.ticker: row for row in outcomes.outcomes}
+    missing_outcomes = sorted(set(selected) - set(outcome_by_ticker))
+    if missing_outcomes:
+        errors.append(f"final U3 candidates missing post-close outcome/execution review: {missing_outcomes}")
+        return errors
+
+    activated = []
+    not_activated = 0
+    for ticker in selected:
+        row = outcome_by_ticker[ticker]
+        if row.trigger_observed is None:
+            errors.append(f"final U3 candidate missing trigger_observed review: {ticker}")
+            continue
+        if row.trigger_observed:
+            activated.append(row)
+            if row.entry_feasible is None or not row.execution_evidence_refs:
+                errors.append(f"activated final candidate missing execution feasibility evidence: {ticker}")
+        else:
+            not_activated += 1
+
+    expected_categories = {
+        "LIMIT_UP": sum(1 for row in activated if row.result == "LIMIT_UP"),
+        "STRONG": sum(1 for row in activated if row.result == "STRONG"),
+        "BROKEN": sum(1 for row in activated if row.result == "BROKEN"),
+        "LIMIT_DOWN": sum(1 for row in activated if row.result == "LIMIT_DOWN"),
+        "OTHER": sum(1 for row in activated if row.result == "OTHER"),
+    }
+    q = grade.selection_quality
+    expected = {
+        "candidate_slots_total": len(selected),
+        "activated_total": len(activated),
+        "not_activated_total": not_activated,
+        "activated_limit_up_hits": expected_categories["LIMIT_UP"],
+        "activated_strong_hits": expected_categories["STRONG"],
+        "activated_broken": expected_categories["BROKEN"],
+        "activated_limit_down": expected_categories["LIMIT_DOWN"],
+        "activated_other": expected_categories["OTHER"],
+        "execution_feasible_total": sum(1 for row in activated if row.entry_feasible is True),
+        "execution_infeasible_total": sum(1 for row in activated if row.entry_feasible is False),
+    }
+    for field, value in expected.items():
+        if getattr(q, field) != value:
+            errors.append(f"selection_quality.{field} must equal frozen-plan/outcome derived count {value}")
     return errors
 
 
