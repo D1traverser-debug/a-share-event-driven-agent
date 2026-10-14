@@ -39,7 +39,9 @@ A configured app is not execution evidence. Missing preferred data blocks or exp
 
 ## Market-day decision flow
 
-The canonical stage machine remains fail-closed. `config/MARKET_DAY_ORCHESTRATION.json` defines A-share-specific internal work: source lanes may run in parallel; event/industry and market-structure work fan in at recall; three independent U1-bounded candidate views (event alpha, market structure, execution/buyability) are compared; a bounded counterevidence pass critiques them; one authorized trade-decision owner adjudicates U3 or NO TRADE.
+The canonical stage machine remains fail-closed. `config/MARKET_DAY_ORCHESTRATION.json` defines A-share-specific internal work: source lanes may run in parallel; event/industry and market-structure work fan in at recall; two independent U1-bounded **opportunity** views (event/industry alpha and market structure) compete; a bounded counterevidence pass critiques them; an authorized opportunity owner forms a preliminary slate; then a separate risk/execution-feasibility gate assesses every U1 candidate and may PASS, DEGRADE or BLOCK it; one authorized trade-decision owner combines opportunity evidence with that risk layer to adjudicate U3 or NO TRADE.
+
+Risk/buyability is a constraint and possible veto, not another bullish vote. `BLOCK` cannot be outvoted into U3. Missing preferred 同花顺/Level-2 evidence cannot support FULL execution assurance.
 
 This is structured artifact handoff, not unbounded specialist chat. An advisory/reviewer output is not a recommendation until the authorized owner adopts it.
 
@@ -49,9 +51,14 @@ New premarket work must resolve the current trading day. Freeze timestamped evid
 
 ## Post-close and evolution
 
-Review starts from the immutable frozen snapshot. Reconcile outcomes/five pools, attribute actual limit-ups/broken boards/limit-downs, grade recall/selection, and classify the earliest failed layer.
+Review starts from the immutable frozen snapshot. Reconcile outcomes/five pools and market/microstructure evidence, then grade three separate things:
+1. research recall (U0/U1);
+2. final-selection activation/outcome quality for frozen U3;
+3. execution feasibility for activated recommendations.
 
-Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and external research/verification. Familiarity is not a waiver. A daily result creates evidence/hypotheses only; permanent rules require replay across regimes plus regression/CI evidence under `references/learning.md` and `references/maintenance.md`.
+A recommendation whose trigger never occurred is not counted as an executed win/loss. Activated recommendations require execution-feasibility evidence. Broken-board/limit-down outcomes remain visible in downside metrics rather than being hidden by recall success.
+
+Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and external research/verification. Familiarity is not a waiver. A daily result creates evidence/hypotheses only; permanent rules require replay across regimes plus regression/CI evidence under `references/learning.md` and `references/maintenance.md`. Replay PASS must report recall, activated-positive, activated-downside and execution-feasibility metrics; recall improvement alone is not enough.
 
 ## Completion
 
