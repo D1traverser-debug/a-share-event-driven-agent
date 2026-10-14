@@ -10,8 +10,8 @@
   "recall": ["u0_mapping", "u1_limit_up_recall", "knowable_recall", "miss_classification"],
   "execution": ["u2_role_ranking", "u3_execution", "leader_buyability_split", "backup_chain", "no_trade", "why_not_peers"],
   "review": ["outcome_reconciliation", "limit_up_attribution", "broken_board", "limit_down_risk", "mention_ledger", "execution_feasibility_review"],
-  "learning": ["problem_research_reflection_floor", "error_ledger", "rule_proposal", "replay_eval", "promotion_policy", "rollback_policy"],
+  "learning": ["problem_research_reflection_floor", "error_ledger", "rule_proposal", "replay_eval", "strategy_rule_promotion_policy", "rollback_policy"],
   "audit": ["source_audit", "universe_audit", "premarket_red_team", "postclose_red_team", "count_reconciliation"],
   "recovery": ["child_run_resolution", "historical_explicit_only", "runtime_compatibility", "next_exact_action"],
-  "maintenance": ["change_classification", "single_owner_update", "authority_wide_contradiction_scan", "regression_testing", "promotion_policy"]
+  "maintenance": ["change_classification", "single_owner_update", "authority_wide_contradiction_scan", "regression_testing", "system_change_promotion_process"]
 }
