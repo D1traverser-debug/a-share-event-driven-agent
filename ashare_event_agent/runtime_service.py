@@ -117,8 +117,9 @@ def _build_pick_report(state) -> Path:
         ])
     if not plan.get("risk_assessments"):
         lines.append("- No risk assessments recorded (final audit should not accept a non-empty U1 without them).")
+    market_risk_lines = [f"- {x}" for x in (plan.get("market_risk_flags") or [])] or ["- None recorded"]
     lines.extend([
-        "", "## Market-level risk flags", *[f"- {x}" for x in (plan.get("market_risk_flags") or [])] or ["- None recorded"],
+        "", "## Market-level risk flags", *market_risk_lines,
         "", "## No-trade conditions", *[f"- {x}" for x in (plan.get("no_trade_conditions") or [])],
         "", "## Backup chain", *[f"- {x}" for x in (plan.get("backup_chain") or [])],
         "", "## Recall boundary",
