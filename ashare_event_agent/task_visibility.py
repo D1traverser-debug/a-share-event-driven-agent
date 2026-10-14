@@ -5,7 +5,7 @@ from .store import SQLiteStateStore
 
 
 def is_default_visible_candidate(state: MarketDayState) -> bool:
-    """Return True only for domain-runtime states safe to surface as ordinary resumable business candidates."""
+    """Return True only for child market-day states safe to surface as ordinary resumable business candidates."""
     contract = state.contract
     return (
         contract.task_class == TaskClass.USER
@@ -16,10 +16,11 @@ def is_default_visible_candidate(state: MarketDayState) -> bool:
 
 
 def list_resumable_states(store: SQLiteStateStore, limit: int = 20) -> list[MarketDayState]:
-    """List domain-local runtime checkpoints eligible for explicit UAOS task reconciliation.
+    """List child-owned market-day checkpoints eligible for domain resume selection.
 
-    This function is not a cross-domain task registry. UAOS decides task identity and
-    continuation; this function only exposes safe domain-runtime checkpoint candidates.
+    This function is not a cross-domain or parent task registry. The A-share domain
+    owns these child identities; UAOS may only route the domain and retain an opaque
+    selected child reference for parent continuity.
     """
     scan_limit = max(1, min(max(limit, 20) * 5, 100))
     states = store.list_recent(scan_limit)
