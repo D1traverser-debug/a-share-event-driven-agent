@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, model_validator
 
 
 CURRENT_CONTRACT_VERSION = "2.0"
-CURRENT_RUNTIME_VERSION = "0.1.0"
+CURRENT_RUNTIME_VERSION = "0.2.0"
 
 
 class Stage(str, Enum):
@@ -100,10 +100,9 @@ class TaskContract(BaseModel):
     source_refs: list[str] = Field(default_factory=list)
     required_outputs: list[ArtifactKind] = Field(default_factory=list)
 
-    # Owner-runtime continuity metadata. Defaults are deliberately fail-closed so
-    # a legacy JSON checkpoint that predates these fields cannot silently become
-    # a bare-inherit USER task. This owner contract version is independent from
-    # the global Universal Continuity protocol version.
+    # Domain-owned market-day runtime identity/continuity metadata. Defaults are
+    # fail-closed so a legacy JSON checkpoint cannot silently become a current
+    # USER run. This child identity is distinct from the UAOS parent router ID.
     task_class: TaskClass = TaskClass.MIGRATION
     resume_eligible: bool = False
     resume_visibility: ResumeVisibility = ResumeVisibility.EXPLICIT_ONLY

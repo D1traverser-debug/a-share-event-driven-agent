@@ -19,3 +19,7 @@ def read_reference(name: str) -> str:
 
 def load_packaged_policy() -> dict:
     return json.loads(files(_PACKAGE).joinpath("resources", "policy.json").read_text(encoding="utf-8"))
+
+
+def load_packaged_market_day_orchestration() -> dict:
+    return json.loads(files(_PACKAGE).joinpath("resources", "market_day_orchestration.json").read_text(encoding="utf-8"))

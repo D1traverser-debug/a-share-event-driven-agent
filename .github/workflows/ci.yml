@@ -3,12 +3,15 @@ on:
   push:
     branches: [main]
   pull_request:
+concurrency:
+  group: ashare-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
@@ -19,7 +22,7 @@ jobs:
         run: pytest -q
       - name: Executable contract eval baseline
         run: python scripts/eval_contracts.py
-      - name: Static ownership / bundle / MCP audit
+      - name: Static ownership / architecture / bundle / MCP audit
         run: python scripts/static_audit.py
       - name: Build wheel
         run: python -m build --wheel
@@ -30,11 +33,17 @@ jobs:
           /tmp/ashare-agent-wheel/bin/pip install "$WHEEL"
           cd /tmp
           /tmp/ashare-agent-wheel/bin/python - <<'PY'
-          from ashare_event_agent.resources import load_packaged_policy, read_reference
-          from ashare_event_agent.models import TaskContract, ArtifactKind
-          assert load_packaged_policy()["research"]["min_industry_depth"] == 5
-          assert "source" in read_reference("sources.md").lower()
+          from ashare_event_agent.resources import load_packaged_policy, read_reference, load_packaged_market_day_orchestration
+          from ashare_event_agent.models import TaskContract, ArtifactKind, CURRENT_RUNTIME_VERSION
+          from ashare_event_agent.orchestration import validate_orchestration
+          policy = load_packaged_policy()
+          assert policy["research"]["min_industry_depth"] == 5
+          assert policy["sources"]["preferred_microstructure_lane"] == "TONGHUASHUN_LEVEL2"
+          assert "同花顺" in read_reference("sources.md")
+          graph = load_packaged_market_day_orchestration()
+          validate_orchestration(graph)
           c = TaskContract(trading_date="2026-10-08", prompt="smoke")
           assert ArtifactKind.PICK_REPORT_MD in c.required_outputs
-          print("PASS: clean wheel contains policy/references and required-output contract")
+          assert CURRENT_RUNTIME_VERSION == "0.2.0"
+          print("PASS: clean wheel contains A-share policy/references/orchestration and required-output contract")
           PY

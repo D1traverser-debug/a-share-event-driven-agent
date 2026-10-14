@@ -4,6 +4,9 @@ import ast
 import json
 from pathlib import Path
 
+from ashare_event_agent.orchestration import validate_orchestration
+from ashare_event_agent.source_contracts import DINGPAN_POOL_SEMANTICS, MARKET_DATA_LANES
+
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "ashare_event_agent" / "plugin_server.py"
 RUNTIME = ROOT / "ashare_event_agent" / "runtime_service.py"
@@ -13,14 +16,13 @@ MODELS = ROOT / "ashare_event_agent" / "models.py"
 CONTROLLER = ROOT / "ashare_event_agent" / "controller.py"
 INTEGRITY = ROOT / "ashare_event_agent" / "integrity.py"
 PYPROJECT = ROOT / "pyproject.toml"
-AGENT_MANIFEST = ROOT / "continuity" / "AGENT_MANIFEST.json"
-CAPABILITIES = ROOT / "continuity" / "EXECUTION_CAPABILITIES.json"
 
 
 def fail(msg: str) -> None:
     raise SystemExit(msg)
 
 
+# Single-owner rule surface.
 ownership = json.loads((ROOT / "config" / "rule_ownership.json").read_text(encoding="utf-8"))
 seen: dict[str, str] = {}
 for owner, keys in ownership.items():
@@ -29,8 +31,7 @@ for owner, keys in ownership.items():
             fail(f"duplicate rule owner {key}: {seen[key]} / {owner}")
         seen[key] = owner
 
-# Root references/config are canonical. Skill and wheel copies are distribution
-# mirrors only; byte drift would create a second rule surface.
+# Canonical references/config and distribution mirrors must not drift.
 src = {p.name for p in (ROOT / "references").glob("*.md")}
 reference_mirrors = [
     ROOT / "skills/a-share-event-driven-agent/references",
@@ -44,80 +45,79 @@ for mirror in reference_mirrors:
             fail(f"reference drift: {mirror}/{name}")
 if (ROOT / "config/policy.json").read_bytes() != (ROOT / "ashare_event_agent/resources/policy.json").read_bytes():
     fail("policy mirror drift")
+if (ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_bytes() != (ROOT / "ashare_event_agent/resources/market_day_orchestration.json").read_bytes():
+    fail("market-day orchestration mirror drift")
 
-# Fail closed if test-only mocks or the retired continuity wrapper leak back into
-# the production package.
-if (ROOT / "ashare_event_agent/adapters/mock.py").exists():
-    fail("test-only mock adapter leaked into production package")
-if (ROOT / "ashare_event_agent/continuity_plugin.py").exists():
-    fail("retired second MCP/continuity wrapper reappeared")
+# Current UAOS binding: parent control plane, child business identity/state.
+manifest = json.loads((ROOT / ".uaos/MANIFEST.json").read_text(encoding="utf-8"))
+adapter = json.loads((ROOT / ".uaos/ADAPTER.json").read_text(encoding="utf-8"))
+capability_profile = json.loads((ROOT / ".uaos/CAPABILITIES.json").read_text(encoding="utf-8"))
+authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
+product = (ROOT / "docs/product_requirements.md").read_text(encoding="utf-8")
+graph = json.loads((ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_text(encoding="utf-8"))
+validate_orchestration(graph)
 
+if manifest.get("status") != "DIRECT_DOMAIN_WORK_PLANE_ACTIVE":
+    fail("manifest must declare direct A-share work plane")
+if manifest.get("binding", {}).get("common_capabilities_min") != "1.6.0":
+    fail("A-share must consume UAOS common capabilities >=1.6.0")
+if manifest.get("domain_authority", {}).get("market_day_identity") != "ashare_event_agent/models.py:TaskContract.task_id":
+    fail("manifest market-day identity owner drift")
+if manifest.get("domain_authority", {}).get("market_day_orchestration_ref") != "config/MARKET_DAY_ORCHESTRATION.json":
+    fail("manifest orchestration authority drift")
+if adapter.get("domain_market_day_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id":
+    fail("adapter must keep market-day identity in the A-share domain")
+if adapter.get("parent_child_id_equality_required") is not False:
+    fail("parent/child identity equality must remain forbidden")
+if "OPAQUE_CHILD" not in adapter.get("parent_reference_semantics", ""):
+    fail("parent reference must remain opaque")
+if capability_profile.get("profile_version") != 4:
+    fail("unexpected A-share capability profile version")
+if capability_profile.get("uaos_common_capabilities_min") != "1.6.0":
+    fail("A-share common capability minimum drift")
+if len(capability_profile.get("problem_response_floor") or []) < 4:
+    fail("problem response cognition floor missing")
+if "FAMILIARITY_IS_NOT_A_WAIVER" not in capability_profile.get("problem_response_rule", ""):
+    fail("familiarity waiver incorrectly reintroduced")
+if authority.get("domain_business_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id":
+    fail("runtime authority must separate child business identity from host runtime promotion")
+if authority.get("parent_may_mirror_market_day_business_state") is not False:
+    fail("UAOS must not mirror A-share market-day business state")
+if not (ROOT / "docs/product_requirements.md").exists() or "Acceptance map" not in product:
+    fail("current A-share product requirements/acceptance map missing")
+if graph.get("business_owner") != "DOMAIN:ashare":
+    fail("A-share market-day graph owner drift")
+if "NO_UNBOUNDED_PEER_CHAT" not in graph.get("decision_model", ""):
+    fail("peer-chat debate must remain forbidden")
+
+# Retired controller/continuity surfaces must remain physically absent.
+for retired in [
+    ROOT / "continuity",
+    ROOT / "config/cutover_status.json",
+    ROOT / "ashare_event_agent/continuity_plugin.py",
+    ROOT / "ashare_event_agent/adapters/mock.py",
+]:
+    if retired.exists():
+        fail(f"retired surface reappeared: {retired.relative_to(ROOT)}")
+
+# Specialized market-data business roles.
+if "TONGHUASHUN_LEVEL2" not in MARKET_DATA_LANES:
+    fail("preferred Tonghuashun/Level-2 lane missing")
+if "XUANGUTONG_DINGPAN" not in MARKET_DATA_LANES:
+    fail("Xuangutong Dingpan lane missing")
+if tuple(MARKET_DATA_LANES["XUANGUTONG_DINGPAN"].owns) != DINGPAN_POOL_SEMANTICS:
+    fail("Dingpan five-pool semantics drift")
+if "Level-2" not in (ROOT / "references/sources.md").read_text(encoding="utf-8"):
+    fail("source authority must document Level-2 assurance role")
+
+# Package/public runtime shape.
 pyproject_text = PYPROJECT.read_text(encoding="utf-8")
+if 'version = "0.2.0"' not in pyproject_text:
+    fail("package release must be 0.2.0")
 if 'ashare-event-mcp = "ashare_event_agent.plugin_server:main"' not in pyproject_text:
     fail("package MCP entrypoint must point directly to plugin_server:main")
 if "continuity_plugin" in pyproject_text:
     fail("retired continuity_plugin remains referenced by package metadata")
-
-agent_manifest = json.loads(AGENT_MANIFEST.read_text(encoding="utf-8"))
-runtime_manifest = agent_manifest.get("runtime") or {}
-if runtime_manifest.get("public_entrypoint") != "ashare_event_agent/plugin_server.py":
-    fail("agent manifest must declare plugin_server.py as the single public runtime entrypoint")
-harness_manifest = (agent_manifest.get("harness") or {}).get("reference_executor_harness") or {}
-if harness_manifest.get("ref") != "ashare_event_agent/runner.py" or harness_manifest.get("production_entrypoint") is not False:
-    fail("runner.py must remain explicitly classified as non-production reference/test harness")
-refs_manifest = agent_manifest.get("references") or {}
-if refs_manifest.get("canonical_root") != "references":
-    fail("reference authority drift: root references must remain canonical")
-if set(refs_manifest.get("generated_mirrors") or []) != {
-    "skills/a-share-event-driven-agent/references",
-    "ashare_event_agent/resources/references",
-}:
-    fail("reference mirror manifest must name both Skill and wheel distribution mirrors")
-
-cutover = json.loads((ROOT / "config" / "cutover_status.json").read_text(encoding="utf-8"))
-if cutover.get("operational_governance_authority") != "GITHUB_MAIN_CONTINUITY":
-    fail("cutover drift: GitHub Continuity must remain the governance authority")
-if cutover.get("business_checkpoint_authority_when_runtime_disabled") != "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF":
-    fail("cutover drift: non-runtime checkpoint authority must remain GitHub Continuity")
-if cutover.get("continuity", {}).get("external_mirrors_may_not_override_task_state") is not True:
-    fail("cutover drift: external mirrors may not override GitHub task state")
-roles = cutover.get("external_system_roles", {})
-if roles.get("notion") != "SOURCE_KNOWLEDGE_MIRROR_ONLY" or roles.get("google_drive") != "SOURCE_ARTIFACT_MIRROR_ONLY":
-    fail("cutover drift: Notion/Drive must remain source/mirror inputs, not control authority")
-gates = cutover.get("required_gates") or {}
-if not gates:
-    fail("runtime promotion gates missing")
-if "independent_audit_attestation" not in gates:
-    fail("runtime promotion gate missing: independent_audit_attestation")
-if cutover.get("runtime_authority_enabled") and any(v != "PASS" for v in gates.values()):
-    fail("runtime authority enabled before all required promotion gates passed")
-
-capability_profile = json.loads(CAPABILITIES.read_text(encoding="utf-8"))
-capabilities = {row.get("capability_id"): row for row in capability_profile.get("capabilities", [])}
-state_machine = capabilities.get("market_day_state_machine") or {}
-if state_machine.get("executor_ref") != "ashare_event_agent/plugin_server.py":
-    fail("market-day state-machine capability must bind to the canonical owner MCP surface")
-if "runner.AgentRuntime" in state_machine.get("invocation_path", "") or state_machine.get("executor_ref") == "ashare_event_agent/runner.py":
-    fail("reference runner must not be advertised as the production state-machine executor")
-live_source = capabilities.get("live_source_acquisition") or {}
-if live_source.get("executor_ref") is not None:
-    fail("live source acquisition must not advertise a native executor before one exists")
-if live_source.get("contract_ref") != "ashare_event_agent/source_contracts.py":
-    fail("live source capability must distinguish source contract metadata from executor implementation")
-if live_source.get("executor_type") != "EXTERNAL_SESSION_CONNECTORS":
-    fail("live source capability must remain session-external until native adapters exist")
-auditor = capabilities.get("strict_isolated_auditor")
-if not auditor:
-    fail("strict isolated auditor capability missing")
-if auditor.get("assurance_ceiling") != "DECLARED_ONLY" or auditor.get("executor_type") != "UNAVAILABLE":
-    fail("independent auditor must not be advertised as executable without attested executor evidence")
-if auditor.get("safe_degraded_modes"):
-    fail("independent audit must not silently degrade to same-executor chat review")
-if "distinct_reviewer_execution_context" not in auditor.get("required_tools", []):
-    fail("independent audit capability missing distinct reviewer execution requirement")
-for stage in ["SOURCE_AUDIT", "UNIVERSE_AUDIT", "PREMARKET_AUDIT", "FINAL_AUDIT"]:
-    if stage not in auditor.get("scope", ""):
-        fail(f"independent audit capability scope missing {stage}")
 
 
 def is_tool_decorator(dec: ast.expr) -> bool:
@@ -181,8 +181,8 @@ if 'ashare-artifact://{task_id}/{kind}' not in plugin_text:
     fail("artifact resource template missing")
 if 'Annotated[CallToolResult, MarketDaySummary]' not in plugin_text:
     fail("artifact-returning premarket audit must expose structured MarketDaySummary output")
-if "continuity_metadata" not in plugin_text or "list_resumable_states" not in plugin_text:
-    fail("canonical MCP surface must own continuity metadata and resumable discovery directly")
+if "task_metadata" not in plugin_text or "list_resumable_states" not in plugin_text or "list_resumable_tasks" not in tools:
+    fail("canonical MCP surface must expose child-run resume metadata and resumable discovery directly")
 if "audit-tool call" not in plugin_text or "does not by itself prove reviewer independence" not in plugin_text:
     fail("MCP instructions must not overclaim independent audit assurance")
 
@@ -190,31 +190,24 @@ package_init = (ROOT / "ashare_event_agent/__init__.py").read_text(encoding="utf
 if "AgentRuntime" in package_init:
     fail("reference AgentRuntime must not be promoted through the package public API")
 
-# Active explanatory/control surfaces must not revive known superseded vocabulary.
-# Historical audits are deliberately excluded because evidence archives retain the
-# terminology that actually existed at the time.
+# Active surfaces must not revive parent-owned per-day identity or retired continuity authority.
 active_semantic_surfaces = [
     ROOT / "README.md",
-    ROOT / "ashare_event_agent/models.py",
-    ROOT / "ashare_event_agent/mcp_contracts.py",
-    ROOT / "ashare_event_agent/continuity.py",
-    ROOT / "ashare_event_agent/plugin_server.py",
-    ROOT / "ashare_event_agent/runner.py",
-    ROOT / "ashare_event_agent/source_contracts.py",
-    ROOT / "skills/a-share-event-driven-agent/SKILL.md",
-    ROOT / "continuity/AGENT_MANIFEST.json",
-    ROOT / "continuity/EXECUTION_CAPABILITIES.json",
-    ROOT / "deploy/chatgpt-site/SITE_SPEC.md",
+    ROOT / "UAOS_SKILL.md",
     ROOT / "docs/architecture.md",
-    ROOT / "docs/INTELLIGENCE_CORE_ARCHITECTURE.md",
-    ROOT / "docs/provenance_and_cutover.md",
+    ROOT / "docs/product_requirements.md",
+    ROOT / "references/recovery.md",
+    ROOT / ".uaos/ADAPTER.json",
+    ROOT / ".uaos/MANIFEST.json",
+    ROOT / ".uaos/CAPABILITIES.json",
 ]
 for path in active_semantic_surfaces:
     text = path.read_text(encoding="utf-8")
-    for obsolete in ["Continuity v2", "ChatGPT Library", "real 9/30 regression cassette"]:
+    for obsolete in ["UAOS owns task identity", "UAOS resolves current task identity", "GITHUB_MAIN_CONTINUITY", "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"]:
         if obsolete in text:
-            fail(f"obsolete active-surface vocabulary reappeared: {obsolete} in {path.relative_to(ROOT)}")
+            fail(f"obsolete parent-owned A-share identity/control semantics reappeared: {obsolete} in {path.relative_to(ROOT)}")
 
+# Existing A-share evidence-lineage guards remain mandatory.
 schema_text = SCHEMAS.read_text(encoding="utf-8")
 model_text = MODELS.read_text(encoding="utf-8")
 controller_text = CONTROLLER.read_text(encoding="utf-8")
@@ -239,9 +232,9 @@ for marker in [
 ]:
     if marker not in schema_text:
         fail(f"schema guard missing: {marker}")
-for marker in ["PREMARKET_SNAPSHOT_JSON", "PICK_REPORT_MD", "REVIEW_REPORT_MD", "LEARNING_REPORT_JSON", "required_outputs"]:
+for marker in ["PREMARKET_SNAPSHOT_JSON", "PICK_REPORT_MD", "REVIEW_REPORT_MD", "LEARNING_REPORT_JSON", "required_outputs", 'CURRENT_RUNTIME_VERSION = "0.2.0"']:
     if marker not in model_text:
-        fail(f"required-output contract missing: {marker}")
+        fail(f"required-output/runtime contract missing: {marker}")
 for marker in [
     "universe_integrity_errors",
     "recall_integrity_errors",
@@ -270,8 +263,8 @@ if len(activation) < 8 or not any(x.get("should_activate") for x in activation) 
     fail("activation inventory must contain enough positive and negative cases")
 
 print(
-    f"PASS: {len(seen)} unique rule keys; {len(src)} synchronized canonical-reference files across two declared distribution mirrors; "
-    f"{len(tools)} typed tools on one public MCP surface; test harnesses/mocks demoted; active legacy vocabulary blocked; "
-    "GitHub governance + runtime-promotion/independent-audit guards + point-in-time source proof + Universe/U0/U1/U3 lineage + "
-    "frozen review grading + replay/required-output guards present"
+    f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; "
+    f"{len(tools)} typed tools on one MCP surface; child-owned market-day identity; UAOS 1.6 cognition/orchestration inheritance; "
+    "Tonghuashun/Level-2 + Dingpan source roles; explicit market-day decision graph; retired parent/continuity control surfaces absent; "
+    "freeze + Universe/U0/U1/U3 + frozen-review + replay guards present"
 )

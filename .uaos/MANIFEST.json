@@ -1,10 +1,24 @@
 {
-  "schema_version":"2.0",
+  "schema_version":"3.0",
   "agent_id":"ashare",
   "domain_id":"ashare",
-  "controller":"D1traverser-debug/universal-agent-os@main",
-  "status":"UAOS_CONTROL_PLANE_ACTIVE",
+  "parent_control_plane":"D1traverser-debug/universal-agent-os@main",
+  "status":"DIRECT_DOMAIN_WORK_PLANE_ACTIVE",
   "skill":{"entrypoint":"UAOS_SKILL.md"},
-  "binding":{"controller_ref":"D1traverser-debug/universal-agent-os@main:CURRENT_SYSTEM.json","adapter_ref":".uaos/ADAPTER.json","capability_ref":".uaos/CAPABILITIES.json"},
-  "domain_authority":{"runtime_authority_ref":"config/RUNTIME_AUTHORITY.json","canonical_rule_roots":["references","config","ashare_event_agent"],"runtime_root":"ashare_event_agent"}
+  "binding":{
+    "parent_system_ref":"D1traverser-debug/universal-agent-os@main:CURRENT_SYSTEM.json",
+    "common_capabilities_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_CAPABILITIES.json",
+    "common_capabilities_min":"1.6.0",
+    "adapter_ref":".uaos/ADAPTER.json",
+    "capability_ref":".uaos/CAPABILITIES.json"
+  },
+  "domain_authority":{
+    "product_requirements_ref":"docs/product_requirements.md",
+    "market_day_identity":"ashare_event_agent/models.py:TaskContract.task_id",
+    "market_day_state":"ashare_event_agent/models.py:MarketDayState",
+    "market_day_orchestration_ref":"config/MARKET_DAY_ORCHESTRATION.json",
+    "runtime_authority_ref":"config/RUNTIME_AUTHORITY.json",
+    "canonical_rule_roots":["references","config","ashare_event_agent"],
+    "runtime_root":"ashare_event_agent"
+  }
 }

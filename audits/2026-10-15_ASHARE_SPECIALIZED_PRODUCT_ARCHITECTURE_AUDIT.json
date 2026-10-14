@@ -1,0 +1,69 @@
+{
+  "audit_id":"ASHARE-SPECIALIZED-PRODUCT-ARCHITECTURE-20261015",
+  "status":"CANDIDATE_VERIFIED__PRODUCTION_PENDING",
+  "target_release":"0.2.0",
+  "trigger":[
+    "USER_REQUEST_TO_HARDEN_RECOMMENDATION_SYSTEM",
+    "USER_CORRECTION__EACH_DOMAIN_SYSTEM_MUST_BE_SPECIALIZED_FOR_ITS_OWN_PRODUCT",
+    "PARENT_OWNED_MARKET_DAY_IDENTITY_FOUND",
+    "BROKEN_STALE_STATIC_AUDIT_FOUND",
+    "TONGHUASHUN_LEVEL2_BUSINESS_PRIORITY_NOT_FORMALIZED"
+  ],
+  "diagnosis":[
+    "The A-share runtime already had a legitimate child TaskContract.task_id and MarketDayState, while active Skill/UAOS parent state still claimed parent task identity and current-trading-day ownership.",
+    "The existing product state machine was strong on point-in-time freeze, U0/U1 recall, U3 execution, review attribution and replay learning, so a generic agent framework rewrite would destroy useful domain specialization.",
+    "The previous static_audit.py still loaded physically retired continuity/cutover files and therefore guarded an obsolete control architecture instead of the current repository authority.",
+    "Source policy documented Xuangutong and structured market data but did not encode the user's required Tonghuashun/Level-2 assurance priority for A-share microstructure and buyability."
+  ],
+  "macro_product_decision":"KEEP_AND_STRENGTHEN_THE_EVENT_DRIVEN_MARKET_DAY_PRODUCT__DO_NOT_COPY_VIDEO_PROGRAM_TOPOLOGY__USE_A_SHARE_SPECIFIC_SOURCE_RESEARCH_RECALL_EXECUTION_REVIEW_AND_REPLAY_ARCHITECTURE",
+  "governing_assumptions_rejected":[
+    "UAOS must create/own a per-day A-share task before domain work can start.",
+    "Hosted-runtime promotion status determines who owns A-share business identity.",
+    "One generic multi-agent/subtask pattern should define every domain product.",
+    "A single market-data provider should be authoritative for all A-share facts.",
+    "Parallel/competitive work requires persistent specialist Agents or free-form debate."
+  ],
+  "external_method_research":[
+    {
+      "source":"CFA Institute — Trade Strategy and Execution",
+      "finding":"Decision quality must consider expected alpha, execution cost/risk and post-trade attribution rather than ranking opportunity alone.",
+      "adopted_as":"Separate event/market-structure opportunity from execution/buyability evidence and review execution feasibility post-close."
+    },
+    {
+      "source":"CFA Institute — Backtesting and Simulation",
+      "finding":"Strategy changes require testing across historical regimes/scenarios and sensitivity rather than one outcome.",
+      "adopted_as":"Preserve multi-regime frozen replay promotion gate."
+    },
+    {
+      "source":"QuantStart — Event-Driven Backtesting",
+      "finding":"Event-driven state and consistent historical/live interfaces reduce look-ahead risk and better approximate actual execution constraints.",
+      "adopted_as":"Retain deterministic point-in-time MarketDayState/FreezeCard architecture and explicit source/execution events."
+    }
+  ],
+  "design":{
+    "business_identity_owner":"A_SHARE_EVENT_DRIVEN_AGENT__TaskContract.task_id",
+    "parent_role":"UAOS_DOMAIN_ROUTER_AND_COMMON_GOVERNANCE_ONLY",
+    "source_lanes":["OFFICIAL_FACTS","TONGHUASHUN_LEVEL2","XUANGUTONG_DINGPAN","STRUCTURED_MARKET_FALLBACK","P01_P09_RESEARCH"],
+    "candidate_views":["EVENT_ALPHA","MARKET_STRUCTURE","BUYABILITY_EXECUTION"],
+    "decision_model":"U1_BOUNDED_INDEPENDENT_CANDIDATE_VIEWS__STRUCTURED_COUNTEREVIDENCE__SINGLE_AUTHORIZED_ADJUDICATION__NO_TRADE_LEGAL",
+    "review_model":"IMMUTABLE_PREMARKET__OUTCOME_RECONCILIATION__ATTRIBUTION__RECALL_AND_SELECTION_GRADING__EXECUTION_FEASIBILITY__LEARNING_REPLAY",
+    "problem_response":"EVERY_PROBLEM_RESEARCH_PLUS_MACRO_AND_ASSUMPTION_REFLECTION",
+    "persistent_peer_chat":false
+  },
+  "candidate_evidence":{
+    "pr":5,
+    "verified_head":"740d39211773123a5fdb0e89ef11dc19febead70",
+    "ci_run":38628590148,
+    "result":"PASS",
+    "verified_steps":["MCP Streamable HTTP smoke","61 unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
+  },
+  "acceptance_before_promotion":[
+    "all existing unit/trajectory tests pass or stale tests are migrated to current ownership semantics without weakening business guards",
+    "contract eval passes",
+    "static audit passes on current authority and retired continuity files remain absent",
+    "isolated wheel contains current policy/references/orchestration",
+    "child production main CI passes after merge",
+    "only after child production verification may UAOS collapse ashare parent state to one router"
+  ],
+  "updated_at":"2026-10-15T04:04:00+08:00"
+}

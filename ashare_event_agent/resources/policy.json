@@ -8,6 +8,10 @@
   "sources": {
     "fixed_ids": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09"],
     "retrieval_priority": ["STRUCTURED_API", "OFFICIAL", "STATIC_HTTP", "EMBEDDED_JSON", "DATABASE", "WEB", "BROWSER"],
+    "preferred_microstructure_lane": "TONGHUASHUN_LEVEL2",
+    "dingpan_five_pool_lane": "XUANGUTONG_DINGPAN",
+    "structured_market_fallback": "LONG_BRIDGE_OR_EQUIVALENT_SESSION_PROVEN",
+    "weaker_data_must_lower_assurance": true,
     "browser_last_resort": true,
     "allow_paid_limited": true
   },
@@ -17,11 +21,20 @@
     "u1_recall_first": true,
     "leader_first_applies_from": "U2"
   },
+  "orchestration": {
+    "graph_ref": "config/MARKET_DAY_ORCHESTRATION.json",
+    "parallel_only_when_dependencies_allow": true,
+    "candidate_views": ["EVENT_ALPHA", "MARKET_STRUCTURE", "BUYABILITY_EXECUTION"],
+    "bounded_counterevidence_review": true,
+    "single_trade_decision_adjudicator": true,
+    "peer_chat_debate": false
+  },
   "execution": {
     "max_execution_slots": 4,
     "no_trade_is_valid": true
   },
   "learning": {
+    "every_problem_requires_research_and_reflection": true,
     "single_day_promotion_forbidden": true,
     "min_replay_cases": 5,
     "min_regimes": 2,

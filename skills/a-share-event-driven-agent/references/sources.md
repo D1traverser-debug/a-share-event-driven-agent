@@ -1,33 +1,34 @@
 # Source completion
 
-P01-P09 are fixed source contracts. Direct API / official / structured market-data / static HTTP / embedded JSON / database paths outrank generic browsing. Browser automation is a last resort, not the default acquisition layer.
+P01-P09 are fixed research-source contracts. Market-data/business lanes are separate because quote/microstructure truth, official hard facts and research/news discovery have different owners. Direct API / official / structured market-data / static HTTP / embedded JSON / database paths outrank generic browsing. Browser automation is a last resort, not the default acquisition layer.
 
-## Retrieval hierarchy
+## Fact-owner hierarchy
 
 Use the narrowest auditable source that actually owns the fact:
 
-1. **Primary official facts** — SSE/SZSE, CSRC, ministries/commissions, listed-company announcements and other first-party disclosures.
+1. **Primary official facts** — SSE/SZSE, CSRC, ministries/commissions, listed-company announcements and other first-party disclosures own hard corporate/regulatory facts and announcement timing.
 2. **Direct structured domain endpoints** — stable JSON/API endpoints that expose the exact business object needed.
-3. **Session-proven structured market-data connector** — for trading calendar, quotes, OHLCV, market/industry state, capital-flow, depth, financials, news and anomaly cross-checks when the connector is actually available in the current session.
+3. **Session-proven market-data lane** — quotes, OHLCV, auction/depth/order-flow, market/industry state, capital-flow and execution/buyability evidence when the lane actually ran in the current session.
 4. **Static HTTP / embedded JSON / database**.
 5. **Web search/extraction** for discovery, corroboration and public pages that lack a better direct path.
 6. **Browser interaction** only for login-gated, JS-only, interaction-only or image-bearing information that cannot be recovered through a better path.
 
 A configured connector/app name is not evidence that it ran. Material source completion requires a current-session receipt or returned data.
 
-## Current preferred application lanes
+## A-share preferred business lanes
 
-These are role assignments, not exclusive vendor lock-in:
+These are business-role assignments, not universal vendor truth or exclusive lock-in:
 
-- **Longbridge (when session-proven)**: preferred structured A-share market-data lane for CN trading days, quotes, historical bars, market temperature, industry ranking, anomaly/top-mover cross-checks, depth, capital flow/distribution, financials, calendars and stock/news retrieval. It is a market-data source, not the canonical definition of the five Dingpan pools.
-- **选股通 / Xuangutong direct API**: preferred direct lane for the five Dingpan pools when a formal prior-review snapshot is missing and a provenance-labeled reconstruction is legally required. Pool semantics must be preserved exactly (`limit_up`, `limit_down`, `limit_up_broken`, `super_stock`, `yesterday_limit_up`) and counts must be reconciled against page/date state before acceptance.
-- **Official exchange/regulator/company sources**: primary-verification lane for trading calendar boundaries, corporate hard events, regulatory/policy facts and announcement timing.
-- **Native web search / token-efficient search-extraction connectors such as Parallel Search when available**: discovery and corroboration lane for public research/news pages.
-- **Opera Browser Connector or another current-session browser connector**: last-resort authenticated/JS/image lane. Use only when direct/structured/static retrieval cannot satisfy the source contract.
-- **Metered crawlers/extractors such as Firecrawl**: optional fallback for difficult extraction/crawl tasks; do not make a metered service a hard dependency when a direct or already-connected path exists.
-- **Alpha Vantage (when useful)**: global macro/news/commodity/cross-market corroboration lane; not the default source for A-share microstructure or Dingpan pool definitions.
+- **同花顺 / Level-2 (when current-session proven)**: preferred A-share market-state/microstructure lane for quotes, auction context, depth/order-flow, turnover/board behavior, buyability and post-close microstructure review. For a claim that materially depends on depth/order-flow, Level-2 evidence outranks a weaker quote summary. If the preferred capability is unavailable, explicitly degrade/block that claim; do not silently substitute weaker data and keep the same assurance.
+- **选股通 / Xuangutong Dingpan**: canonical business lane for the five Dingpan pools: `limit_up`, `limit_down`, `limit_up_broken`, `super_stock`, `yesterday_limit_up`. Pool definition, count and target trading date must reconcile before acceptance. Premarket normally reuses the previous formal review snapshot instead of re-fetching it.
+- **Official exchange/regulator/company sources**: primary-verification lane for trading-calendar boundaries, corporate hard events, regulatory/policy facts and announcement timing. A conflicting market-data vendor cannot override a verified first-party disclosure merely because its timestamp is newer.
+- **Longbridge or another current-session structured market-data connector**: fallback/corroboration lane for CN trading days, quotes, bars, market/industry state, anomaly/top-mover cross-checks, depth/flow, financials, calendars and stock/news retrieval. It does not redefine the five Dingpan pools and does not replace official hard facts.
+- **P01-P09 research sources**: event/news/industry discovery and breadth. They can generate hypotheses, but hard claims must be verified by the appropriate fact owner where one exists.
+- **Native web search / search-extraction connectors**: discovery/corroboration for public research and news pages.
+- **Authenticated browser or metered extraction**: last-resort acquisition when a better direct/structured/static path cannot satisfy the contract.
+- **Global data/news providers**: macro/commodity/cross-market corroboration only; not the default authority for A-share microstructure or Dingpan pool definitions.
 
-Task-local user constraints may disable a particular browser/extractor/app. Persist that constraint in the active task rather than silently changing the global source hierarchy.
+Task-local user constraints may disable a particular app/source. Persist that constraint in the active child market-day run rather than silently changing the global source hierarchy.
 
 ## Five-pool rule
 
@@ -56,4 +57,4 @@ For premarket use, every non-blocked receipt is checked against the current Free
 
 Image-only tables, calendars, leaderboards, seats, and timelines are first-class source data. A text scraper that misses a material image does not satisfy FULL.
 
-For source conflicts, preserve both observations until the definitions are reconciled. Never choose the numerically convenient value and call the discrepancy solved.
+For source conflicts, preserve both observations until definitions and time semantics are reconciled. Never choose the numerically convenient value and call the discrepancy solved.
