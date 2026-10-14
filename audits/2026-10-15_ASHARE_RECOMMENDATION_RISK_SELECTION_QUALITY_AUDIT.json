@@ -1,6 +1,6 @@
 {
   "audit_id":"ASHARE-RECOMMENDATION-RISK-SELECTION-QUALITY-20261015",
-  "status":"CANDIDATE_VERIFIED__PRODUCTION_PENDING",
+  "status":"RESOLVED__PRODUCTION_VERIFIED",
   "target_release":"0.3.0",
   "trigger":[
     "USER_REQUEST_TO_COMPLETE_ASHARE_RECOMMENDATION_SYSTEM",
@@ -80,6 +80,12 @@
     "result":"PASS",
     "verified_steps":["MCP Streamable HTTP smoke","unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
   },
+  "production_evidence":{
+    "main_commit":"ed83b2b6246605e9d236b0b184dddcb936553298",
+    "ci_run":38634603142,
+    "result":"PASS",
+    "verified_steps":["MCP Streamable HTTP smoke","unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
+  },
   "acceptance_result":{
     "existing_specialized_freeze_source_research_and_replay_architecture_preserved":true,
     "opportunity_views_no_longer_include_risk_buyability_vote":true,
@@ -94,8 +100,8 @@
     "child_identity_and_parent_router_boundary_preserved":true,
     "hosted_runtime_remains_unpromoted_without_live_evidence":true,
     "candidate_full_ci_pass":true,
-    "production_ci_pass":false
+    "production_ci_pass":true
   },
-  "terminal_decision":"PENDING_PRODUCTION__KEEP_SPECIALIZED_ASHARE_PRODUCT__OPPORTUNITY_RISK_SEPARATED__SELECTION_AND_EXECUTION_QUALITY_GRADED",
-  "updated_at":"2026-10-15T04:44:00+08:00"
+  "terminal_decision":"KEEP_SPECIALIZED_ASHARE_PRODUCT__OPPORTUNITY_RISK_SEPARATED__SELECTION_AND_EXECUTION_QUALITY_GRADED__PRODUCTION_VERIFIED",
+  "updated_at":"2026-10-15T04:50:00+08:00"
 }
