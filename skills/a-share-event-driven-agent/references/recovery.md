@@ -1,36 +1,34 @@
 # Recovery
 
-Chat history is not persistent authority. A chat is only an execution window; the market-day task is the durable object.
+Chat history is not persistent authority. UAOS is the cross-domain recovery/controller authority; this repository supplies A-share domain business rules, evidence and optional runtime checkpoints.
 
-## 1. Read cutover status first
-Read `config/cutover_status.json` before treating any Runtime checkpoint as executable authority.
+## 1. Read current runtime authority
+Read `config/RUNTIME_AUTHORITY.json` before treating any owner-runtime checkpoint as executable authority.
 
-- GitHub `main` Continuity is always the recovery/governance entrypoint for current task metadata, stage intent, next action and evidence references.
-- `runtime_authority_enabled=true`: after contract/session compatibility checks, the owner Runtime may additionally be the executable market-day task-state authority.
-- `runtime_authority_enabled=false`: Runtime remains candidate/shadow. Continue legal governance/source/research work from GitHub Continuity and block only Runtime-dependent stage certification. **Do not fall back to Notion/Drive as an operating controller.**
-- Notion/Google Drive may be read as source, knowledge, artifact or migration-mirror inputs, but they cannot override GitHub task state or recovery pointers.
+- UAOS resolves the exact task/trading day and cross-chat continuation.
+- `runtime_authority_enabled=true`: after current contract/session compatibility and execution-proof checks, the owner runtime may be executable market-day business-state authority.
+- `runtime_authority_enabled=false`: runtime remains candidate/shadow. UAOS may continue legal research/governance/evidence work while runtime-only certification stays blocked.
+- Notion/Google Drive are source/knowledge/artifact inputs only. They never become controller/task authority.
 
 ## 2. New vs continuation
-New work inherits durable rules/knowledge/learning, not another task's unfinished state.
+New work inherits durable rules/knowledge, not another market day's unfinished stage/freeze/candidates. A past premarket task must not resume as if its old time window were current.
 
-Explicit continuation must discover only resumable USER tasks. Exclude TEST, FIXTURE, EVAL and SYSTEM_INFRA from ordinary bare-`继承` discovery.
+UAOS resolves current task identity. Domain-local runtime candidate listing is advisory evidence for reconciliation only; it is not a second task registry.
 
-A resumable task should expose at least: `task_id`, `task_class`, `status`, `next_action`, `blocked_reason`, gates, freeze hash/evidence boundary when applicable, checkpoint reference, contract/runtime version and updated time.
-
-## 3. Compatibility before resume
-Before resuming, compare the persisted task contract with the current Skill/runtime contract:
-- `COMPATIBLE` → resume;
-- `MIGRATABLE` → migrate checkpoint, then resume;
-- `INCOMPATIBLE` → block old execution semantics; preserve only still-valid evidence/artifacts and start a legal current control plane.
-
-Never restore an obsolete state merely because it was persisted correctly.
+## 3. Compatibility before runtime resume
+Before resuming an owner-runtime checkpoint classify it against current domain contracts:
+- `COMPATIBLE` -> resume after UAOS binding;
+- `MIGRATABLE` -> perform an explicit current-schema data migration, then resume;
+- `INCOMPATIBLE` -> preserve valid evidence but do not restore obsolete execution semantics.
 
 ## 4. Recovery behavior
-Do not ask the user to repeat facts already persisted. Do not use deleted chat memory as substitute for missing durable state.
+Do not ask the user to repeat facts already persisted. Do not use deleted chat memory as authority.
 
-1. Load the matching GitHub Continuity `TASK_MANIFEST.json` + `HANDOFF.md` and current cutover/capability contracts.
-2. If Runtime authority is enabled and the current session can prove the required owner Runtime capability, load/resume the unique compatible Runtime checkpoint and bind its receipt/evidence into GitHub Continuity.
-3. If Runtime authority is disabled or unavailable, preserve the GitHub-governed task and continue only actions that do not require an executed Runtime transition. Record precise capability gaps instead of routing business control to external mirrors.
-4. After any material governance mutation, reread the GitHub checkpoint before claiming COMMITTED.
+1. Resolve task identity through UAOS.
+2. Reread current `.uaos/*`, `config/RUNTIME_AUTHORITY.json` and the exact business evidence/runtime checkpoint needed now.
+3. Reconcile current trading-day/time semantics before material premarket action.
+4. If owner runtime is enabled and session-proven, resume the unique compatible domain checkpoint and bind evidence to the current UAOS task/action.
+5. Otherwise continue only legal non-runtime-dependent work and record precise blockers.
+6. After a material business mutation, reread the written business authority before claiming completion.
 
-Deleting an old chat must not delete the business workflow; conversely, the existence of a historical checkpoint must not force a new task to continue it.
+Historical checkpoints may be evidence but never force a new task to continue them.

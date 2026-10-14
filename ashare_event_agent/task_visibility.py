@@ -4,8 +4,8 @@ from .models import MarketDayState, ResumeVisibility, Stage, TaskClass
 from .store import SQLiteStateStore
 
 
-def is_bare_inherit_candidate(state: MarketDayState) -> bool:
-    """Return True only for tasks allowed into ordinary bare-inherit discovery."""
+def is_default_visible_candidate(state: MarketDayState) -> bool:
+    """Return True only for domain-runtime states safe to surface as ordinary resumable business candidates."""
     contract = state.contract
     return (
         contract.task_class == TaskClass.USER
@@ -16,19 +16,18 @@ def is_bare_inherit_candidate(state: MarketDayState) -> bool:
 
 
 def list_resumable_states(store: SQLiteStateStore, limit: int = 20) -> list[MarketDayState]:
-    """Universal Continuity owner-adapter read path.
+    """List domain-local runtime checkpoints eligible for explicit UAOS task reconciliation.
 
-    The store may contain legacy, test, replay, fixture or migration checkpoints.
-    Only explicit USER/default-visible/incomplete tasks are returned. The caller
-    can still load any known task id explicitly through the normal get endpoint.
+    This function is not a cross-domain task registry. UAOS decides task identity and
+    continuation; this function only exposes safe domain-runtime checkpoint candidates.
     """
     scan_limit = max(1, min(max(limit, 20) * 5, 100))
     states = store.list_recent(scan_limit)
-    eligible = [state for state in states if is_bare_inherit_candidate(state)]
+    eligible = [state for state in states if is_default_visible_candidate(state)]
     return eligible[: max(1, min(limit, 100))]
 
 
-def continuity_metadata(state: MarketDayState) -> dict[str, object]:
+def task_metadata(state: MarketDayState) -> dict[str, object]:
     contract = state.contract
     return {
         "task_class": contract.task_class.value,

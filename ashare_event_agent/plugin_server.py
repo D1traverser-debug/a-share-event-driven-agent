@@ -9,7 +9,7 @@ from mcp.types import CallToolResult, ResourceLink, TextContent
 from pydantic import Field
 
 from . import runtime_service as impl
-from .continuity import continuity_metadata, list_resumable_states
+from .task_visibility import list_resumable_states, task_metadata
 from .mcp_contracts import MarketDayList, MarketDaySummary, READ_ONLY_TOOL, STATE_WRITE_TOOL
 from .models import ArtifactKind
 from .schemas import (
@@ -44,7 +44,7 @@ def _summary(raw: dict) -> MarketDaySummary:
     clean = _publicize(raw)
     task_id = clean.get("task_id")
     if task_id:
-        clean.update(continuity_metadata(impl._load(task_id)))
+        clean.update(task_metadata(impl._load(task_id)))
     return MarketDaySummary.model_validate(clean)
 
 
@@ -78,7 +78,8 @@ mcp = MCPServer(
     "A-share Event-Driven Agent",
     instructions=(
         "Use for A-share premarket stock-recommendation research, post-close review, recall grading, and replay-governed learning. "
-        "Resume persisted market-day tasks before starting duplicates. Follow next_action exactly. "
+        "UAOS owns cross-domain task identity and continuation; this runtime exposes domain-local market-day checkpoints only. "
+        "Follow the current UAOS task plus domain next_action exactly after current trading-day reconciliation. "
         "The runtime owns freeze integrity, legal transitions, schemas, StockBase permission boundaries, recall/completion gates, and rule-promotion eligibility. "
         "The model owns public research, industry reasoning, role hypotheses, red-team judgments, and attribution within those contracts. "
         "An audit-tool call records an audit decision but does not by itself prove reviewer independence."
@@ -100,32 +101,32 @@ def start_market_day(
     prior_review_ref: str | None = None,
     mode: str = "LIVE_DAY",
 ) -> MarketDaySummary:
-    """Start a durable A-share market-day runtime before premarket research. This freezes task identity and establishes the legal stage path."""
+    """Start a durable domain market-day runtime after UAOS resolves the current task/trading day."""
     return _summary(impl.start_market_day(trading_date, prompt, stockbase_ref, prior_review_ref, mode))
 
 
 @mcp.tool(title="Get A-share Market Day", annotations=READ_ONLY_TOOL, structured_output=True)
 def get_market_day(task_id: str, detail: bool = True) -> MarketDaySummary:
-    """Load one persisted A-share market-day checkpoint without changing state. Use this to resume after interruption or a fresh conversation."""
+    """Load one persisted A-share domain checkpoint without changing state."""
     return _summary(impl.get_market_day(task_id, detail))
 
 
 @mcp.tool(title="List Recent A-share Market Days", annotations=READ_ONLY_TOOL, structured_output=True)
 def list_recent_market_days(limit: int = 20, include_complete: bool = False) -> MarketDayList:
-    """List recent durable A-share market-day checkpoints so explicit continuation can inspect known tasks without relying on chat memory."""
+    """List recent durable A-share domain checkpoints for inspection."""
     return MarketDayList(tasks=[_summary(x) for x in impl.list_recent_market_days(limit, include_complete)])
 
 
 @mcp.tool(title="List Resumable A-share Tasks", annotations=READ_ONLY_TOOL, structured_output=True)
 def list_resumable_tasks(limit: int = 20) -> MarketDayList:
-    """List only USER/default-visible/incomplete tasks eligible for ordinary bare-inherit discovery; test, migration, hidden and explicit-only tasks are excluded."""
+    """List safe domain-local runtime candidates for UAOS reconciliation; this is not a cross-domain task registry."""
     states = list_resumable_states(impl.store, limit)
     return MarketDayList(tasks=[_summary_from_state(state) for state in states])
 
 
 @mcp.tool(title="Record Governance Context", annotations=STATE_WRITE_TOOL, structured_output=True)
 def record_governance_context(task_id: str, refs: list[str], notes: list[str] | None = None) -> MarketDaySummary:
-    """Record GitHub governance refs plus any external source/mirror pointers loaded for this task; external mirrors never become control authority by being recorded here."""
+    """Record current governance/source refs for the domain task; external mirrors never become control authority by being recorded here."""
     return _summary(impl.record_governance_context(task_id, refs, notes))
 
 

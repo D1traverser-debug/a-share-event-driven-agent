@@ -1,9 +1,11 @@
 import json
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def test_rule_ownership_is_unique():
-    ownership = json.loads(Path("config/rule_ownership.json").read_text(encoding="utf-8"))
+    ownership = json.loads((ROOT / "config/rule_ownership.json").read_text(encoding="utf-8"))
     seen = set()
     for keys in ownership.values():
         for key in keys:
@@ -12,9 +14,9 @@ def test_rule_ownership_is_unique():
 
 
 def test_reference_mirrors_are_identical():
-    source = Path("references")
-    skill = Path("skills/a-share-event-driven-agent/references")
-    package = Path("ashare_event_agent/resources/references")
+    source = ROOT / "references"
+    skill = ROOT / "skills/a-share-event-driven-agent/references"
+    package = ROOT / "ashare_event_agent/resources/references"
     names = {p.name for p in source.glob("*.md")}
     assert names == {p.name for p in skill.glob("*.md")} == {p.name for p in package.glob("*.md")}
     for name in names:
@@ -23,25 +25,27 @@ def test_reference_mirrors_are_identical():
 
 
 def test_policy_mirror_is_identical():
-    assert Path("config/policy.json").read_bytes() == Path("ashare_event_agent/resources/policy.json").read_bytes()
+    assert (ROOT / "config/policy.json").read_bytes() == (ROOT / "ashare_event_agent/resources/policy.json").read_bytes()
 
 
-def test_cutover_never_reactivates_notion_drive_control_plane():
-    cutover = json.loads(Path("config/cutover_status.json").read_text(encoding="utf-8"))
-    assert cutover["operational_governance_authority"] == "GITHUB_MAIN_CONTINUITY"
-    assert cutover["business_checkpoint_authority_when_runtime_disabled"] == "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"
-    assert cutover["continuity"]["external_mirrors_may_not_override_task_state"] is True
-    assert cutover["external_system_roles"]["notion"] == "SOURCE_KNOWLEDGE_MIRROR_ONLY"
-    assert cutover["external_system_roles"]["google_drive"] == "SOURCE_ARTIFACT_MIRROR_ONLY"
+def test_current_control_binding_is_uaos_only():
+    manifest = json.loads((ROOT / ".uaos/MANIFEST.json").read_text(encoding="utf-8"))
+    adapter = json.loads((ROOT / ".uaos/ADAPTER.json").read_text(encoding="utf-8"))
+    authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
+    assert manifest["controller"] == "D1traverser-debug/universal-agent-os@main"
+    assert adapter["legacy_controller_compatibility"] == "NONE"
+    assert authority["external_system_roles"]["notion"] == "SOURCE_OR_KNOWLEDGE_ONLY"
+    assert authority["external_system_roles"]["google_drive"] == "SOURCE_OR_ARTIFACT_ONLY"
+    assert not (ROOT / "continuity").exists()
+    assert not (ROOT / "config/cutover_status.json").exists()
 
 
-def test_runtime_promotion_is_separate_from_governance_migration():
-    cutover = json.loads(Path("config/cutover_status.json").read_text(encoding="utf-8"))
-    gates = cutover["required_gates"]
+def test_runtime_promotion_is_separate_from_controller_authority():
+    authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
+    gates = authority["required_promotion_gates"]
     assert gates
-    if cutover["runtime_authority_enabled"]:
+    if authority["runtime_authority_enabled"]:
         assert all(status == "PASS" for status in gates.values())
-    skill = Path("skills/a-share-event-driven-agent/SKILL.md").read_text(encoding="utf-8")
-    recovery = Path("references/recovery.md").read_text(encoding="utf-8")
-    assert "Never route business control back to Notion/Drive" in skill
-    assert "Do not fall back to Notion/Drive as an operating controller" in recovery
+    skill = (ROOT / "UAOS_SKILL.md").read_text(encoding="utf-8")
+    assert "UAOS owns task identity" in skill
+    assert "Notion" not in skill or "controller" not in skill.lower()
