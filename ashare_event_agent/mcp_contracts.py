@@ -34,8 +34,8 @@ class MarketDaySummary(PublicModel):
     next_action: str
     artifacts: dict[str, ArtifactSummary] | None = None
 
-    # Universal Continuity owner-adapter metadata. Runtime contract versioning
-    # is intentionally separate from the global Universal protocol version.
+    # Child-owned market-day resume/discovery metadata. Contract/runtime versioning
+    # is domain-local and does not turn the child task ID into a UAOS router ID.
     task_class: Literal["USER", "TEST", "FIXTURE", "EVAL", "SYSTEM_INFRA", "MIGRATION"] = "MIGRATION"
     resume_eligible: bool = False
     resume_visibility: Literal["DEFAULT", "EXPLICIT_ONLY", "HIDDEN"] = "EXPLICIT_ONLY"
