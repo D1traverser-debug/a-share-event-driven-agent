@@ -1,0 +1,101 @@
+{
+  "audit_id":"ASHARE-RECOMMENDATION-RISK-SELECTION-QUALITY-20261015",
+  "status":"CANDIDATE_VERIFIED__PRODUCTION_PENDING",
+  "target_release":"0.3.0",
+  "trigger":[
+    "USER_REQUEST_TO_COMPLETE_ASHARE_RECOMMENDATION_SYSTEM",
+    "USER_CORRECTION__EACH_DOMAIN_SYSTEM_MUST_BE_SPECIALIZED_FOR_ITS_OWN_PRODUCT",
+    "PROFESSIONAL_AUDIT_FOUND_RISK_BUYABILITY_MODELED_AS_COMPETING_BULLISH_VIEW",
+    "PROFESSIONAL_AUDIT_FOUND_POSTCLOSE_RECALL_STRONGER_THAN_FINAL_SELECTION_AND_EXECUTION_GRADING"
+  ],
+  "diagnosis":[
+    "The 0.2.0 A-share product already had strong point-in-time freeze, P01-P09 research, Tonghuashun/Level-2 preference, Xuangutong five-pool reconciliation, U0/U1/U3 lineage, immutable review and replay-governed learning. A generic multi-agent rewrite was unnecessary and would reduce domain specialization.",
+    "The 0.2.0 internal graph placed EVENT_ALPHA, MARKET_STRUCTURE and BUYABILITY_EXECUTION inside one competitive-candidate group. That incorrectly allowed risk/executability to behave like another opinion rather than a constraint/veto layer.",
+    "The post-close contract mechanically graded research recall but did not give frozen final recommendations an equally strict activation/outcome/execution-feasibility scorecard, creating an optimization bias toward finding more opportunities rather than selecting executable recommendations well.",
+    "User-facing reports did not expose the new risk assurance/veto and selection-quality evidence until the final candidate hardening pass."
+  ],
+  "macro_product_decision":"KEEP_SPECIALIZED_EVENT_DRIVEN_MARKET_DAY_PRODUCT__SEPARATE_OPPORTUNITY_DISCOVERY_FROM_RISK_EXECUTION_FEASIBILITY__GRADE_RECALL_FINAL_SELECTION_AND_EXECUTION_SEPARATELY",
+  "governing_assumptions_rejected":[
+    "Risk/buyability is just a third candidate opinion that may be outvoted by two opportunity views.",
+    "Improved U1 recall is sufficient evidence that a recommendation-rule change improved the product.",
+    "A recommendation whose trigger never fired should be counted like an executed win/loss.",
+    "A strong opportunity narrative may retain FULL execution assurance when preferred microstructure evidence is missing.",
+    "The A-share product should be redesigned around the same internal topology as the Video product."
+  ],
+  "external_method_research":[
+    {
+      "source":"QuantConnect Algorithm Framework — Alpha / Portfolio / Risk / Execution separation",
+      "finding":"Risk and execution operate as distinct downstream control concerns rather than additional alpha signals.",
+      "adopted_as":"Opportunity views compete first; every U1 candidate receives an explicit risk/feasibility assessment; BLOCK cannot enter U3."
+    },
+    {
+      "source":"CFA Institute — Trade Strategy and Execution",
+      "finding":"Trade decisions must account for expected alpha together with liquidity, volatility, market impact, costs and execution risk.",
+      "adopted_as":"Execution assurance and post-close feasibility are explicit product dimensions instead of being hidden inside opportunity ranking."
+    },
+    {
+      "source":"CFA Institute — Backtesting and Simulation",
+      "finding":"Evaluation should examine multiple risk/return dimensions and regimes rather than optimize one success metric.",
+      "adopted_as":"Replay PASS must report recall, activated-positive, activated-downside and execution-feasibility metrics across frozen multi-regime cases."
+    },
+    {
+      "source":"Python language reference — starred expression/list display syntax",
+      "finding":"Iterable unpacking requires a valid operand expression; compressed report construction introduced an invalid starred/or expression.",
+      "adopted_as":"Use explicit intermediate report-line variables; keep delivery code readable rather than compressing expressions."
+    }
+  ],
+  "final_design":{
+    "business_identity_owner":"A_SHARE_EVENT_DRIVEN_AGENT__TaskContract.task_id",
+    "parent_role":"UAOS_DOMAIN_ROUTER_AND_COMMON_GOVERNANCE_ONLY",
+    "opportunity_views":["EVENT_INDUSTRY_ALPHA","MARKET_STRUCTURE"],
+    "opportunity_counterevidence":"BOUNDED_STRUCTURED_CRITIQUE",
+    "opportunity_adjudicator":"opportunity_decision_owner",
+    "risk_layer":"ALL_U1_PASS_DEGRADE_BLOCK_ASSESSMENT__HARD_VETO_NOT_OUTVOTABLE",
+    "preferred_microstructure":"TONGHUASHUN_LEVEL2_WHEN_CURRENT_SESSION_PROVEN",
+    "final_adjudicator":"trade_decision_owner",
+    "legal_terminal_premarket_result":"U3_MAX_FOUR_OR_NO_TRADE",
+    "postclose_scorecards":["RESEARCH_RECALL","FINAL_SELECTION_ACTIVATION_AND_OUTCOME","EXECUTION_FEASIBILITY"],
+    "replay_required_metrics":["u1_recall","activated_positive_rate","activated_downside_rate","execution_feasibility_rate"],
+    "hosted_runtime_promotion_claimed":false,
+    "persistent_peer_chat":false
+  },
+  "candidate_failure_evidence":[
+    {
+      "ci_run":38633001646,
+      "classification":"STALE_TEST_FIXTURES_ONLY",
+      "result":"63_PASS_2_FAIL",
+      "resolution":"Recovery fixture now follows CURRENT_CONTRACT_VERSION; valid Replay PASS fixture now supplies all decision-quality metrics. No production constraint was weakened."
+    },
+    {
+      "ci_run":38633895971,
+      "classification":"DELIVERY_LAYER_SYNTAX_ERROR",
+      "result":"MCP_SMOKE_FAIL_BEFORE_TESTS",
+      "resolution":"External Python syntax check plus assumption review; replaced compressed starred/or report expression with explicit intermediate list. No business rule changed."
+    }
+  ],
+  "candidate_evidence":{
+    "pr":7,
+    "verified_head":"5e14d859235e51b5ebaba0287906d9adb0ec96ea",
+    "ci_run":38634289915,
+    "result":"PASS",
+    "verified_steps":["MCP Streamable HTTP smoke","unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
+  },
+  "acceptance_result":{
+    "existing_specialized_freeze_source_research_and_replay_architecture_preserved":true,
+    "opportunity_views_no_longer_include_risk_buyability_vote":true,
+    "every_u1_candidate_requires_explicit_risk_assessment":true,
+    "block_risk_candidate_cannot_enter_u3":true,
+    "full_execution_assurance_requires_preferred_microstructure_evidence":true,
+    "postclose_final_u3_trigger_review_required":true,
+    "activated_recommendation_execution_feasibility_evidence_required":true,
+    "selection_quality_mechanically_reconciles_to_frozen_plan_and_outcomes":true,
+    "replay_pass_requires_recall_selection_downside_and_execution_metrics":true,
+    "pick_and_review_reports_surface_risk_and_selection_quality":true,
+    "child_identity_and_parent_router_boundary_preserved":true,
+    "hosted_runtime_remains_unpromoted_without_live_evidence":true,
+    "candidate_full_ci_pass":true,
+    "production_ci_pass":false
+  },
+  "terminal_decision":"PENDING_PRODUCTION__KEEP_SPECIALIZED_ASHARE_PRODUCT__OPPORTUNITY_RISK_SEPARATED__SELECTION_AND_EXECUTION_QUALITY_GRADED",
+  "updated_at":"2026-10-15T04:44:00+08:00"
+}

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "a-share-event-driven-agent"
-version = "0.2.0"
-description = "Deterministic A-share event-driven premarket/review runtime with source-specialized decision orchestration and replay-governed learning."
+version = "0.3.0"
+description = "Deterministic A-share event-driven premarket/review runtime with opportunity-risk separation, selection-quality grading, and replay-governed learning."
 requires-python = ">=3.11"
 dependencies = [
   "pydantic>=2.7",

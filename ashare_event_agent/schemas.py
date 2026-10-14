@@ -285,6 +285,27 @@ class RecallPoolPackage(StrictModel):
         return self
 
 
+class CandidateRiskAssessment(StrictModel):
+    ticker: str
+    decision: Literal["PASS", "DEGRADE", "BLOCK"]
+    assurance: Literal["FULL", "DEGRADED"]
+    evidence_refs: list[str] = Field(min_length=1)
+    risk_flags: list[str] = Field(default_factory=list)
+    hard_veto_reasons: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def risk_decision_is_coherent(self):
+        if self.decision == "BLOCK" and not self.hard_veto_reasons:
+            raise ValueError("BLOCK risk assessment requires hard_veto_reasons")
+        if self.decision == "PASS" and self.hard_veto_reasons:
+            raise ValueError("PASS risk assessment cannot contain hard_veto_reasons")
+        if self.decision == "DEGRADE" and not self.risk_flags:
+            raise ValueError("DEGRADE risk assessment requires explicit risk_flags")
+        if self.assurance == "FULL" and self.decision == "DEGRADE":
+            raise ValueError("DEGRADE risk assessment cannot claim FULL assurance")
+        return self
+
+
 class ExecutionCandidate(StrictModel):
     ticker: str
     name: str
@@ -298,18 +319,31 @@ class ExecutionCandidate(StrictModel):
 
 class ExecutionPlan(StrictModel):
     candidates: list[ExecutionCandidate] = Field(max_length=4)
+    risk_assessments: list[CandidateRiskAssessment] = Field(default_factory=list)
+    preferred_microstructure_observed: bool = False
+    assurance: Literal["FULL", "DEGRADED"] = "DEGRADED"
+    market_risk_flags: list[str] = Field(default_factory=list)
     no_trade_conditions: list[str] = Field(min_length=1)
     backup_chain: list[str] = Field(min_length=1)
     first_read_answer: str = Field(min_length=1)
 
     @model_validator(mode="after")
-    def execution_slots_are_unique(self):
+    def execution_plan_is_coherent(self):
         tickers = [c.ticker for c in self.candidates]
         slots = [c.slot for c in self.candidates]
         if len(set(tickers)) != len(tickers):
             raise ValueError("Execution candidates must have unique tickers")
         if len(set(slots)) != len(slots):
             raise ValueError("Execution candidates must have unique role slots")
+        risk_tickers = [row.ticker for row in self.risk_assessments]
+        if len(set(risk_tickers)) != len(risk_tickers):
+            raise ValueError("risk_assessments must contain unique tickers")
+        if self.assurance == "FULL" and not self.preferred_microstructure_observed:
+            raise ValueError("FULL execution assurance requires preferred microstructure evidence")
+        blocked = {row.ticker for row in self.risk_assessments if row.decision == "BLOCK"}
+        selected_blocked = sorted(set(tickers) & blocked)
+        if selected_blocked:
+            raise ValueError(f"BLOCK risk candidates cannot enter final execution plan: {selected_blocked}")
         return self
 
 
@@ -335,6 +369,21 @@ class MarketOutcome(StrictModel):
     result: Literal["LIMIT_UP", "BROKEN", "LIMIT_DOWN", "STRONG", "OTHER"]
     board_count_after: int = Field(ge=0)
     event_labels: list[str] = Field(default_factory=list)
+    trigger_observed: bool | None = None
+    entry_feasible: bool | None = None
+    invalidation_observed: bool | None = None
+    execution_evidence_refs: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def execution_review_is_coherent(self):
+        if self.trigger_observed is False and self.entry_feasible is not None:
+            raise ValueError("entry_feasible must be null when recommendation trigger was not observed")
+        if self.trigger_observed is True:
+            if self.entry_feasible is None:
+                raise ValueError("activated recommendation requires entry_feasible review")
+            if not self.execution_evidence_refs:
+                raise ValueError("activated recommendation requires execution_evidence_refs")
+        return self
 
 
 class OutcomePackage(StrictModel):
@@ -397,6 +446,45 @@ class AttributionPackage(StrictModel):
         return self
 
 
+class SelectionQualityGrade(StrictModel):
+    candidate_slots_total: int = Field(ge=0)
+    activated_total: int = Field(ge=0)
+    not_activated_total: int = Field(ge=0)
+    activated_limit_up_hits: int = Field(ge=0)
+    activated_strong_hits: int = Field(ge=0)
+    activated_broken: int = Field(ge=0)
+    activated_limit_down: int = Field(ge=0)
+    activated_other: int = Field(ge=0)
+    execution_feasible_total: int = Field(ge=0)
+    execution_infeasible_total: int = Field(ge=0)
+    activated_positive_rate: float = Field(ge=0, le=1)
+    activated_downside_rate: float = Field(ge=0, le=1)
+    execution_feasibility_rate: float = Field(ge=0, le=1)
+    notes: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def selection_arithmetic_reconciles(self):
+        if self.candidate_slots_total != self.activated_total + self.not_activated_total:
+            raise ValueError("candidate_slots_total must equal activated_total + not_activated_total")
+        categories = self.activated_limit_up_hits + self.activated_strong_hits + self.activated_broken + self.activated_limit_down + self.activated_other
+        if self.activated_total != categories:
+            raise ValueError("activated_total must equal activated outcome category counts")
+        if self.activated_total != self.execution_feasible_total + self.execution_infeasible_total:
+            raise ValueError("activated_total must equal execution feasible + infeasible counts")
+        positive = self.activated_limit_up_hits + self.activated_strong_hits
+        downside = self.activated_broken + self.activated_limit_down
+        expected_positive = positive / self.activated_total if self.activated_total else 0.0
+        expected_downside = downside / self.activated_total if self.activated_total else 0.0
+        expected_feasible = self.execution_feasible_total / self.activated_total if self.activated_total else 0.0
+        if abs(self.activated_positive_rate - expected_positive) > 1e-9:
+            raise ValueError("activated_positive_rate arithmetic mismatch")
+        if abs(self.activated_downside_rate - expected_downside) > 1e-9:
+            raise ValueError("activated_downside_rate arithmetic mismatch")
+        if abs(self.execution_feasibility_rate - expected_feasible) > 1e-9:
+            raise ValueError("execution_feasibility_rate arithmetic mismatch")
+        return self
+
+
 class RecallGrade(StrictModel):
     actual_limit_up_total: int = Field(ge=0)
     excluded_scope_total: int = Field(ge=0)
@@ -407,6 +495,21 @@ class RecallGrade(StrictModel):
     u1_recall: float = Field(ge=0, le=1)
     miss_counts: dict[str, int] = Field(default_factory=dict)
     reconciliation_notes: list[str] = Field(default_factory=list)
+    selection_quality: SelectionQualityGrade = Field(default_factory=lambda: SelectionQualityGrade(
+        candidate_slots_total=0,
+        activated_total=0,
+        not_activated_total=0,
+        activated_limit_up_hits=0,
+        activated_strong_hits=0,
+        activated_broken=0,
+        activated_limit_down=0,
+        activated_other=0,
+        execution_feasible_total=0,
+        execution_infeasible_total=0,
+        activated_positive_rate=0.0,
+        activated_downside_rate=0.0,
+        execution_feasibility_rate=0.0,
+    ))
 
     @model_validator(mode="after")
     def recall_arithmetic_reconciles(self):
@@ -495,6 +598,11 @@ class ReplayEval(StrictModel):
             raise ValueError("PASS cannot contain material regressions")
         if not self.baseline_metrics or not self.candidate_metrics:
             raise ValueError("PASS requires baseline and candidate metrics")
+        required_metrics = {"u1_recall", "activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"}
+        missing_baseline = sorted(required_metrics - set(self.baseline_metrics))
+        missing_candidate = sorted(required_metrics - set(self.candidate_metrics))
+        if missing_baseline or missing_candidate:
+            raise ValueError(f"PASS replay must report recall, final-selection and execution-quality metrics; missing baseline={missing_baseline} candidate={missing_candidate}")
         if not self.mechanical_evidence_refs:
             raise ValueError("PASS requires mechanical replay evidence refs")
         missing_hashes = sorted(set(self.case_refs) - set(self.cassette_hashes))

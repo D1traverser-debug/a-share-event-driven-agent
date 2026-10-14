@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "a-share-event-driven-agent",
-  "version": "0.2.0",
-  "description": "A-share event-driven recommendation and review system with point-in-time freeze, THS/Level-2 market-data preference, Dingpan five-pool reconciliation, broad recall, structured candidate adjudication and replay-governed learning.",
+  "version": "0.3.0",
+  "description": "A-share event-driven recommendation and review system with point-in-time freeze, THS/Level-2 preferred microstructure, Dingpan five-pool reconciliation, broad recall, opportunity/risk separation, final-selection/execution quality grading, and replay-governed learning.",
   "repository": "https://github.com/D1traverser-debug/a-share-event-driven-agent",
-  "keywords": ["a-share", "stock-picking", "level2", "post-close-review", "event-driven", "limit-up", "mcp", "agent"]
+  "keywords": ["a-share", "stock-picking", "level2", "risk-gating", "post-close-review", "event-driven", "limit-up", "mcp", "agent"]
 }

@@ -90,7 +90,9 @@ def _build_pick_report(state) -> Path:
         f"# A-share Premarket Pick Report | {state.contract.trading_date}", "",
         f"Frozen hash: `{state.frozen_hash or ''}`",
         f"Main-board only: {state.contract.mainboard_only}",
-        f"Auction used: {state.contract.auction_used}", "",
+        f"Auction used: {state.contract.auction_used}",
+        f"Execution assurance: **{plan.get('assurance','DEGRADED')}**",
+        f"Preferred microstructure observed: {bool(plan.get('preferred_microstructure_observed'))}", "",
         "## First-read answer", str(plan.get("first_read_answer") or "N/A"), "", "## Execution candidates",
     ]
     candidates = plan.get("candidates") or []
@@ -105,7 +107,19 @@ def _build_pick_report(state) -> Path:
             f"  - Why this: {'; '.join(row.get('why_this') or [])}",
             f"  - Why not peers: {'; '.join(row.get('why_not_peers') or []) or 'N/A'}",
         ])
+    lines.extend(["", "## Risk / buyability gate"])
+    for row in plan.get("risk_assessments") or []:
+        lines.extend([
+            f"- **{row.get('ticker','')}** | {row.get('decision','')} | assurance={row.get('assurance','')}",
+            f"  - Risk flags: {'; '.join(row.get('risk_flags') or []) or 'None'}",
+            f"  - Hard veto: {'; '.join(row.get('hard_veto_reasons') or []) or 'None'}",
+            f"  - Evidence: {'; '.join(row.get('evidence_refs') or [])}",
+        ])
+    if not plan.get("risk_assessments"):
+        lines.append("- No risk assessments recorded (final audit should not accept a non-empty U1 without them).")
+    market_risk_lines = [f"- {x}" for x in (plan.get("market_risk_flags") or [])] or ["- None recorded"]
     lines.extend([
+        "", "## Market-level risk flags", *market_risk_lines,
         "", "## No-trade conditions", *[f"- {x}" for x in (plan.get("no_trade_conditions") or [])],
         "", "## Backup chain", *[f"- {x}" for x in (plan.get("backup_chain") or [])],
         "", "## Recall boundary",
@@ -113,7 +127,7 @@ def _build_pick_report(state) -> Path:
         f"- U1 candidates: {len(recall.get('u1_candidates') or [])}",
         f"- Height records: {len(market.get('heights') or [])}",
         f"- Role hypotheses: {len(market.get('roles') or [])}", "",
-        "> This report is a frozen research/execution artifact, not a guarantee of return. Post-close facts must never be written back into it.",
+        "> This report is a frozen recommendation/research artifact, not a guarantee of return. Post-close facts must never be written back into it.",
     ])
     return _write_text(RUNS_DIR / state.contract.task_id / "PICK_REPORT.md", "\n".join(lines) + "\n")
 
@@ -122,6 +136,7 @@ def _build_final_artifacts(state) -> tuple[Path, Path]:
     outcomes = state.working.get("review_outcomes") or {}
     attribution = state.working.get("attribution") or {}
     grade = state.working.get("recall_grading") or {}
+    selection = grade.get("selection_quality") or {}
     learning = state.working.get("learning_audit") or {}
     proposal = state.working.get("rule_proposal") or {}
     replay = state.working.get("replay_eval") or {}
@@ -131,11 +146,18 @@ def _build_final_artifacts(state) -> tuple[Path, Path]:
         "## Outcome reconciliation",
         f"- Outcome records: {len(outcomes.get('outcomes') or [])}",
         f"- Pool counts: {json.dumps(outcomes.get('pool_counts') or {}, ensure_ascii=False)}", "",
-        "## Recall grading",
+        "## Research recall quality",
         f"- Knowable limit-ups: {grade.get('knowable_limit_up_total', 0)}",
         f"- U0 hits / recall: {grade.get('u0_hits', 0)} / {grade.get('u0_recall', 0)}",
         f"- U1 hits / recall: {grade.get('u1_hits', 0)} / {grade.get('u1_recall', 0)}",
         f"- Miss counts: {json.dumps(grade.get('miss_counts') or {}, ensure_ascii=False)}", "",
+        "## Final-selection / execution quality",
+        f"- Final slots: {selection.get('candidate_slots_total', 0)}",
+        f"- Activated / not activated: {selection.get('activated_total', 0)} / {selection.get('not_activated_total', 0)}",
+        f"- Activated positive rate: {selection.get('activated_positive_rate', 0)}",
+        f"- Activated downside rate: {selection.get('activated_downside_rate', 0)}",
+        f"- Execution feasibility rate: {selection.get('execution_feasibility_rate', 0)}",
+        f"- Activated outcomes: limit_up={selection.get('activated_limit_up_hits', 0)}, strong={selection.get('activated_strong_hits', 0)}, broken={selection.get('activated_broken', 0)}, limit_down={selection.get('activated_limit_down', 0)}, other={selection.get('activated_other', 0)}", "",
         "## Attribution coverage",
         f"- Actual limit-ups attributed: {len(attribution.get('actual_limit_ups') or [])}",
         f"- Broken boards attributed: {len(attribution.get('broken_boards') or [])}",
@@ -174,15 +196,15 @@ def _next_action(state) -> str:
         Stage.UNIVERSE_AUDIT: "audit node exhaustion and mapping omissions",
         Stage.MARKET_STRUCTURE: "submit height facts plus evidence-backed role hypotheses/rotation maps",
         Stage.RECALL_POOL: "submit U0/U1 recall-first pool without leader-based early pruning",
-        Stage.EXECUTION_PLAN: "submit narrow U3 execution plan with triggers/invalidation/NO TRADE",
+        Stage.EXECUTION_PLAN: "adjudicate opportunity views, risk-assess every U1 candidate, enforce hard vetoes, then submit U3/NO TRADE with assurance",
         Stage.PREMARKET_AUDIT: "run independent premarket red-team audit; PASS freezes snapshot",
         Stage.FROZEN: "premarket snapshot is immutable; after close call start_postclose_review",
-        Stage.REVIEW_OUTCOMES: "submit official post-close outcome pools/counts",
+        Stage.REVIEW_OUTCOMES: "submit reconciled post-close outcomes plus trigger/execution-feasibility evidence for final U3",
         Stage.ATTRIBUTION: "attribute every in-scope limit-up and key failures against the frozen snapshot",
-        Stage.RECALL_GRADING: "compute knowable U0/U1 recall and miss classes",
+        Stage.RECALL_GRADING: "grade research recall separately from final-selection activation/outcome/execution feasibility",
         Stage.LEARNING_AUDIT: "identify repeatable errors without changing rules yet",
         Stage.RULE_PROPOSAL: "submit one bounded rule proposal or explicit N_A",
-        Stage.REPLAY_EVAL: "replay proposed rule across frozen historical cases; no one-day promotion",
+        Stage.REPLAY_EVAL: "replay proposed rule across frozen historical cases using recall + selection + execution metrics; no one-day promotion",
         Stage.FINAL_AUDIT: "independent final audit and writeback boundary check",
         Stage.COMPLETE: "market-day loop complete",
         Stage.BLOCKED: "repair the recorded dependency/contract defect; do not silently bypass it",
@@ -305,7 +327,7 @@ def submit_execution_plan(task_id: str, payload: dict) -> dict:
     state = _load(task_id); _require_stage(state, Stage.EXECUTION_PLAN)
     plan = ExecutionPlan.model_validate(payload)
     state.working["execution_plan"] = plan.model_dump(mode="json")
-    state.set_gate("execution_plan", GateStatus.PASS, [f"slots={len(plan.candidates)}", "NO_TRADE defined"])
+    state.set_gate("execution_plan", GateStatus.PASS, [f"slots={len(plan.candidates)}", f"risk_assessments={len(plan.risk_assessments)}", f"assurance={plan.assurance}", "NO_TRADE defined"])
     return _summary(_save_advance(state))
 
 
@@ -332,7 +354,8 @@ def submit_market_outcomes(task_id: str, payload: dict) -> dict:
     state = _load(task_id); _require_stage(state, Stage.REVIEW_OUTCOMES); engine.assert_frozen_unchanged(state)
     pkg = OutcomePackage.model_validate(payload)
     state.working["review_outcomes"] = pkg.model_dump(mode="json")
-    state.set_gate("review_outcomes", GateStatus.PASS, [f"outcomes={len(pkg.outcomes)}", json.dumps(pkg.pool_counts, ensure_ascii=False)])
+    activated = sum(1 for row in pkg.outcomes if row.trigger_observed is True)
+    state.set_gate("review_outcomes", GateStatus.PASS, [f"outcomes={len(pkg.outcomes)}", f"activated_u3={activated}", json.dumps(pkg.pool_counts, ensure_ascii=False)])
     return _summary(_save_advance(state))
 
 
@@ -350,7 +373,8 @@ def submit_recall_grading(task_id: str, payload: dict) -> dict:
     if grade.u0_hits > grade.knowable_limit_up_total or grade.u1_hits > grade.knowable_limit_up_total:
         raise ValueError("recall hits cannot exceed knowable limit-up count")
     state.working["recall_grading"] = grade.model_dump(mode="json")
-    state.set_gate("recall_grading", GateStatus.PASS, [f"u0_recall={grade.u0_recall:.4f}", f"u1_recall={grade.u1_recall:.4f}"])
+    q = grade.selection_quality
+    state.set_gate("recall_grading", GateStatus.PASS, [f"u0_recall={grade.u0_recall:.4f}", f"u1_recall={grade.u1_recall:.4f}", f"activated_positive_rate={q.activated_positive_rate:.4f}", f"activated_downside_rate={q.activated_downside_rate:.4f}", f"execution_feasibility_rate={q.execution_feasibility_rate:.4f}"])
     return _summary(_save_advance(state))
 
 
