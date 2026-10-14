@@ -1,39 +1,61 @@
 # A-share Event-Driven Agent
 
-A-share domain runtime for premarket recommendation, post-close review, learning governance and replay regression under Universal Agent OS (UAOS).
+A-share domain system for current-day premarket recommendation, post-close review, replay-governed learning and evidence-preserving recovery under Universal Agent OS (UAOS).
 
 ## Current authority
-- Cross-domain controller: `D1traverser-debug/universal-agent-os@main`
+
+- Parent control plane/common method: `D1traverser-debug/universal-agent-os@main`
 - Domain entry: `UAOS_SKILL.md`
+- Product requirements: `docs/product_requirements.md`
+- A-share internal decision graph: `config/MARKET_DAY_ORCHESTRATION.json`
 - Binding: `.uaos/MANIFEST.json`, `.uaos/ADAPTER.json`, `.uaos/CAPABILITIES.json`
-- Runtime promotion/authority: `config/RUNTIME_AUTHORITY.json`
-- Canonical rules: `references/`, `config/`, `ashare_event_agent/`
+- Hosted runtime promotion/assurance: `config/RUNTIME_AUTHORITY.json`
+- Canonical business rules: `references/`, `config/`, `ashare_event_agent/`
 - Public optional MCP/runtime surface: `ashare_event_agent/plugin_server.py`
 
-There is no domain-level cross-chat controller/task index/lease/resume protocol. The retired `continuity/` namespace and old `config/cutover_status.json` are physically absent from the current tree.
+When selected, this domain runs directly as `DOMAIN:ashare`. UAOS is not a mandatory proxy for each business turn and does not own per-trading-day A-share business state. Child `TaskContract.task_id` + `MarketDayState` is the domain market-day/run identity/state model; parent and child IDs are distinct.
 
-## Runtime flow
-Premarket:
+There is no domain-level second cross-domain controller, lease/resume-epoch protocol or peer-chat debate system. The retired `continuity/` namespace and old `config/cutover_status.json` remain absent.
+
+## Product flow
+
+Premarket deterministic stages:
 `INTAKE -> FREEZE -> SOURCE_COMPLETION -> SOURCE_AUDIT -> EVENT_LEDGER -> INDUSTRY_RESEARCH -> STOCKBASE_RECALL -> UNIVERSE_AUDIT -> MARKET_STRUCTURE -> RECALL_POOL -> EXECUTION_PLAN -> PREMARKET_AUDIT -> FROZEN`
 
 Post-close:
 `FROZEN -> REVIEW_OUTCOMES -> ATTRIBUTION -> RECALL_GRADING -> LEARNING_AUDIT -> RULE_PROPOSAL -> REPLAY_EVAL -> FINAL_AUDIT -> COMPLETE`
 
-UAOS resolves task identity and current trading day before domain execution. Historical premarket state never resumes as if its time window were current.
+The outer stage machine is fail-closed. Inside stages, `MARKET_DAY_ORCHESTRATION.json` allows only explicit A-share dependencies: independent source lanes can progress in parallel; event/industry and market-structure research fan into broad recall; event-alpha, market-structure and execution/buyability candidate views are compared; bounded counterevidence review is advisory; one authorized decision owner produces U3 (max four slots) or NO TRADE.
+
+## A-share source hierarchy
+
+- Official/first-party sources own hard corporate/regulatory facts.
+- 同花顺 / Level-2 is the preferred market-state/microstructure lane when current-session access is proven; Level-2 evidence carries higher assurance for depth/order-flow/buyability claims than weaker quote summaries.
+- 选股通 Dingpan owns the five pool definitions and count/date reconciliation.
+- Longbridge or another structured connector is fallback/corroboration, not a redefinition of five-pool or official-fact semantics.
+- P01-P09 remain the fixed research/news/industry set.
+
+Configured availability is not execution evidence. Missing hard/preferred capability blocks or explicitly lowers assurance for only the dependent work unit; no silent equivalence substitution.
 
 ## Core invariants
+
 - FreezeCard bounds all premarket information; post-close facts never backfill it.
-- Missing required capability/data blocks or explicitly degrades only the affected work unit; no silent free-form fallback.
-- P01-P09/source completeness and time provenance are reconciled before final premarket claims.
-- StockBase recommendation access is read-only; review writeback is receipt-gated.
 - Research recall is broad before execution ranking narrows candidates.
+- Every final U3 ticker descends from frozen U1.
+- Candidate selection is comparative (`why_this` + `why_not_peers`); NO TRADE is first-class.
+- Market role is not proven by board count alone.
+- Five-pool and outcome counts reconcile before review acceptance.
+- Post-close attribution is derived against frozen membership, not rewritten hindsight.
 - One market day creates evidence/hypotheses, not an automatically promoted permanent rule.
+- Every detected problem requires research plus macro/assumption reflection before durable repair.
 - Audit-tool invocation is not independent-review proof; assurance follows actual execution evidence.
 
 ## Runtime authority
-`config/RUNTIME_AUTHORITY.json` is the sole owner-runtime promotion switch. `runtime_authority_enabled=false` means runtime-only certification remains blocked unless current evidence changes that status. UAOS remains controller authority regardless of owner-runtime promotion.
+
+`config/RUNTIME_AUTHORITY.json` separates **domain business ownership** from **hosted runtime assurance**. `runtime_authority_enabled=false` does not return business ownership to UAOS; it only means hosted-runtime-only certification/durable runtime resume is not yet proven. Current chat/tool execution may still perform governed A-share research, decision, review and artifacts under the repository contracts.
 
 Notion/Google Drive are source/knowledge/artifact inputs only. They are never controller/task-state fallbacks.
 
 ## Validation
-Unit/static/contract tests cover schemas, transitions, freeze integrity, source lineage, role evidence, recall pruning, recovery, replay, packaging and current-tree architecture hygiene. Live source/runtime capability claims require real current-session evidence.
+
+Unit/trajectory tests, contract evals, static ownership/architecture fitness checks, wheel-install smoke and current-source/runtime capability evidence protect schemas, transitions, freeze integrity, source lineage, market-day identity, U0/U1/U3 lineage, decision graph semantics, review/replay learning and packaging.
