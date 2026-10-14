@@ -1,0 +1,10 @@
+{
+  "schema_version":"2.0",
+  "agent_id":"ashare",
+  "domain_id":"ashare",
+  "controller":"D1traverser-debug/universal-agent-os@main",
+  "status":"UAOS_CONTROL_PLANE_ACTIVE",
+  "skill":{"entrypoint":"UAOS_SKILL.md"},
+  "binding":{"controller_ref":"D1traverser-debug/universal-agent-os@main:CURRENT_SYSTEM.json","adapter_ref":".uaos/ADAPTER.json","capability_ref":".uaos/CAPABILITIES.json"},
+  "domain_authority":{"runtime_authority_ref":"config/RUNTIME_AUTHORITY.json","canonical_rule_roots":["references","config","ashare_event_agent"],"runtime_root":"ashare_event_agent"}
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version":"2.0",
+  "controller":"D1traverser-debug/universal-agent-os@main",
+  "code_rule_authority":"D1traverser-debug/a-share-event-driven-agent@main",
+  "runtime_authority_enabled":false,
+  "runtime_state_authority_when_enabled":"ashare_event_agent runtime checkpoint",
+  "runtime_disabled_behavior":"UAOS_MAY_ROUTE_RESEARCH_GOVERNANCE_AND_EVIDENCE_WORK__RUNTIME_ONLY_CERTIFICATION_REMAINS_BLOCKED",
+  "required_promotion_gates":{
+    "historical_multi_regime_replay":"PENDING",
+    "real_p01_p09_live_source_adapter_validation":"PENDING",
+    "durable_hosted_checkpoint_artifact_store":"PENDING",
+    "fresh_session_runtime_restart_recovery":"PENDING",
+    "real_premarket_postclose_learning_e2e":"PENDING",
+    "independent_audit_attestation":"PENDING"
+  },
+  "external_system_roles":{"notion":"SOURCE_OR_KNOWLEDGE_ONLY","google_drive":"SOURCE_OR_ARTIFACT_ONLY","stockbase":"COMPANY_KNOWLEDGE_READ__REVIEW_WRITE_RECEIPT_GATED"},
+  "old_continuity_task_manifests_are_authority":false
+}

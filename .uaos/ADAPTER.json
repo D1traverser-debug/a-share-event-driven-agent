@@ -1,0 +1,12 @@
+{
+  "schema_version":"2.0",
+  "domain_id":"ashare",
+  "controller":"D1traverser-debug/universal-agent-os@main",
+  "status":"UAOS_CONTROL_PLANE_ACTIVE",
+  "task_identity_authority":"UAOS",
+  "cross_chat_continuity_authority":"UAOS",
+  "business_rule_authority":"D1traverser-debug/a-share-event-driven-agent@main",
+  "runtime_state_authority":"ONLY_WHEN_CONFIG_RUNTIME_AUTHORITY_ENABLES_IT_WITH_CURRENT_EVIDENCE",
+  "historical_market_day_state":"EVIDENCE_ONLY_NOT_AUTO_RESUMABLE",
+  "legacy_controller_compatibility":"NONE"
+}
