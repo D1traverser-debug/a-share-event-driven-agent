@@ -1,6 +1,6 @@
 {
   "audit_id":"ASHARE-SPECIALIZED-PRODUCT-ARCHITECTURE-20261015",
-  "status":"EVALUATING",
+  "status":"CANDIDATE_VERIFIED__PRODUCTION_PENDING",
   "target_release":"0.2.0",
   "trigger":[
     "USER_REQUEST_TO_HARDEN_RECOMMENDATION_SYSTEM",
@@ -50,6 +50,13 @@
     "problem_response":"EVERY_PROBLEM_RESEARCH_PLUS_MACRO_AND_ASSUMPTION_REFLECTION",
     "persistent_peer_chat":false
   },
+  "candidate_evidence":{
+    "pr":5,
+    "verified_head":"740d39211773123a5fdb0e89ef11dc19febead70",
+    "ci_run":38628590148,
+    "result":"PASS",
+    "verified_steps":["MCP Streamable HTTP smoke","61 unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
+  },
   "acceptance_before_promotion":[
     "all existing unit/trajectory tests pass or stale tests are migrated to current ownership semantics without weakening business guards",
     "contract eval passes",
@@ -58,5 +65,5 @@
     "child production main CI passes after merge",
     "only after child production verification may UAOS collapse ashare parent state to one router"
   ],
-  "updated_at":"2026-10-15T03:48:00+08:00"
+  "updated_at":"2026-10-15T04:04:00+08:00"
 }
