@@ -8,8 +8,8 @@ from uuid import uuid4
 from pydantic import BaseModel, Field, model_validator
 
 
-CURRENT_CONTRACT_VERSION = "2.0"
-CURRENT_RUNTIME_VERSION = "0.2.0"
+CURRENT_CONTRACT_VERSION = "2.1"
+CURRENT_RUNTIME_VERSION = "0.3.0"
 
 
 class Stage(str, Enum):
