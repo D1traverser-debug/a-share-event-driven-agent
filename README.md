@@ -25,7 +25,9 @@ Premarket deterministic stages:
 Post-close:
 `FROZEN -> REVIEW_OUTCOMES -> ATTRIBUTION -> RECALL_GRADING -> LEARNING_AUDIT -> RULE_PROPOSAL -> REPLAY_EVAL -> FINAL_AUDIT -> COMPLETE`
 
-The outer stage machine is fail-closed. Inside stages, `MARKET_DAY_ORCHESTRATION.json` allows only explicit A-share dependencies: independent source lanes can progress in parallel; event/industry and market-structure research fan into broad recall; event-alpha, market-structure and execution/buyability candidate views are compared; bounded counterevidence review is advisory; one authorized decision owner produces U3 (max four slots) or NO TRADE.
+The outer stage machine is fail-closed. Inside stages, `MARKET_DAY_ORCHESTRATION.json` allows only explicit A-share dependencies: independent source lanes can progress in parallel; event/industry and market-structure research fan into broad recall; event-alpha and market-structure lanes independently compete on **opportunity strength**; bounded counterevidence review critiques them; an opportunity owner produces a preliminary slate; a separate all-U1 risk/execution-feasibility gate may PASS, DEGRADE or BLOCK candidates; one authorized trade-decision owner then produces U3 (max four slots) or NO TRADE.
+
+Risk/buyability is not a third bullish opinion. A hard-veto candidate cannot be voted into U3, and missing preferred microstructure evidence must lower execution assurance rather than being hidden by stronger narrative evidence.
 
 ## A-share source hierarchy
 
@@ -42,11 +44,15 @@ Configured availability is not execution evidence. Missing hard/preferred capabi
 - FreezeCard bounds all premarket information; post-close facts never backfill it.
 - Research recall is broad before execution ranking narrows candidates.
 - Every final U3 ticker descends from frozen U1.
+- Every frozen U1 candidate receives explicit risk/buyability assessment before final U3 adjudication.
+- `BLOCK` risk candidates cannot enter U3; FULL execution assurance requires preferred microstructure evidence.
 - Candidate selection is comparative (`why_this` + `why_not_peers`); NO TRADE is first-class.
 - Market role is not proven by board count alone.
 - Five-pool and outcome counts reconcile before review acceptance.
 - Post-close attribution is derived against frozen membership, not rewritten hindsight.
+- Post-close grades research recall, final-selection activation/outcome quality, and execution feasibility separately.
 - One market day creates evidence/hypotheses, not an automatically promoted permanent rule.
+- Durable replay cannot claim improvement from recall alone while hiding worse downside or executability.
 - Every detected problem requires research plus macro/assumption reflection before durable repair.
 - Audit-tool invocation is not independent-review proof; assurance follows actual execution evidence.
 
@@ -58,4 +64,4 @@ Notion/Google Drive are source/knowledge/artifact inputs only. They are never co
 
 ## Validation
 
-Unit/trajectory tests, contract evals, static ownership/architecture fitness checks, wheel-install smoke and current-source/runtime capability evidence protect schemas, transitions, freeze integrity, source lineage, market-day identity, U0/U1/U3 lineage, decision graph semantics, review/replay learning and packaging.
+Unit/trajectory tests, contract evals, static ownership/architecture fitness checks, wheel-install smoke and current-source/runtime capability evidence protect schemas, transitions, freeze integrity, source lineage, market-day identity, U0/U1/U3 lineage, opportunity-risk separation, decision graph semantics, final-selection/execution grading, review/replay learning and packaging.
