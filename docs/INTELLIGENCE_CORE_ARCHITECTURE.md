@@ -1,31 +1,32 @@
 # A-share Intelligence Core Architecture
 
-Status: **future architecture boundary / non-executable design**. This document does not create a Core, change current business authority, or promote the candidate Runtime. `config/cutover_status.json` remains the only Runtime cutover switch, and current GitHub Continuity task state remains authoritative while Runtime authority is disabled.
+Status: **future shared-research boundary / non-executable design**. This document does not create a Core, change current business authority, or promote the hosted runtime.
 
-## 1. Purpose
+Current authority is defined by `.uaos/*`, `config/RUNTIME_AUTHORITY.json`, `docs/product_requirements.md` and the A-share runtime/contracts. The A-share domain owns market-day business identity/state; UAOS is the parent control plane and must not mirror per-day A-share business state.
 
-Premarket recommendation, post-close review and Financial Writing need the same factual world but optimize different objectives. The shared layer therefore owns **research intelligence**, not business workflow state.
+## Purpose
 
-The target architecture is:
+Premarket recommendation, post-close review and Financial Writing may need overlapping factual company/event/industry knowledge, but they optimize different products. A future shared layer may own **research intelligence**, not consumer business workflow state.
+
+Target relationship:
 
 ```text
-Universal Continuity Layer
+UAOS common control/governance plane
         |
-        +--> A-share Market Agent
+        +--> A-share Event-Driven Agent
         |      +-- Premarket recommendation
         |      +-- Post-close review / learning
         |
         +--> Financial Writing Agent
-                   |
-                   v
-          A-share Intelligence Core
+        |
+        +--> future shared research/intelligence substrate
 ```
 
-The Core should make the system broadly knowledgeable without forcing every task to load an entire legacy/source corpus into model context. Knowledge is comprehensive at rest and retrieved selectively at execution time.
+The shared substrate must not become another controller, task registry or recommendation engine.
 
-## 2. Reuse what already exists
+## Reuse current A-share primitives
 
-Current canonical schemas already contain useful Core primitives:
+Current canonical schemas already contain useful research primitives:
 
 - `EvidenceRecord` — claim/provenance/availability/confidence/negative evidence.
 - `EventCard` — event/catalyst identity and tradability classification.
@@ -33,135 +34,103 @@ Current canonical schemas already contain useful Core primitives:
 - `StockMapping` — company-to-event/node mapping, business stage, products, customers/orders/capacity, profit transmission and positive/negative evidence.
 - `SourceReceipt` — source completeness and retrieval boundary.
 
-These should evolve into the shared research substrate rather than be duplicated into a second StockBase/ArticleBase/MarketBase implementation.
+These can evolve into a shared research substrate rather than be copied into parallel StockBase/ArticleBase/MarketBase truth stores.
 
-## 3. What is **not** shared durable knowledge
+## What must remain A-share market-day state
 
-The following are market-day/task-state objects and remain owned by Market Agent:
+The following are time-bound recommendation/review objects and remain owned by the A-share Agent:
 
+- `TaskContract.task_id` / `MarketDayState`
 - `FreezeCard`
 - `HeightRecord`
 - `RoleHypothesis`
 - `MarketStructurePackage`
 - `RecallCandidate` / `RecallPoolPackage`
 - `ExecutionCandidate` / `ExecutionPlan`
-- FROZEN snapshot/hash
+- frozen snapshot/hash
 - post-close `OutcomePackage`, `AttributionPackage`, `RecallGrade`
+- `config/MARKET_DAY_ORCHESTRATION.json` business decision graph
 
-A company may have stable factual attributes in the Core, while its role (leader, pioneer, card leader, capacity anchor, ambush, etc.) is time-bound and must never be promoted into permanent company truth without an explicit time dimension.
+A stable company fact may be shared; a stock's current role, buyability, U1 membership or recommendation slot may not be promoted into timeless company truth.
 
-## 4. Knowledge classes
+## Knowledge classes
 
-The Core logically separates at least:
+A future Core may distinguish:
 
-1. **Stable Knowledge** — company business, products, customers, capacity, ownership/relationships, value-chain position.
-2. **Event Knowledge** — policy, order, price, product launch, conference, earnings, supply/demand shock, future calendar catalyst.
-3. **Industry/Concept Graph** — event -> concept -> L0..Ln node -> economics -> beneficiary/damage path -> company mapping.
-4. **Evidence Ledger** — source, availability time, effective time, claim, confidence, counterevidence and provenance.
-5. **Market Observation** — date/time-scoped facts that may inform Market Agent but are not stable company truth.
-6. **Hypothesis** — an unpromoted explanatory/strategy proposition requiring replay or repeated evidence.
-7. **Promoted Rule** — executable strategy policy only after replay/regression/promotion gates.
-8. **Writing Learning** — title/hook/retention/article-craft evidence owned by Financial Writing, not by Market Agent strategy rules.
+1. stable company knowledge;
+2. event/catalyst knowledge;
+3. industry/concept/value-chain graph;
+4. evidence ledger with availability/effective time;
+5. date-scoped market observations;
+6. unpromoted hypotheses;
+7. promoted strategy rules only after replay/regression;
+8. writing-specific learning owned by Financial Writing.
 
-## 5. Fact and strategy rule must never share a promotion path
+## Fact and strategy rules must never share a promotion path
 
 Example:
 
-- `Company X owns platform Y` can become a durable fact after evidence validation.
-- `Platform-Y companies are more likely to limit-up tomorrow` is a strategy hypothesis, not a fact.
+- `Company X supplies product Y` can become a durable fact after evidence validation.
+- `Product-Y suppliers are more likely to limit-up tomorrow` is a strategy hypothesis and must use the A-share replay/promotion path.
 
-A single market day may create a hypothesis but may not directly create a durable executable rule. Strategy promotion remains:
+A single day may create a hypothesis but may not directly create a durable executable recommendation rule.
 
-`observation -> hypothesis -> frozen historical replay -> regression/counterexample audit -> promotion eligibility -> reviewed code/rule change`.
+## Candidate write path
 
-## 6. KnowledgeCandidate write path
+Any consumer may discover knowledge but must not directly overwrite shared truth:
 
-Any consumer may discover knowledge, but consumers do not directly mutate durable truth.
+`consumer -> KnowledgeCandidate -> entity/provenance/time/conflict validation -> curator -> canonical shared intelligence`.
 
-Target contract:
+Suggested candidate fields include claim, entity refs, knowledge class, source refs, available/effective time, confidence, positive/negative evidence, conflicts, discoverer, originating child business ref and status.
 
-```text
-Consumer (Premarket / Review / Writing / Research)
-        |
-        v
-KnowledgeCandidate
-        |
-        +-- dedupe / entity resolution
-        +-- provenance & effective-time validation
-        +-- conflict / counterevidence scan
-        +-- freshness / expiry classification
-        +-- stable-vs-event-vs-market-state classification
-        v
-Knowledge Curator
-        |
-        v
-Canonical Intelligence Core
-```
+The originating A-share child task ID may be stored as provenance; it must not become a shared controller identity.
 
-Minimum candidate fields should include:
+## Read path
 
-- `candidate_id`
-- `claim`
-- `entity_refs`
-- `knowledge_class`
-- `source_refs`
-- `available_at`
-- `effective_from` / `effective_to` when known
-- `confidence`
-- `positive_evidence`
-- `negative_evidence`
-- `conflicts`
-- `discovered_by`
-- `discovered_in_task_id`
-- `status = PENDING | ACCEPTED | REJECTED | SUPERSEDED`
+Do not make an “all-knowing” system by loading all persistent documents into every prompt.
 
-This generalizes the current `StockBase_pending_updates/ReviewQueue` idea rather than letting each consumer invent a separate writeback mechanism.
+Read selectively:
+`event/catalyst -> related graph nodes -> mapped companies -> stable facts -> evidence -> historical/event context -> task-specific market state`.
 
-## 7. Read path: broad knowledge, narrow context
+The shared store can be broad; execution context remains relevance-selected and point-in-time bounded.
 
-Do not solve “all-knowing system” by loading all persistent documents into every prompt.
+## Consumer boundaries
 
-Execution should query by current task:
+### A-share / Premarket
+Reads shared intelligence, then owns trading-day identity, freeze, recall, role ranking, buyability, candidate adjudication and execution planning.
 
-`event/catalyst -> related graph nodes -> mapped companies -> stable facts -> evidence -> historical/event context -> required task-specific market state`.
+### A-share / Post-close
+Reads the immutable frozen snapshot plus actual outcomes. It may propose knowledge corrections and strategy hypotheses; strategy promotion remains A-share-owned and replay-gated.
 
-The Core can be large; the model context should be relevance-selected and evidence-bounded.
+### Financial Writing
+May read shared intelligence and submit knowledge candidates. It owns article identity, workflow, writing decisions and writing-specific evolution. It must not mutate A-share recommendation rules.
 
-## 8. Consumer boundaries
+## Current storage/authority roles
 
-### Market Agent / Premarket
-Reads shared intelligence, then owns freeze, recall, role ranking, buyability, trigger/invalidation and execution planning.
+- **A-share GitHub `main`**: product/code/rules/tests/evals authority.
+- **A-share child market-day state**: domain business identity/state.
+- **Hosted runtime store**: durable executable checkpoint authority only if current promotion gates pass.
+- **UAOS**: cross-domain parent governance/common capabilities/optional parent guidance, not per-day market state.
+- **StockBase/current knowledge inputs**: read/review-write under their receipt boundaries.
+- **Notion/Google Drive/external stores**: source/knowledge/artifact inputs only.
 
-### Market Agent / Post-close
-Reads the immutable premarket snapshot plus actual outcomes. It may propose knowledge corrections and strategy hypotheses. It is the current controlled reviewer for StockBase-style durable company updates until the Curator path is implemented.
+## Migration order if the Core is ever implemented
 
-### Financial Writing Agent
-Reads shared intelligence and may submit KnowledgeCandidates discovered during research. It owns article cognition, structure, title, hook, human voice, delivery and writing-specific learning. It must not mutate Market Agent execution rules.
+1. Keep current A-share product/identity boundaries intact.
+2. Add explicit KnowledgeCandidate schema/tests without changing current StockBase write authority.
+3. Map current event/industry/company fields into shared primitives without duplicate truth stores.
+4. Build read-only query/package interface first.
+5. Shadow-compare A-share and Financial consumption.
+6. Add curator conflict/version/write path.
+7. Migrate existing review queues only after replay/E2E evidence.
+8. Cut over components independently behind machine-readable gates.
 
-## 9. Storage and authority roles during migration
+## Non-goals
 
-- **GitHub `main`**: current schema/code/Skill/tests/evals/rule authority and owner Continuity governance.
-- **Owner Runtime durable store**: future executable task/checkpoint/freeze/gate/artifact identity/version authority only after explicit promotion.
-- **StockBase/current knowledge sources**: current shared company-knowledge inputs under their own read/write receipt boundaries.
-- **Notion / Google Drive / other external stores**: optional source, knowledge, raw artifact and migration-mirror inputs only. They are not task/control authorities and cannot override GitHub task state.
-- **Universal Continuity**: cross-agent discovery/routing/takeover/progress protocol. Owner task identity and business state remain in the owner’s authoritative surfaces; no separate “Library database” is introduced by this design.
-
-## 10. Migration order
-
-1. Keep existing governance/cutover boundaries intact; no premature Runtime/Core authority promotion.
-2. Add explicit KnowledgeCandidate schema and tests without changing StockBase write authority.
-3. Map current EventBase/IndustryBase/StockBase fields into Core primitives; do not create duplicate truth stores.
-4. Build read-only Core query/package interface first.
-5. Make Premarket and Writing consume the same Research/Intelligence package in shadow comparison.
-6. Add Curator write path and conflict/version semantics.
-7. Migrate ReviewQueue into the Curator path only after replay/E2E evidence.
-8. Cut over components independently behind explicit machine-readable gates.
-
-## 11. Non-goals
-
-- No monolithic “super Skill”.
-- No automatic merging of recommendation, review and writing state machines.
-- No loading the full knowledge base into every prompt.
-- No direct consumer writes to canonical durable truth without validation.
-- No promotion of post-close hindsight into premarket facts.
-- No Runtime/Core authority change merely because this architecture document exists.
+- no monolithic super Skill;
+- no merging of recommendation/review/writing state machines;
+- no full-knowledge dump into every prompt;
+- no direct consumer mutation of shared truth without validation;
+- no post-close hindsight promoted into premarket facts;
+- no parent/shared layer ownership of A-share market-day identities or state;
+- no runtime/Core authority change merely because this document exists.
