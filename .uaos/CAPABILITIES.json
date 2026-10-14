@@ -1,8 +1,13 @@
 {
-  "schema_version":"2.0",
-  "profile_version":2,
+  "schema_version":"2.1",
+  "profile_version":3,
   "domain_id":"ashare",
   "policy":"CURRENT_SESSION_HANDSHAKE__POINT_IN_TIME_DATA__FAIL_CLOSED_ON_MISSING_HARD_INPUTS",
+  "uaos_common_capabilities_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_CAPABILITIES.json",
+  "common_capabilities_inheritance":"UAOS_HOSTED",
+  "domain_evolution_role":"DOMAIN_EVIDENCE_EVAL_AND_BUSINESS_OWNER_PROMOTION",
+  "authority_context":"DOMAIN:ashare",
+  "updated_at":"2026-10-14T08:58:31Z",
   "capabilities":[
     {"capability_id":"premarket_research_and_freeze","scope":"PREMARKET","required":["current_sources","timestamped_evidence"],"side_channel_allowed":false},
     {"capability_id":"postclose_review","scope":"POST_CLOSE","required":["complete_postclose_data","frozen_premarket_snapshot"],"side_channel_allowed":false},
