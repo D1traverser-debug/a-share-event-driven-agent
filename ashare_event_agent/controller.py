@@ -72,7 +72,7 @@ class WorkflowController:
             if errors:
                 return self._revise_in_place(state, "execution_plan", errors)
             self._pass(state, "execution_plan")
-            return self.engine.transition(state, Stage.PREMARKET_AUDIT, reason="execution_plan passed with U1 lineage")
+            return self.engine.transition(state, Stage.PREMARKET_AUDIT, reason="execution_plan passed U1 lineage plus risk/buyability gating")
 
         if s == Stage.ATTRIBUTION:
             attribution = AttributionPackage.model_validate(state.working.get("attribution"))
@@ -87,11 +87,13 @@ class WorkflowController:
         if s == Stage.RECALL_GRADING:
             grade = RecallGrade.model_validate(state.working.get("recall_grading"))
             attribution = AttributionPackage.model_validate(state.working.get("attribution"))
-            errors = recall_grade_integrity_errors(attribution, grade)
+            outcomes = OutcomePackage.model_validate(state.working.get("review_outcomes"))
+            plan = ExecutionPlan.model_validate(state.working.get("execution_plan"))
+            errors = recall_grade_integrity_errors(attribution, grade, plan, outcomes)
             if errors:
                 return self._revise_in_place(state, "recall_grading", errors)
             self._pass(state, "recall_grading")
-            return self.engine.transition(state, Stage.LEARNING_AUDIT, reason="recall_grading passed against attribution")
+            return self.engine.transition(state, Stage.LEARNING_AUDIT, reason="recall and final-selection quality passed frozen-plan/outcome reconciliation")
 
         if s == Stage.REPLAY_EVAL:
             replay = ReplayEval.model_validate(state.working.get("replay_eval"))
