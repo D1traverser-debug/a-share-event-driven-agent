@@ -181,8 +181,8 @@ if 'ashare-artifact://{task_id}/{kind}' not in plugin_text:
     fail("artifact resource template missing")
 if 'Annotated[CallToolResult, MarketDaySummary]' not in plugin_text:
     fail("artifact-returning premarket audit must expose structured MarketDaySummary output")
-if "continuity_metadata" not in plugin_text or "list_resumable_states" not in plugin_text:
-    fail("canonical MCP surface must own child-run continuity metadata and resumable discovery directly")
+if "task_metadata" not in plugin_text or "list_resumable_states" not in plugin_text or "list_resumable_tasks" not in tools:
+    fail("canonical MCP surface must expose child-run resume metadata and resumable discovery directly")
 if "audit-tool call" not in plugin_text or "does not by itself prove reviewer independence" not in plugin_text:
     fail("MCP instructions must not overclaim independent audit assurance")
 
