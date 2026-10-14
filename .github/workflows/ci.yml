@@ -39,11 +39,14 @@ jobs:
           policy = load_packaged_policy()
           assert policy["research"]["min_industry_depth"] == 5
           assert policy["sources"]["preferred_microstructure_lane"] == "TONGHUASHUN_LEVEL2"
+          assert policy["orchestration"]["risk_feasibility_is_constraint_not_candidate_vote"] is True
+          assert policy["review"]["grade_recall_separately_from_final_selection"] is True
           assert "同花顺" in read_reference("sources.md")
           graph = load_packaged_market_day_orchestration()
           validate_orchestration(graph)
+          assert "risk_feasibility_assessment" in {row["id"] for row in graph["nodes"]}
           c = TaskContract(trading_date="2026-10-08", prompt="smoke")
           assert ArtifactKind.PICK_REPORT_MD in c.required_outputs
-          assert CURRENT_RUNTIME_VERSION == "0.2.0"
-          print("PASS: clean wheel contains A-share policy/references/orchestration and required-output contract")
+          assert CURRENT_RUNTIME_VERSION == "0.3.0"
+          print("PASS: clean wheel contains A-share 0.3 policy/references/orchestration and required-output contract")
           PY
