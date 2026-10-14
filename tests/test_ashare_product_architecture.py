@@ -17,6 +17,7 @@ def test_product_requirements_define_recommendation_specific_outcomes():
     assert "同花顺 / Level-2" in text
     assert "选股通 Dingpan" in text
     assert "NO TRADE" in text
+    assert "selection quality" in text.lower()
     assert "post-close" in text
     assert "Acceptance map" in text
 
@@ -43,27 +44,38 @@ def test_parallel_source_lanes_are_ready_after_freeze_without_global_wave_blocki
     } <= after_freeze
 
 
-def test_candidate_competition_is_u1_bounded_then_owned_adjudication():
+def test_opportunity_competition_is_separate_from_risk_gate_and_final_adjudication():
     g = graph()
     by_id = {row["id"]: row for row in g["nodes"]}
-    candidates = [row for row in g["nodes"] if row.get("decision_group") == "u3_candidate_slate"]
+    candidates = [row for row in g["nodes"] if row.get("decision_group") == "opportunity_slate"]
     assert {row["id"] for row in candidates} == {
         "event_alpha_candidate_slate",
         "market_structure_candidate_slate",
-        "buyability_execution_candidate_slate",
     }
     assert all(row["depends_on"] == ["recall_pool"] for row in candidates)
-    adjudication = by_id["trade_decision_adjudication"]
-    assert adjudication["coordination"] == "OWNER_ADJUDICATION"
-    assert adjudication["adjudicator"] == "trade_decision_owner"
-    assert set(row["id"] for row in candidates) <= set(adjudication["depends_on"])
+
+    opportunity = by_id["opportunity_slate_adjudication"]
+    assert opportunity["coordination"] == "OWNER_ADJUDICATION"
+    assert opportunity["adjudicator"] == "opportunity_decision_owner"
+    assert set(row["id"] for row in candidates) <= set(opportunity["depends_on"])
+
+    risk = by_id["risk_feasibility_assessment"]
+    assert risk["coordination"] == "FAN_OUT_FAN_IN"
+    assert "opportunity_slate_adjudication" in risk["depends_on"]
+    assert "tonghuashun_level2_market_lane" in risk["depends_on"]
+    assert risk["owner"] == "execution_risk_owner"
+
+    final = by_id["trade_decision_adjudication"]
+    assert final["coordination"] == "OWNER_ADJUDICATION"
+    assert final["adjudicator"] == "trade_decision_owner"
+    assert "risk_feasibility_assessment" in final["depends_on"]
     assert by_id["candidate_counterevidence_review"]["advisory_only"] is True
 
 
 def test_revision_scope_is_dependency_bounded():
     impacted = set(downstream_nodes(graph(), "tonghuashun_level2_market_lane"))
     assert "source_reconciliation" in impacted
-    assert "buyability_execution_candidate_slate" in impacted
+    assert "risk_feasibility_assessment" in impacted
     assert "trade_decision_adjudication" in impacted
     assert "premarket_audit_and_freeze" in impacted
     assert "resolve_trading_day" not in impacted
@@ -77,7 +89,7 @@ def test_specialized_source_owners_are_not_collapsed_into_one_vendor():
     assert "XUANGUTONG_DINGPAN" not in MARKET_DATA_LANES["TONGHUASHUN_LEVEL2"].fallback_lanes
 
 
-def test_problem_response_and_learning_are_both_mandatory_but_single_day_promotion_is_forbidden():
+def test_problem_response_learning_and_quality_metrics_are_mandatory():
     profile = json.loads((ROOT / ".uaos/CAPABILITIES.json").read_text(encoding="utf-8"))
     policy = json.loads((ROOT / "config/policy.json").read_text(encoding="utf-8"))
     assert profile["problem_response_floor"] == [
@@ -88,3 +100,11 @@ def test_problem_response_and_learning_are_both_mandatory_but_single_day_promoti
     ]
     assert policy["learning"]["every_problem_requires_research_and_reflection"] is True
     assert policy["learning"]["single_day_promotion_forbidden"] is True
+    assert policy["orchestration"]["risk_feasibility_is_constraint_not_candidate_vote"] is True
+    assert policy["review"]["grade_recall_separately_from_final_selection"] is True
+    assert set(policy["learning"]["replay_required_metrics"]) == {
+        "u1_recall",
+        "activated_positive_rate",
+        "activated_downside_rate",
+        "execution_feasibility_rate",
+    }
