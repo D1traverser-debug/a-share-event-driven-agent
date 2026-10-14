@@ -2,7 +2,7 @@ from ashare_event_agent.task_visibility import is_default_visible_candidate, lis
 from ashare_event_agent.controller import WorkflowController
 from ashare_event_agent.engine import MarketDayEngine
 from ashare_event_agent.models import (
-    GateStatus, MarketDayState, ResumeVisibility, Stage, TaskClass, TaskContract,
+    CURRENT_CONTRACT_VERSION, GateStatus, MarketDayState, ResumeVisibility, Stage, TaskClass, TaskContract,
 )
 from ashare_event_agent.store import SQLiteStateStore
 
@@ -19,7 +19,7 @@ def test_checkpoint_survives_reload(tmp_path):
     assert loaded.contract.task_class == TaskClass.USER
     assert loaded.contract.resume_eligible is True
     assert loaded.contract.resume_visibility == ResumeVisibility.DEFAULT
-    assert loaded.contract.contract_version == "2.0"
+    assert loaded.contract.contract_version == CURRENT_CONTRACT_VERSION
 
 
 def test_old_checkpoint_missing_visibility_fields_fails_closed_as_non_default_candidate():
@@ -38,9 +38,9 @@ def test_domain_runtime_candidate_discovery_returns_only_default_visible_user_ta
     engine = MarketDayEngine(store)
     user = engine.start(TaskContract(trading_date="2026-10-08", prompt="user"))
     assert is_default_visible_candidate(user) is True
-    fixture = engine.start(TaskContract(trading_date="2026-10-08", prompt="fixture", task_class=TaskClass.FIXTURE, resume_eligible=True, resume_visibility=ResumeVisibility.DEFAULT, contract_version="2.0"))
+    fixture = engine.start(TaskContract(trading_date="2026-10-08", prompt="fixture", task_class=TaskClass.FIXTURE, resume_eligible=True, resume_visibility=ResumeVisibility.DEFAULT, contract_version=CURRENT_CONTRACT_VERSION))
     assert is_default_visible_candidate(fixture) is False
-    explicit_only = engine.start(TaskContract(trading_date="2026-10-08", prompt="explicit", task_class=TaskClass.USER, resume_eligible=True, resume_visibility=ResumeVisibility.EXPLICIT_ONLY, contract_version="2.0"))
+    explicit_only = engine.start(TaskContract(trading_date="2026-10-08", prompt="explicit", task_class=TaskClass.USER, resume_eligible=True, resume_visibility=ResumeVisibility.EXPLICIT_ONLY, contract_version=CURRENT_CONTRACT_VERSION))
     assert is_default_visible_candidate(explicit_only) is False
     complete = engine.start(TaskContract(trading_date="2026-10-08", prompt="complete"))
     complete.stage = Stage.COMPLETE
