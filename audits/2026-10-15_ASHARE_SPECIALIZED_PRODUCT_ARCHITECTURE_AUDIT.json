@@ -1,6 +1,6 @@
 {
   "audit_id":"ASHARE-SPECIALIZED-PRODUCT-ARCHITECTURE-20261015",
-  "status":"CANDIDATE_VERIFIED__PRODUCTION_PENDING",
+  "status":"RESOLVED__PRODUCTION_VERIFIED",
   "target_release":"0.2.0",
   "trigger":[
     "USER_REQUEST_TO_HARDEN_RECOMMENDATION_SYSTEM",
@@ -52,18 +52,30 @@
   },
   "candidate_evidence":{
     "pr":5,
-    "verified_head":"740d39211773123a5fdb0e89ef11dc19febead70",
-    "ci_run":38628590148,
+    "verified_head":"2e187dd349eea39da0fc35901e9f3429b11ad75e",
+    "ci_run":38628786127,
     "result":"PASS",
     "verified_steps":["MCP Streamable HTTP smoke","61 unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
   },
-  "acceptance_before_promotion":[
-    "all existing unit/trajectory tests pass or stale tests are migrated to current ownership semantics without weakening business guards",
-    "contract eval passes",
-    "static audit passes on current authority and retired continuity files remain absent",
-    "isolated wheel contains current policy/references/orchestration",
-    "child production main CI passes after merge",
-    "only after child production verification may UAOS collapse ashare parent state to one router"
-  ],
-  "updated_at":"2026-10-15T04:04:00+08:00"
+  "production_evidence":{
+    "main_commit":"1fb2cda4dba3a4dd1f6c6fe5a2a7fe1b3039d292",
+    "ci_run":38628981077,
+    "result":"PASS",
+    "verified_steps":["MCP Streamable HTTP smoke","61 unit and trajectory tests","executable contract eval baseline","static ownership/architecture/bundle/MCP audit","wheel build","isolated wheel install smoke"]
+  },
+  "acceptance_result":{
+    "specialized_ashare_product_requirements_authoritative":true,
+    "child_owns_market_day_identity_and_state":true,
+    "parent_child_identity_equality_forbidden":true,
+    "tonghuashun_level2_preferred_microstructure_lane_encoded":true,
+    "xuangutong_five_pool_business_semantics_encoded":true,
+    "u0_u1_recall_and_u3_lineage_preserved":true,
+    "structured_candidate_comparison_and_single_owner_adjudication_verified":true,
+    "immutable_postclose_attribution_and_replay_learning_preserved":true,
+    "every_problem_research_and_reflection_floor_inherited":true,
+    "stale_continuity_era_static_audit_retired":true,
+    "candidate_and_production_ci_pass":true
+  },
+  "terminal_decision":"KEEP_SPECIALIZED_ASHARE_MARKET_DAY_PRODUCT__CHILD_OWNS_BUSINESS_IDENTITY_AND_STATE__UAOS_ROUTER_ONLY__FROZEN_REPLAY_GATED_EVOLUTION",
+  "updated_at":"2026-10-15T04:08:00+08:00"
 }
