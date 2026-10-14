@@ -24,14 +24,25 @@
   "orchestration": {
     "graph_ref": "config/MARKET_DAY_ORCHESTRATION.json",
     "parallel_only_when_dependencies_allow": true,
-    "candidate_views": ["EVENT_ALPHA", "MARKET_STRUCTURE", "BUYABILITY_EXECUTION"],
+    "opportunity_candidate_views": ["EVENT_ALPHA", "MARKET_STRUCTURE"],
+    "risk_feasibility_is_constraint_not_candidate_vote": true,
+    "risk_assessment_covers_all_u1": true,
+    "hard_risk_veto_cannot_enter_u3": true,
     "bounded_counterevidence_review": true,
     "single_trade_decision_adjudicator": true,
     "peer_chat_debate": false
   },
   "execution": {
     "max_execution_slots": 4,
-    "no_trade_is_valid": true
+    "no_trade_is_valid": true,
+    "full_assurance_requires_preferred_microstructure": true,
+    "selected_candidate_requires_nonblocked_risk_assessment": true
+  },
+  "review": {
+    "grade_recall_separately_from_final_selection": true,
+    "selected_candidates_require_trigger_review": true,
+    "activated_candidates_require_execution_feasibility_evidence": true,
+    "selection_quality_metrics": ["activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"]
   },
   "learning": {
     "every_problem_requires_research_and_reflection": true,
@@ -39,6 +50,7 @@
     "min_replay_cases": 5,
     "min_regimes": 2,
     "require_positive_and_negative_samples": true,
-    "require_no_future_contamination": true
+    "require_no_future_contamination": true,
+    "replay_required_metrics": ["u1_recall", "activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"]
   }
 }
