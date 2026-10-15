@@ -1,18 +1,19 @@
 {
-  "schema_version":"1.0",
+  "schema_version":"1.1",
   "domain_id":"ashare",
   "role":"OWNER_NATIVE_CANONICAL_EVOLUTION_EVIDENCE_ENTRYPOINT",
-  "updated_at":"2026-10-15T23:38:00+08:00",
+  "updated_at":"2026-10-16T07:13:00+08:00",
   "rules":[
     "Material or evolution-relevant detected problems preserve durable causal evidence here or in a linked record.",
     "Small local defects may use compact records; do not promote every incident into a permanent domain rule.",
     "Domain-only learning remains A-share owned. Common/cross-domain failure classes are upcalled to UAOS with structured evidence.",
-    "Failed or rejected repair paths that materially informed the decision are preserved rather than silently rewritten out of history."
+    "Failed or rejected repair paths that materially informed the decision are preserved rather than silently rewritten out of history.",
+    "User framing, an external method, or the first repairable symptom is evidence rather than root-cause authority; root-scope admission and typed evolution disposition precede repair/no-change/parent guidance under Common Behavior 1.3."
   ],
   "entries":[
     {
       "evolution_id":"EVO-20261015-COMMON-BEHAVIOR-OWNER-ADOPTION",
-      "status":"CANDIDATE_REPAIR_IMPLEMENTED__DOMAIN_CI_PENDING",
+      "status":"PRODUCTION_BASELINE_1_2__SUPERSEDED_BY_1_3_CANDIDATE",
       "failure_class":"FC-INHERITED-BEHAVIOR-DECLARATION-WITHOUT-UNIFORM-OPERATIONAL-PROOF-002",
       "symptom":"A-share declared UAOS common cognition/problem-response semantics but lacked the current COMMON_BEHAVIOR_ASSURANCE binding and owner-native executable recovery/repair-or-block/structured-parent-guidance admission exposed by sibling domains.",
       "diagnosis":[
@@ -38,7 +39,61 @@
       ],
       "verification_refs":["tests/test_behavior_assurance.py","tests/test_common_behavior_binding.py"],
       "parent_guidance_ref":"UAOS:EVO-20261015-DOMAIN-HEALTH-ESCALATION-GOVERNANCE",
-      "open_followup":"live market-day behavior remains observation scope after production promotion"
+      "open_followup":"live market-day behavior remains observation scope"
+    },
+    {
+      "evolution_id":"EVO-20261016-COMMON-BEHAVIOR-1-3-ROOT-SCOPE-ADOPTION",
+      "status":"CANDIDATE_IMPLEMENTED__DOMAIN_CI_PENDING",
+      "failure_class":"FC-COMMON-BEHAVIOR-1-3-OWNER-ADOPTION-OPEN",
+      "symptom":"A-share Common Behavior 1.2 owner admission could require recovery and repair-or-block closure, but a repairable symptom or parent-upcall path could still be acted on without a mechanically prior root-scope receipt and governed evolution disposition.",
+      "macro_alignment":"Keep A-share as direct market-day owner; extend its existing owner behavior admission rather than copying the parent kernel or routing business problem handling through UAOS.",
+      "competing_hypotheses":[
+        {
+          "id":"H1_DECLARATION_BUMP_ONLY",
+          "layer":"CONFIGURATION",
+          "disposition":"REJECTED",
+          "evidence":"Changing 1.2 to 1.3 in JSON would reproduce the declaration-without-behavior failure class."
+        },
+        {
+          "id":"H2_COPY_PARENT_KERNEL",
+          "layer":"DOMAIN_ARCHITECTURE",
+          "disposition":"REJECTED",
+          "evidence":"Would duplicate the parent control plane and weaken A-share owner-native evidence semantics."
+        },
+        {
+          "id":"H3_EXTEND_OWNER_BEHAVIOR_ADMISSION",
+          "layer":"DOMAIN_WORKFLOW",
+          "disposition":"SELECTED",
+          "evidence":"The existing behavior_assurance path already owns recovery, closure and parent-guidance receipts, so root-scope/evolution admission belongs immediately before those actions."
+        },
+        {
+          "id":"H4_ROUTE_ALL_PROBLEMS_THROUGH_PARENT",
+          "layer":"PARENT_CONTROL_PLANE",
+          "disposition":"REJECTED",
+          "evidence":"Would violate direct-domain ownership and create a parent bottleneck for A-share-local problems."
+        }
+      ],
+      "selected_repair":[
+        "add owner-native ProblemLayer/HypothesisDisposition/RootScopeReceipt and require_root_scope_admission",
+        "derive durable problem evidence requirement from material/systemic root-scope signals",
+        "require typed EvolutionDisposition before repair/no-change/parent guidance",
+        "require PARENT_OR_COMMON_UPCALL plus durable problem ref for parent guidance",
+        "raise capability profile to 7 and bind Common Behavior Assurance minimum 1.3.0",
+        "add adversarial trajectory tests for root-scope/evolution bypasses"
+      ],
+      "rejected_paths":[
+        "declaration-only version bump",
+        "copy UAOS deliberation/problem_closure implementation wholesale",
+        "send all A-share problems to parent before local diagnosis",
+        "force material architecture ceremony on every one-off local defect"
+      ],
+      "verification_refs":[
+        "ashare_event_agent/behavior_assurance.py",
+        "tests/test_behavior_assurance.py",
+        "tests/test_common_behavior_binding.py"
+      ],
+      "parent_governance_ref":"UAOS:EVO-20261016-PROBLEM-COGNITION-ACTION-TRANSACTION",
+      "open_followup":"candidate/domain CI, controlled promotion, production reread, and live market-day behavior observation"
     }
   ]
 }
