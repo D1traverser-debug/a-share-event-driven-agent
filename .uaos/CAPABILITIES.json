@@ -1,19 +1,30 @@
 {
-  "schema_version":"3.1",
-  "profile_version":5,
+  "schema_version":"3.2",
+  "profile_version":6,
   "domain_id":"ashare",
   "policy":"CURRENT_SESSION_HANDSHAKE__POINT_IN_TIME_DATA__FAIL_CLOSED_ON_MISSING_HARD_INPUTS",
   "uaos_common_capabilities_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_CAPABILITIES.json",
   "uaos_common_capabilities_min":"1.6.0",
+  "uaos_common_behavior_assurance_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_BEHAVIOR_ASSURANCE.json",
+  "uaos_common_behavior_assurance_min":"1.2.0",
+  "uaos_domain_health_escalation_ref":"D1traverser-debug/universal-agent-os@main:config/DOMAIN_HEALTH_ESCALATION_POLICY.json",
   "common_capabilities_inheritance":"UAOS_HOSTED_METHOD__DOMAIN_OWNS_BUSINESS_STATE_AND_TASK_GRAPH",
   "direct_domain_activation":true,
-  "domain_evolution_role":"DOMAIN_EVIDENCE_EVAL_REPLAY_AND_BUSINESS_OWNER_PROMOTION",
+  "domain_evolution_role":"DOMAIN_EVIDENCE_EVAL_REPLAY_AND_BUSINESS_OWNER_PROMOTION__COMMON_OR_CROSS_DOMAIN_UPCALLS_UAOS",
+  "domain_evolution_evidence_entrypoint":"audits/EVOLUTION_INDEX.json",
   "authority_context":"DOMAIN:ashare",
   "problem_response_floor":["MICRO_DIAGNOSIS","MACRO_GOAL_AND_TOPOLOGY_ALIGNMENT","GOVERNING_ASSUMPTION_CHALLENGE","EXTERNAL_METHOD_OR_ARCHITECTURE_RESEARCH"],
   "problem_response_rule":"EVERY_DETECTED_PROBLEM_REQUIRES_RESEARCH_AND_REFLECTION__FAMILIARITY_IS_NOT_A_WAIVER__RISK_ADDS_COUNTEREXAMPLE_AND_INDEPENDENT_VERIFICATION_DEPTH",
+  "hosted_behavior_semantics":{
+    "recover_before_user_escalation":"OWNER_NATIVE_EXECUTABLE_ADMISSION__RECOVERABLE_DEPENDENCY_REQUIRES_LOCAL_RECOVERY_ATTEMPT_UNLESS_REAL_USER_OR_SAFETY_DEPENDENCY",
+    "problem_to_action_closure":"REPAIR_EXECUTED_OR_BLOCKED_WITH_REASON_OR_NO_CHANGE_WITH_EVIDENCE_OR_STRUCTURED_PARENT_GUIDANCE__RECOMMENDATION_ONLY_NOT_TERMINAL_WHEN_REPAIR_AVAILABLE",
+    "parent_guidance":"STRUCTURED_UPCALL_WITH_DOMAIN_REVISION_PROBLEM_IMPACT_LAYER_EVIDENCE_LOCAL_ATTEMPTS_AND_UNAFFECTED_WORK_SIGNAL",
+    "assurance_ceiling":"EXECUTABLE_POLICY_AND_UNIT_TRAJECTORY_VERIFIED_UNTIL_LIVE_MARKET_DAY_OBSERVATION"
+  },
+  "owner_native_behavior_admission":"ashare_event_agent.behavior_assurance",
   "product_governance_ref":"docs/product_requirements.md",
   "domain_orchestration_ref":"config/MARKET_DAY_ORCHESTRATION.json",
-  "updated_at":"2026-10-15T04:24:00+08:00",
+  "updated_at":"2026-10-15T23:35:00+08:00",
   "capabilities":[
     {"capability_id":"market_day_identity_and_freeze","scope":"CURRENT_OR_EXPLICIT_MARKET_DAY","required":["current_china_trading_day_resolution","child_owned_task_contract","freeze_card"],"side_channel_allowed":false},
     {"capability_id":"premarket_research_and_freeze","scope":"PREMARKET","required":["current_sources","timestamped_evidence","source_reconciliation","frozen_snapshot"],"side_channel_allowed":false},
@@ -25,6 +36,7 @@
     {"capability_id":"postclose_review","scope":"POST_CLOSE","required":["complete_postclose_data","frozen_premarket_snapshot","attribution","recall_grading","selection_quality_grading"],"side_channel_allowed":false},
     {"capability_id":"source_reconciliation","scope":"SOURCE_CONFLICTS","required":["provenance","time_semantics","fact_owner_semantics"],"side_channel_allowed":false},
     {"capability_id":"runtime_execution","scope":"HOSTED_OWNER_RUNTIME","required":["runtime_authority_enabled","current_session_runtime_proof"],"side_channel_allowed":false},
+    {"capability_id":"owner_common_behavior_assurance","scope":"DETECTED_PROBLEM_RECOVERY_CLOSURE_AND_PARENT_GUIDANCE","required":["ashare_event_agent.behavior_assurance","audits/EVOLUTION_INDEX.json","owner_behavior_trajectory_tests"],"assurance_ceiling":"EXECUTABLE_POLICY_AND_UNIT_TRAJECTORY_VERIFIED_UNTIL_LIVE_MARKET_DAY_OBSERVATION","side_channel_allowed":false},
     {"capability_id":"learning_promotion","scope":"POSTMORTEM_TO_RULE","required":["problem_research_reflection","replay_or_cross_case_evidence","recall_selection_execution_metrics","regression_ci"],"side_channel_allowed":false}
   ]
 }

@@ -21,7 +21,8 @@ Read:
 3. `.uaos/CAPABILITIES.json`;
 4. `docs/product_requirements.md` when product/architecture scope matters;
 5. `config/RUNTIME_AUTHORITY.json` before making hosted-runtime assurance claims;
-6. only the reference/runtime files required by the current market-day stage.
+6. `audits/EVOLUTION_INDEX.json` when a detected problem may require learning, durable causal history, or parent guidance;
+7. only the reference/runtime files required by the current market-day stage.
 
 For a **new live recommendation**, the A-share domain resolves the current China trading day, creates its own child `TaskContract`/`MarketDayState`, defines the legal freeze boundary and executes the business workflow. Do not create a same-ID UAOS market-day task first.
 
@@ -49,6 +50,19 @@ This is structured artifact handoff, not unbounded specialist chat. An advisory/
 
 New premarket work must resolve the current trading day. Freeze timestamped evidence before final recommendation; post-close facts never backfill the frozen decision. Research recall remains broad before execution ranking narrows it. A final U3 candidate must descend from frozen U1.
 
+## Problem response, recovery and parent guidance
+
+Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and external research/verification. Familiarity is not a waiver.
+
+The common behavior contract is operationalized by `ashare_event_agent.behavior_assurance`:
+- if a dependency is plausibly recoverable with current authority/tools, attempt proportionate local recovery before asking the user or parent to solve it;
+- if a concrete owner-authorized repair is available and no required user fact/approval/authorization or safety-sensitive choice blocks it, attempt the repair and verify it before finalizing;
+- valid problem closure is verified repair, a real blocker, evidence-backed no-change, or structured parent guidance; recommendation-only is not terminal when repair is currently available;
+- when parent guidance is required, emit a structured upcall containing current domain revision, problem reference, severity/impact, blocking scope, suspected layer, evidence, local recovery attempts, requested help, conflict keys when relevant, and whether unaffected A-share work may continue;
+- asking UAOS for guidance does not transfer A-share market-day identity, workflow or state to the parent.
+
+A hard failure in one capability blocks only the affected business prerequisite unless current evidence proves a shared invariant requires broader blocking. Do not convert a local issue into a global A-share stop merely because parent guidance is open.
+
 ## Post-close and evolution
 
 Review starts from the immutable frozen snapshot. Reconcile outcomes/five pools and market/microstructure evidence, then grade three separate things:
@@ -58,8 +72,10 @@ Review starts from the immutable frozen snapshot. Reconcile outcomes/five pools 
 
 A recommendation whose trigger never occurred is not counted as an executed win/loss. Activated recommendations require execution-feasibility evidence. Broken-board/limit-down outcomes remain visible in downside metrics rather than being hidden by recall success.
 
-Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and external research/verification. Familiarity is not a waiver. A daily result creates evidence/hypotheses only; permanent rules require replay across regimes plus regression/CI evidence under `references/learning.md` and `references/maintenance.md`. Replay PASS must report recall, activated-positive, activated-downside and execution-feasibility metrics; recall improvement alone is not enough.
+A daily result creates evidence/hypotheses only; permanent rules require replay across regimes plus regression/CI evidence under `references/learning.md` and `references/maintenance.md`. Replay PASS must report recall, activated-positive, activated-downside and execution-feasibility metrics; recall improvement alone is not enough.
+
+Every evolution-relevant/material detected problem preserves owner-native causal history at `audits/EVOLUTION_INDEX.json` or a record linked from it. A domain-only rule remains A-share-owned; common/cross-domain failure classes are upcalled to UAOS instead of being silently promoted as A-share-global parent policy.
 
 ## Completion
 
-Completion requires the exact A-share frozen/review evidence and outputs for the requested stage. Do not create a second controller, parent-owned per-day task registry, lease/resume epoch protocol, or peer-chat debate system.
+Completion requires the exact A-share frozen/review evidence and outputs for the requested stage plus the problem-closure receipt when a material problem was detected. Do not create a second controller, parent-owned per-day task registry, lease/resume epoch protocol, or peer-chat debate system.

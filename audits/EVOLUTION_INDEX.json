@@ -1,0 +1,44 @@
+{
+  "schema_version":"1.0",
+  "domain_id":"ashare",
+  "role":"OWNER_NATIVE_CANONICAL_EVOLUTION_EVIDENCE_ENTRYPOINT",
+  "updated_at":"2026-10-15T23:38:00+08:00",
+  "rules":[
+    "Material or evolution-relevant detected problems preserve durable causal evidence here or in a linked record.",
+    "Small local defects may use compact records; do not promote every incident into a permanent domain rule.",
+    "Domain-only learning remains A-share owned. Common/cross-domain failure classes are upcalled to UAOS with structured evidence.",
+    "Failed or rejected repair paths that materially informed the decision are preserved rather than silently rewritten out of history."
+  ],
+  "entries":[
+    {
+      "evolution_id":"EVO-20261015-COMMON-BEHAVIOR-OWNER-ADOPTION",
+      "status":"CANDIDATE_REPAIR_IMPLEMENTED__DOMAIN_CI_PENDING",
+      "failure_class":"FC-INHERITED-BEHAVIOR-DECLARATION-WITHOUT-UNIFORM-OPERATIONAL-PROOF-002",
+      "symptom":"A-share declared UAOS common cognition/problem-response semantics but lacked the current COMMON_BEHAVIOR_ASSURANCE binding and owner-native executable recovery/repair-or-block/structured-parent-guidance admission exposed by sibling domains.",
+      "diagnosis":[
+        "CAPABILITIES profile5 had a problem_response_floor but no common behavior assurance reference/minimum.",
+        "MANIFEST had no common behavior assurance or domain-health escalation binding.",
+        "No owner-native executable behavior admission enforced local recovery before escalation or repair-now closure.",
+        "No canonical child evolution evidence entrypoint made material causal history/upcalls directly discoverable."
+      ],
+      "macro_alignment":"Preserve A-share as the direct business owner while operationalizing UAOS common behavior outcomes through A-share-native code/evidence rather than copying a second parent controller.",
+      "governance_basis":"D1traverser-debug/universal-agent-os@main:docs/requirements/FROZEN_REQUIREMENTS_v2.1.md + config/COMMON_BEHAVIOR_ASSURANCE.json + config/DOMAIN_HEALTH_ESCALATION_POLICY.json",
+      "selected_repair":[
+        "bind COMMON_BEHAVIOR_ASSURANCE 1.2 and domain-health escalation policy in child manifest/capabilities",
+        "add ashare_event_agent.behavior_assurance executable owner-native admission",
+        "add structured ParentGuidanceUpcall envelope compatible with current parent policy",
+        "add this canonical evolution evidence entrypoint",
+        "add behavioral trajectory tests and static binding assertions"
+      ],
+      "rejected_paths":[
+        "declaration-only JSON update without executable admission",
+        "copy the parent UAOS kernel into the child",
+        "create a second A-share supervisor/controller",
+        "globally stop all A-share work whenever parent guidance is open"
+      ],
+      "verification_refs":["tests/test_behavior_assurance.py","tests/test_common_behavior_binding.py"],
+      "parent_guidance_ref":"UAOS:EVO-20261015-DOMAIN-HEALTH-ESCALATION-GOVERNANCE",
+      "open_followup":"live market-day behavior remains observation scope after production promotion"
+    }
+  ]
+}
