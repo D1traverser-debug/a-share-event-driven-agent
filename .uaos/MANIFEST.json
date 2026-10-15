@@ -1,5 +1,5 @@
 {
-  "schema_version":"3.1",
+  "schema_version":"3.2",
   "agent_id":"ashare",
   "domain_id":"ashare",
   "parent_control_plane":"D1traverser-debug/universal-agent-os@main",
@@ -10,7 +10,7 @@
     "common_capabilities_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_CAPABILITIES.json",
     "common_capabilities_min":"1.6.0",
     "common_behavior_assurance_ref":"D1traverser-debug/universal-agent-os@main:config/COMMON_BEHAVIOR_ASSURANCE.json",
-    "common_behavior_assurance_min":"1.2.0",
+    "common_behavior_assurance_min":"1.3.0",
     "domain_health_escalation_ref":"D1traverser-debug/universal-agent-os@main:config/DOMAIN_HEALTH_ESCALATION_POLICY.json",
     "adapter_ref":".uaos/ADAPTER.json",
     "capability_ref":".uaos/CAPABILITIES.json"
@@ -22,6 +22,7 @@
     "market_day_orchestration_ref":"config/MARKET_DAY_ORCHESTRATION.json",
     "runtime_authority_ref":"config/RUNTIME_AUTHORITY.json",
     "behavior_assurance_ref":"ashare_event_agent/behavior_assurance.py",
+    "root_scope_admission_ref":"ashare_event_agent/behavior_assurance.py:require_root_scope_admission",
     "evolution_evidence_entrypoint":"audits/EVOLUTION_INDEX.json",
     "canonical_rule_roots":["references","config","ashare_event_agent"],
     "runtime_root":"ashare_event_agent"

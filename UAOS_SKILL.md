@@ -52,13 +52,21 @@ New premarket work must resolve the current trading day. Freeze timestamped evid
 
 ## Problem response, recovery and parent guidance
 
-Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and external research/verification. Familiarity is not a waiver.
+A-share adopts UAOS Common Behavior Assurance 1.3 owner-natively through `ashare_event_agent.behavior_assurance`.
 
-The common behavior contract is operationalized by `ashare_event_agent.behavior_assurance`:
+Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and relevant external research/verification. Familiarity is not a waiver. A user correction, external method, or first repairable symptom is evidence, not automatic root-cause authority.
+
+Before repair, evidence-backed no-change, or parent guidance, create a root-scope receipt. A small single local problem may remain lightweight. Material, repeated, cross-subsystem, architecture-gap, complexity-growth or scope-expansion signals must compare competing hypotheses across at least two layers, test an architecture/upstream explanation, preserve at least one rejected alternative and bind architecture reassessment evidence.
+
+The owner-native transaction is:
+`DETECT -> RECOVER WHEN APPLICABLE -> ROOT_SCOPE_ADMISSION -> TYPED_EVOLUTION_DISPOSITION -> REPAIR / NO_CHANGE / PARENT_GUIDANCE -> VERIFY`.
+
 - if a dependency is plausibly recoverable with current authority/tools, attempt proportionate local recovery before asking the user or parent to solve it;
-- if a concrete owner-authorized repair is available and no required user fact/approval/authorization or safety-sensitive choice blocks it, attempt the repair and verify it before finalizing;
-- valid problem closure is verified repair, a real blocker, evidence-backed no-change, or structured parent guidance; recommendation-only is not terminal when repair is currently available;
-- when parent guidance is required, emit a structured upcall containing current domain revision, problem reference, severity/impact, blocking scope, suspected layer, evidence, local recovery attempts, requested help, conflict keys when relevant, and whether unaffected A-share work may continue;
+- if a concrete owner-authorized repair is available and no required user fact/approval/authorization or safety-sensitive choice blocks it, root-scope and evolution admission must happen first, then attempt and verify the repair before finalizing;
+- recommendation-only is not terminal when an admitted repair is currently available;
+- material/evolution-relevant problems require durable causal evidence in `audits/EVOLUTION_INDEX.json` or a record linked from it; callers cannot downgrade that requirement;
+- parent guidance requires the `PARENT_OR_COMMON_UPCALL` evolution disposition plus a durable problem reference and structured upcall evidence;
+- a genuine required user fact/approval/authorization or safety-sensitive choice may be surfaced as a blocker without pretending a root cause has been established;
 - asking UAOS for guidance does not transfer A-share market-day identity, workflow or state to the parent.
 
 A hard failure in one capability blocks only the affected business prerequisite unless current evidence proves a shared invariant requires broader blocking. Do not convert a local issue into a global A-share stop merely because parent guidance is open.
@@ -78,4 +86,4 @@ Every evolution-relevant/material detected problem preserves owner-native causal
 
 ## Completion
 
-Completion requires the exact A-share frozen/review evidence and outputs for the requested stage plus the problem-closure receipt when a material problem was detected. Do not create a second controller, parent-owned per-day task registry, lease/resume epoch protocol, or peer-chat debate system.
+Completion requires the exact A-share frozen/review evidence and outputs for the requested stage plus the root-scope/evolution/problem-closure receipt when a material problem was detected. Do not create a second controller, parent-owned per-day task registry, lease/resume epoch protocol, or peer-chat debate system.

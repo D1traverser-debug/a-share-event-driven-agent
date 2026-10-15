@@ -23,6 +23,17 @@ def fail(msg: str) -> None:
     raise SystemExit(msg)
 
 
+def version_at_least(actual: object, minimum: str) -> bool:
+    """Compare dotted numeric contract versions without freezing future compatible upgrades."""
+    try:
+        left = tuple(int(part) for part in str(actual).split("."))
+        right = tuple(int(part) for part in minimum.split("."))
+    except ValueError:
+        return False
+    width = max(len(left), len(right))
+    return left + (0,) * (width - len(left)) >= right + (0,) * (width - len(right))
+
+
 ownership = json.loads((ROOT / "config" / "rule_ownership.json").read_text(encoding="utf-8"))
 seen: dict[str, str] = {}
 for owner, keys in ownership.items():
@@ -54,29 +65,32 @@ graph = json.loads((ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_text(enc
 validate_orchestration(graph)
 
 if manifest.get("status") != "DIRECT_DOMAIN_WORK_PLANE_ACTIVE": fail("manifest must declare direct A-share work plane")
-if manifest.get("binding", {}).get("common_capabilities_min") != "1.6.0": fail("A-share must consume UAOS common capabilities >=1.6.0")
-if manifest.get("binding", {}).get("common_behavior_assurance_min") != "1.2.0": fail("A-share must consume UAOS common behavior assurance >=1.2.0")
+if not version_at_least(manifest.get("binding", {}).get("common_capabilities_min"), "1.6.0"): fail("A-share must consume UAOS common capabilities >=1.6.0")
+if not version_at_least(manifest.get("binding", {}).get("common_behavior_assurance_min"), "1.3.0"): fail("A-share must consume UAOS common behavior assurance >=1.3.0")
 if not str(manifest.get("binding", {}).get("domain_health_escalation_ref", "")).endswith("config/DOMAIN_HEALTH_ESCALATION_POLICY.json"): fail("A-share domain-health escalation binding missing")
 if manifest.get("domain_authority", {}).get("market_day_identity") != "ashare_event_agent/models.py:TaskContract.task_id": fail("manifest market-day identity owner drift")
 if manifest.get("domain_authority", {}).get("market_day_orchestration_ref") != "config/MARKET_DAY_ORCHESTRATION.json": fail("manifest orchestration authority drift")
 if manifest.get("domain_authority", {}).get("behavior_assurance_ref") != "ashare_event_agent/behavior_assurance.py": fail("manifest owner-native behavior assurance authority missing")
+if not str(manifest.get("domain_authority", {}).get("root_scope_admission_ref", "")).endswith("require_root_scope_admission"): fail("manifest owner-native root-scope admission missing")
 if manifest.get("domain_authority", {}).get("evolution_evidence_entrypoint") != "audits/EVOLUTION_INDEX.json": fail("canonical A-share evolution evidence entrypoint missing")
 if adapter.get("domain_market_day_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("adapter must keep market-day identity in the A-share domain")
 if adapter.get("parent_child_id_equality_required") is not False: fail("parent/child identity equality must remain forbidden")
 if "OPAQUE_CHILD" not in adapter.get("parent_reference_semantics", ""): fail("parent reference must remain opaque")
-if capability_profile.get("profile_version") != 6: fail("unexpected A-share capability profile version")
-if capability_profile.get("uaos_common_capabilities_min") != "1.6.0": fail("A-share common capability minimum drift")
-if capability_profile.get("uaos_common_behavior_assurance_min") != "1.2.0": fail("A-share common behavior assurance minimum drift")
+if int(capability_profile.get("profile_version", 0)) < 7: fail("A-share capability profile must be >=7 for Common Behavior 1.3")
+if not version_at_least(capability_profile.get("uaos_common_capabilities_min"), "1.6.0"): fail("A-share common capability minimum drift")
+if not version_at_least(capability_profile.get("uaos_common_behavior_assurance_min"), "1.3.0"): fail("A-share common behavior assurance minimum must be >=1.3.0")
 if capability_profile.get("owner_native_behavior_admission") != "ashare_event_agent.behavior_assurance": fail("A-share owner-native behavior admission missing")
 if len(capability_profile.get("problem_response_floor") or []) < 4: fail("problem response cognition floor missing")
 if "FAMILIARITY_IS_NOT_A_WAIVER" not in capability_profile.get("problem_response_rule", ""): fail("familiarity waiver incorrectly reintroduced")
 hosted_behavior = capability_profile.get("hosted_behavior_semantics") or {}
 if "LOCAL_RECOVERY_ATTEMPT" not in hosted_behavior.get("recover_before_user_escalation", ""): fail("recover-before-escalation behavior is not operationally bound")
+if "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY" not in hosted_behavior.get("root_scope_admission", ""): fail("root-scope behavior is not operationally bound")
+if "TYPED_EVOLUTION_DISPOSITION" not in hosted_behavior.get("evolution_before_action", ""): fail("typed evolution-before-action behavior is not operationally bound")
 if "RECOMMENDATION_ONLY_NOT_TERMINAL" not in hosted_behavior.get("problem_to_action_closure", ""): fail("problem-to-action closure behavior is not operationally bound")
 if "STRUCTURED_UPCALL" not in hosted_behavior.get("parent_guidance", ""): fail("structured parent guidance is not operationally bound")
 if not BEHAVIOR.exists(): fail("owner-native behavior assurance module missing")
 behavior_text = BEHAVIOR.read_text(encoding="utf-8")
-for marker in ["require_behavior_problem_closure", "recoverable dependency must receive a proportionate local recovery attempt", "owner-authorized available repair must be attempted", "class ParentGuidanceUpcall"]:
+for marker in ["require_root_scope_admission", "root-scope admission must precede repair", "typed evolution disposition is required before action", "recoverable dependency must receive a proportionate local recovery attempt", "owner-authorized available repair must be attempted", "class ParentGuidanceUpcall"]:
     if marker not in behavior_text: fail(f"owner-native behavior assurance guard missing: {marker}")
 if not (ROOT / "audits/EVOLUTION_INDEX.json").exists(): fail("canonical A-share evolution evidence index missing")
 if authority.get("domain_business_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("runtime authority must separate child business identity from host runtime promotion")
@@ -168,4 +182,4 @@ if "premarket snapshot mutated after freeze" not in (ROOT / "ashare_event_agent/
 activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encoding="utf-8"))["cases"]
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation): fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; UAOS 1.6 cognition + behavior assurance 1.2; owner-native recovery/closure/upcall admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")
+print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; UAOS common capabilities >=1.6 + behavior assurance >=1.3; owner-native recovery/root-scope/evolution/closure/upcall admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")
