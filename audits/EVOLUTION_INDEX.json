@@ -1,18 +1,49 @@
 {
-  "schema_version":"1.0",
+  "schema_version":"1.1",
   "domain_id":"ashare",
   "role":"OWNER_NATIVE_CANONICAL_EVOLUTION_EVIDENCE_ENTRYPOINT",
-  "updated_at":"2026-10-15T23:38:00+08:00",
+  "updated_at":"2026-10-16T01:15:00+08:00",
+  "common_behavior_assurance_min":"1.3.0",
   "rules":[
     "Material or evolution-relevant detected problems preserve durable causal evidence here or in a linked record.",
     "Small local defects may use compact records; do not promote every incident into a permanent domain rule.",
     "Domain-only learning remains A-share owned. Common/cross-domain failure classes are upcalled to UAOS with structured evidence.",
-    "Failed or rejected repair paths that materially informed the decision are preserved rather than silently rewritten out of history."
+    "Failed or rejected repair paths that materially informed the decision are preserved rather than silently rewritten out of history.",
+    "Repair/no-change requires owner-native root-scope evidence and evolution disposition; parent guidance may be used to resolve unknown root scope without fabricating a diagnosis."
   ],
   "entries":[
     {
-      "evolution_id":"EVO-20261015-COMMON-BEHAVIOR-OWNER-ADOPTION",
+      "evolution_id":"EVO-20261016-COMMON-BEHAVIOR-1-3-ROOT-SCOPE",
       "status":"CANDIDATE_REPAIR_IMPLEMENTED__DOMAIN_CI_PENDING",
+      "failure_class":"FC-PREMATURE-PROBLEM-FRAMING-AND-REPAIR-BEFORE-ROOT-SCOPE-001",
+      "symptom":"Parent Common Behavior 1.3 requires evidence-tested root scope and evolution disposition before repair/no-change. A-share profile6 owner admission still allowed repair-now closure based on repair availability/authorization without a root-scope receipt.",
+      "diagnosis":[
+        "behavior_assurance.py enforced local recovery and repair-or-block but did not bind action to competing root-cause hypotheses.",
+        "A-share already had durable evolution evidence and structured parent guidance, so a new controller or journal was unnecessary.",
+        "The correct owner-native extension is to add root-scope hypotheses/receipt to the existing behavior admission and make repair/no-change consume that receipt."
+      ],
+      "macro_alignment":"Preserve A-share market-day/business ownership and point-in-time evidence model while adopting parent cognition ordering through A-share-native receipts.",
+      "governance_basis":"D1traverser-debug/universal-agent-os@main:docs/requirements/FROZEN_REQUIREMENTS_v2.2.md + config/COMMON_BEHAVIOR_ASSURANCE.json 1.3",
+      "selected_repair":[
+        "add owner-native RootScopeHypothesis/RootScopeReceipt and systemic cross-layer admission to ashare_event_agent.behavior_assurance",
+        "require root-scope receipt plus evolution disposition before repair/no-change",
+        "require durable problem ref for material/evolution-relevant action or parent upcall",
+        "allow structured parent guidance to request root-scope help without fabricating a selected root cause",
+        "bump capability profile to 7 and common behavior minimum to 1.3"
+      ],
+      "rejected_paths":[
+        "copy UAOS parent kernel into A-share",
+        "create a second cognition controller",
+        "treat user/external framing as selected root cause",
+        "require root-scope certainty before asking parent for diagnosis help"
+      ],
+      "verification_refs":["tests/test_behavior_assurance.py","tests/test_common_behavior_binding.py"],
+      "parent_guidance_ref":"UAOS:EVO-20261016-PROBLEM-COGNITION-ACTION-TRANSACTION",
+      "open_followup":"candidate CI and live market-day behavior observation"
+    },
+    {
+      "evolution_id":"EVO-20261015-COMMON-BEHAVIOR-OWNER-ADOPTION",
+      "status":"PROMOTED__PRODUCTION_CI_VERIFIED__SUPERSEDED_BY_1_3_ROOT_SCOPE_EXTENSION",
       "failure_class":"FC-INHERITED-BEHAVIOR-DECLARATION-WITHOUT-UNIFORM-OPERATIONAL-PROOF-002",
       "symptom":"A-share declared UAOS common cognition/problem-response semantics but lacked the current COMMON_BEHAVIOR_ASSURANCE binding and owner-native executable recovery/repair-or-block/structured-parent-guidance admission exposed by sibling domains.",
       "diagnosis":[
