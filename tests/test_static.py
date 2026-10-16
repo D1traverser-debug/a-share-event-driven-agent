@@ -37,8 +37,17 @@ def test_current_control_binding_keeps_parent_router_and_child_business_identity
     manifest = json.loads((ROOT / ".uaos/MANIFEST.json").read_text(encoding="utf-8"))
     adapter = json.loads((ROOT / ".uaos/ADAPTER.json").read_text(encoding="utf-8"))
     authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
-    assert manifest["parent_control_plane"] == "D1traverser-debug/universal-agent-os@main"
+    controller = "D1traverser-debug/universal-agent-os@main"
+    assert manifest["controller"] == controller
+    assert manifest["parent_control_plane"] == controller
+    assert manifest["status"] == "UAOS_CONTROL_PLANE_ACTIVE"
+    assert manifest["binding"]["controller_ref"] == f"{controller}:CURRENT_SYSTEM.json"
+    assert manifest["session_activation"].startswith("DIRECT_ASHARE_WORK_PLANE")
     assert manifest["domain_authority"]["market_day_identity"] == "ashare_event_agent/models.py:TaskContract.task_id"
+    assert adapter["controller"] == controller
+    assert adapter["parent_control_plane"] == controller
+    assert adapter["status"] == "UAOS_CONTROL_PLANE_ACTIVE"
+    assert adapter["session_activation"].startswith("DIRECT_ASHARE_WORK_PLANE")
     assert adapter["parent_router_identity_authority"] == "UAOS"
     assert adapter["domain_market_day_identity_authority"] == "ashare_event_agent/models.py:TaskContract.task_id"
     assert adapter["parent_child_id_equality_required"] is False
