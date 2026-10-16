@@ -20,9 +20,15 @@ def test_manifest_and_capability_profile_bind_current_common_behavior_contract()
     assert manifest["domain_authority"]["root_scope_admission_ref"].endswith("require_root_scope_admission")
     assert manifest["domain_authority"]["evolution_evidence_entrypoint"] == "audits/EVOLUTION_INDEX.json"
 
-    assert capabilities["schema_version"] == "3.3"
-    assert capabilities["profile_version"] == 7
+    assert capabilities["schema_version"] == "3.4"
+    assert capabilities["profile_version"] == 8
     assert capabilities["uaos_common_behavior_assurance_min"] == "1.3.0"
+    assert capabilities["uaos_common_capabilities_min"] == "1.6.0"
+    assert capabilities["uaos_deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
+    assert capabilities["hosted_cognition_semantics"] == {
+        "source": "CURRENT_UAOS_DELIBERATION_POLICY",
+        "local_overrides": "NONE",
+    }
     assert capabilities["owner_native_behavior_admission"] == "ashare_event_agent.behavior_assurance"
     semantics = capabilities["hosted_behavior_semantics"]
     assert "LOCAL_RECOVERY_ATTEMPT" in semantics["recover_before_user_escalation"]

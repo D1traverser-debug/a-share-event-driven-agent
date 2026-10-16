@@ -45,7 +45,9 @@
     "selection_quality_metrics": ["activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"]
   },
   "learning": {
-    "every_problem_requires_research_and_reflection": true,
+    "problem_cognition_owner": "CURRENT_UAOS_DELIBERATION_POLICY",
+    "problem_cognition_rule": "RISK_ADAPTIVE__LIGHTWEIGHT_MAY_USE_CURRENT_EVIDENCE__CONTRASTIVE_COMPARES_ALTERNATIVES__STRUCTURED_REQUIRES_EXTERNAL_RESEARCH_AND_UPSTREAM_FALSIFICATION",
+    "domain_market_research_is_separate_from_generic_problem_cognition": true,
     "single_day_promotion_forbidden": true,
     "min_replay_cases": 5,
     "min_regimes": 2,
