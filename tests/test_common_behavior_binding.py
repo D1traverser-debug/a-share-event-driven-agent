@@ -15,7 +15,8 @@ def test_manifest_and_capability_profile_bind_current_common_behavior_contract()
 
     assert tuple(int(part) for part in manifest["schema_version"].split(".")) >= (3, 3)
     assert manifest["controller"] == controller
-    assert manifest["status"] == "UAOS_CONTROL_PLANE_ACTIVE"
+    assert manifest["status"] == "DIRECT_DOMAIN_WORK_PLANE_ACTIVE"
+    assert manifest["binding_status"] == "UAOS_CONTROL_PLANE_ACTIVE"
     assert manifest["binding"]["controller_ref"] == f"{controller}:CURRENT_SYSTEM.json"
     assert manifest["binding"]["common_behavior_assurance_ref"].endswith("config/COMMON_BEHAVIOR_ASSURANCE.json")
     assert manifest["binding"]["common_behavior_assurance_min"] == "1.3.0"
