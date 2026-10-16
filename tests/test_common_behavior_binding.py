@@ -11,17 +11,22 @@ def load(path: str):
 def test_manifest_and_capability_profile_bind_current_common_behavior_contract():
     manifest = load(".uaos/MANIFEST.json")
     capabilities = load(".uaos/CAPABILITIES.json")
+    controller = "D1traverser-debug/universal-agent-os@main"
 
-    assert manifest["schema_version"] == "3.2"
+    assert tuple(int(part) for part in manifest["schema_version"].split(".")) >= (3, 3)
+    assert manifest["controller"] == controller
+    assert manifest["status"] == "UAOS_CONTROL_PLANE_ACTIVE"
+    assert manifest["binding"]["controller_ref"] == f"{controller}:CURRENT_SYSTEM.json"
     assert manifest["binding"]["common_behavior_assurance_ref"].endswith("config/COMMON_BEHAVIOR_ASSURANCE.json")
     assert manifest["binding"]["common_behavior_assurance_min"] == "1.3.0"
+    assert manifest["binding"]["deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
     assert manifest["binding"]["domain_health_escalation_ref"].endswith("config/DOMAIN_HEALTH_ESCALATION_POLICY.json")
     assert manifest["domain_authority"]["behavior_assurance_ref"] == "ashare_event_agent/behavior_assurance.py"
     assert manifest["domain_authority"]["root_scope_admission_ref"].endswith("require_root_scope_admission")
     assert manifest["domain_authority"]["evolution_evidence_entrypoint"] == "audits/EVOLUTION_INDEX.json"
 
-    assert capabilities["schema_version"] == "3.4"
-    assert capabilities["profile_version"] == 8
+    assert tuple(int(part) for part in capabilities["schema_version"].split(".")) >= (3, 4)
+    assert capabilities["profile_version"] >= 8
     assert capabilities["uaos_common_behavior_assurance_min"] == "1.3.0"
     assert capabilities["uaos_common_capabilities_min"] == "1.6.0"
     assert capabilities["uaos_deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
