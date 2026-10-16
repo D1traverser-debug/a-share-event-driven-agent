@@ -13,6 +13,7 @@ def test_current_skill_requires_capability_handshake_and_no_second_controller_na
     assert profile["policy"].startswith("CURRENT_SESSION_HANDSHAKE")
     assert profile["direct_domain_activation"] is True
     assert profile["uaos_common_capabilities_min"] == "1.6.0"
+    assert profile["uaos_deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
     assert not (ROOT / "continuity").exists()
 
 
@@ -30,7 +31,7 @@ def test_public_runtime_surface_is_child_business_runtime_not_cross_domain_contr
     assert not (ROOT / "ashare_event_agent/continuity.py").exists()
 
 
-def test_live_source_cognition_and_runtime_capability_remain_fail_closed():
+def test_live_source_cognition_and_runtime_capability_remain_fail_closed_without_shadow_parent_algorithm():
     profile = json.loads((ROOT / ".uaos/CAPABILITIES.json").read_text(encoding="utf-8"))
     caps = {row["capability_id"]: row for row in profile["capabilities"]}
     assert "premarket_research_and_freeze" in caps
@@ -38,8 +39,12 @@ def test_live_source_cognition_and_runtime_capability_remain_fail_closed():
     assert "ashare_market_day_orchestration" in caps
     assert "preferred_market_microstructure" in caps
     assert "runtime_execution" in caps
-    assert len(profile["problem_response_floor"]) >= 4
-    assert "FAMILIARITY_IS_NOT_A_WAIVER" in profile["problem_response_rule"]
+    assert profile["hosted_cognition_semantics"] == {
+        "source": "CURRENT_UAOS_DELIBERATION_POLICY",
+        "local_overrides": "NONE",
+    }
+    assert "problem_response_floor" not in profile
+    assert "problem_response_rule" not in profile
     assert all(row.get("side_channel_allowed") is False for row in caps.values())
 
 
