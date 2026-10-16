@@ -52,7 +52,7 @@ New premarket work must resolve the current trading day. Freeze timestamped evid
 
 ## Parent cognition binding, recovery and parent guidance
 
-Parent cognition stages and evidence/search depth are owned only by current UAOS `config/DELIBERATION_POLICY.json`. This Skill does not define a second parent problem-response floor; `.uaos/CAPABILITIES.json` declares `CURRENT_UAOS_DELIBERATION_POLICY` with no local cognition override. A-share realizes the parent method through owner-native recovery, root-scope, evolution, action-closure and parent-guidance gates.
+A-share adopts UAOS Common Behavior Assurance 1.3 through the owner-native gates below. Parent cognition stages and evidence/search depth are owned only by current UAOS `config/DELIBERATION_POLICY.json`. This Skill does not define a second parent problem-response floor; `.uaos/CAPABILITIES.json` declares `CURRENT_UAOS_DELIBERATION_POLICY` with no local cognition override. A-share realizes the parent method through owner-native recovery, root-scope, evolution, action-closure and parent-guidance gates.
 
 Before repair, evidence-backed no-change, or parent guidance, create a root-scope receipt at the depth required by the current parent policy. A small single local problem may remain lightweight. Material, repeated, cross-subsystem, architecture-gap, complexity-growth or scope-expansion signals must compare competing hypotheses across at least two layers, test an architecture/upstream explanation, preserve at least one rejected alternative and bind architecture reassessment evidence.
 
