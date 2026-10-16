@@ -50,13 +50,11 @@ This is structured artifact handoff, not unbounded specialist chat. An advisory/
 
 New premarket work must resolve the current trading day. Freeze timestamped evidence before final recommendation; post-close facts never backfill the frozen decision. Research recall remains broad before execution ranking narrows it. A final U3 candidate must descend from frozen U1.
 
-## Problem response, recovery and parent guidance
+## Parent cognition binding, recovery and parent guidance
 
-A-share adopts UAOS Common Behavior Assurance 1.3 owner-natively through `ashare_event_agent.behavior_assurance`.
+Parent cognition stages and evidence/search depth are owned only by current UAOS `config/DELIBERATION_POLICY.json`. This Skill does not define a second parent problem-response floor; `.uaos/CAPABILITIES.json` declares `CURRENT_UAOS_DELIBERATION_POLICY` with no local cognition override. A-share realizes the parent method through owner-native recovery, root-scope, evolution, action-closure and parent-guidance gates.
 
-Every detected problem requires concrete diagnosis, macro workflow/goal check, governing-assumption challenge and relevant external research/verification. Familiarity is not a waiver. A user correction, external method, or first repairable symptom is evidence, not automatic root-cause authority.
-
-Before repair, evidence-backed no-change, or parent guidance, create a root-scope receipt. A small single local problem may remain lightweight. Material, repeated, cross-subsystem, architecture-gap, complexity-growth or scope-expansion signals must compare competing hypotheses across at least two layers, test an architecture/upstream explanation, preserve at least one rejected alternative and bind architecture reassessment evidence.
+Before repair, evidence-backed no-change, or parent guidance, create a root-scope receipt at the depth required by the current parent policy. A small single local problem may remain lightweight. Material, repeated, cross-subsystem, architecture-gap, complexity-growth or scope-expansion signals must compare competing hypotheses across at least two layers, test an architecture/upstream explanation, preserve at least one rejected alternative and bind architecture reassessment evidence.
 
 The owner-native transaction is:
 `DETECT -> RECOVER WHEN APPLICABLE -> ROOT_SCOPE_ADMISSION -> TYPED_EVOLUTION_DISPOSITION -> REPAIR / NO_CHANGE / PARENT_GUIDANCE -> VERIFY`.
