@@ -4,7 +4,8 @@
   "domain_id":"ashare",
   "controller":"D1traverser-debug/universal-agent-os@main",
   "parent_control_plane":"D1traverser-debug/universal-agent-os@main",
-  "status":"UAOS_CONTROL_PLANE_ACTIVE",
+  "status":"DIRECT_DOMAIN_WORK_PLANE_ACTIVE",
+  "binding_status":"UAOS_CONTROL_PLANE_ACTIVE",
   "session_activation":"DIRECT_ASHARE_WORK_PLANE_AFTER_DOMAIN_SELECTION__NO_MANDATORY_LIVE_UAOS_BUSINESS_PROXY",
   "skill":{"entrypoint":"UAOS_SKILL.md"},
   "binding":{
