@@ -1,8 +1,10 @@
 {
-  "schema_version":"3.0",
+  "schema_version":"3.1",
   "domain_id":"ashare",
+  "controller":"D1traverser-debug/universal-agent-os@main",
   "parent_control_plane":"D1traverser-debug/universal-agent-os@main",
-  "status":"DIRECT_DOMAIN_WORK_PLANE_ACTIVE",
+  "status":"UAOS_CONTROL_PLANE_ACTIVE",
+  "session_activation":"DIRECT_ASHARE_WORK_PLANE_AFTER_DOMAIN_SELECTION__NO_MANDATORY_LIVE_UAOS_BUSINESS_PROXY",
   "parent_scope":"CROSS_DOMAIN_ROUTING__COMMON_GOVERNANCE__COMMON_COGNITION_EVOLUTION_METHOD__OPTIONAL_PARENT_GUIDANCE",
   "parent_router_identity_authority":"UAOS",
   "domain_market_day_identity_authority":"ashare_event_agent/models.py:TaskContract.task_id",
