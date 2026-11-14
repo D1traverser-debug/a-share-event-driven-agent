@@ -3,6 +3,7 @@
 Status: ACTIVE
 Effective date: 2026-11-14
 Domain: ASHARE
+Authority Context: DOMAIN:ashare
 Repository: D1traverser-debug/a-share-event-driven-agent
 
 ## 1. Governance boundary
