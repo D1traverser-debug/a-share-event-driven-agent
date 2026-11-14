@@ -12,7 +12,7 @@ class ProblemDisposition(str, Enum):
     REPAIR_EXECUTED = "REPAIR_EXECUTED"
     BLOCKED_WITH_REASON = "BLOCKED_WITH_REASON"
     NO_CHANGE_WITH_EVIDENCE = "NO_CHANGE_WITH_EVIDENCE"
-    PARENT_GUIDANCE_REQUIRED = "PARENT_GUIDANCE_REQUIRED"
+    CAOS_GOVERNANCE_REVIEW_REQUIRED = "CAOS_GOVERNANCE_REVIEW_REQUIRED"
 
 
 class ProblemLayer(str, Enum):
@@ -20,7 +20,7 @@ class ProblemLayer(str, Enum):
     DOMAIN_WORKFLOW = "DOMAIN_WORKFLOW"
     DOMAIN_ARCHITECTURE = "DOMAIN_ARCHITECTURE"
     COMMON_CAPABILITY = "COMMON_CAPABILITY"
-    PARENT_CONTROL_PLANE = "PARENT_CONTROL_PLANE"
+    CAOS_GOVERNANCE = "CAOS_GOVERNANCE"
     HOST = "HOST"
     REQUIREMENT_OR_GOAL = "REQUIREMENT_OR_GOAL"
 
@@ -36,7 +36,7 @@ class EvolutionDisposition(str, Enum):
     NO_DURABLE_EVOLUTION_WITH_EVIDENCE = "NO_DURABLE_EVOLUTION_WITH_EVIDENCE"
     DOMAIN_EVOLUTION_CANDIDATE = "DOMAIN_EVOLUTION_CANDIDATE"
     DOMAIN_EVOLUTION_UPDATED = "DOMAIN_EVOLUTION_UPDATED"
-    PARENT_OR_COMMON_UPCALL = "PARENT_OR_COMMON_UPCALL"
+    CAOS_GOVERNANCE_REVIEW = "CAOS_GOVERNANCE_REVIEW"
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +71,7 @@ class RootScopeReceipt:
 _UPSTREAM_LAYERS = {
     ProblemLayer.DOMAIN_ARCHITECTURE,
     ProblemLayer.COMMON_CAPABILITY,
-    ProblemLayer.PARENT_CONTROL_PLANE,
+    ProblemLayer.CAOS_GOVERNANCE,
     ProblemLayer.HOST,
     ProblemLayer.REQUIREMENT_OR_GOAL,
 }
@@ -90,7 +90,7 @@ def require_root_scope_admission(
     architecture_reassessment_refs: tuple[str, ...] = (),
     direct_user_or_external_claim_promoted_without_test: bool = False,
 ) -> RootScopeReceipt:
-    """Owner-native Common Behavior 1.3 root-scope admission."""
+    """CAOS-governed owner-native root-scope admission."""
 
     if direct_user_or_external_claim_promoted_without_test:
         raise BehaviorAdmissionError(
@@ -173,7 +173,7 @@ class BehaviorProblemSignals:
     verification_evidence: tuple[str, ...] = ()
     no_change_evidence: tuple[str, ...] = ()
     blocker: str | None = None
-    parent_help_needed: bool = False
+    caos_review_needed: bool = False
     evidence_refs: tuple[str, ...] = ()
     root_scope_receipt: RootScopeReceipt | None = None
     evolution_disposition: EvolutionDisposition | None = None
@@ -203,7 +203,7 @@ def _durable_record_required(signals: BehaviorProblemSignals) -> bool:
         in {
             EvolutionDisposition.DOMAIN_EVOLUTION_CANDIDATE,
             EvolutionDisposition.DOMAIN_EVOLUTION_UPDATED,
-            EvolutionDisposition.PARENT_OR_COMMON_UPCALL,
+            EvolutionDisposition.CAOS_GOVERNANCE_REVIEW,
         }
     )
 
@@ -211,7 +211,7 @@ def _durable_record_required(signals: BehaviorProblemSignals) -> bool:
 def _require_cognition_and_learning(signals: BehaviorProblemSignals) -> None:
     if signals.root_scope_receipt is None:
         raise BehaviorAdmissionError(
-            "problem action denied: root-scope admission must precede repair, no-change, or parent guidance"
+            "problem action denied: root-scope admission must precede repair, no-change, or CAOS governance review"
         )
     if not isinstance(signals.evolution_disposition, EvolutionDisposition):
         raise BehaviorAdmissionError(
@@ -226,7 +226,7 @@ def _require_cognition_and_learning(signals: BehaviorProblemSignals) -> None:
 
 
 def require_behavior_problem_closure(signals: BehaviorProblemSignals) -> BehaviorProblemReceipt:
-    """Enforce A-share owner-native realization of UAOS Common Behavior 1.3."""
+    """Enforce A-share owner-native realization of CAOS-governed cognition and recovery."""
 
     if not signals.problem_detected:
         return BehaviorProblemReceipt(
@@ -241,7 +241,7 @@ def require_behavior_problem_closure(signals: BehaviorProblemSignals) -> Behavio
 
     if signals.recoverable_dependency and not signals.local_recovery_attempts and not user_dependency:
         raise BehaviorAdmissionError(
-            "recoverable dependency must receive a proportionate local recovery attempt before user or parent escalation"
+            "recoverable dependency must receive a proportionate local recovery attempt before user or CAOS governance review"
         )
 
     if user_dependency and signals.blocker:
@@ -279,16 +279,16 @@ def require_behavior_problem_closure(signals: BehaviorProblemSignals) -> Behavio
             **common,
         )
 
-    if signals.parent_help_needed:
-        if signals.evolution_disposition is not EvolutionDisposition.PARENT_OR_COMMON_UPCALL:
+    if signals.caos_review_needed:
+        if signals.evolution_disposition is not EvolutionDisposition.CAOS_GOVERNANCE_REVIEW:
             raise BehaviorAdmissionError(
-                "parent-guidance escalation requires PARENT_OR_COMMON_UPCALL evolution disposition"
+                "CAOS-governance review escalation requires CAOS_GOVERNANCE_REVIEW evolution disposition"
             )
         if not signals.evidence_refs:
-            raise BehaviorAdmissionError("parent-guidance escalation requires evidence_refs")
+            raise BehaviorAdmissionError("CAOS-governance review escalation requires evidence_refs")
         return BehaviorProblemReceipt(
             signals.problem_id,
-            ProblemDisposition.PARENT_GUIDANCE_REQUIRED,
+            ProblemDisposition.CAOS_GOVERNANCE_REVIEW_REQUIRED,
             signals.local_recovery_attempts,
             signals.evidence_refs,
             signals.blocker,
@@ -316,12 +316,12 @@ def require_behavior_problem_closure(signals: BehaviorProblemSignals) -> Behavio
         )
 
     raise BehaviorAdmissionError(
-        "detected problem requires admitted repair evidence, a real blocker, evidence-backed no-change, or structured parent guidance"
+        "detected problem requires admitted repair evidence, a real blocker, evidence-backed no-change, or structured CAOS governance review"
     )
 
 
 @dataclass(frozen=True, slots=True)
-class ParentGuidanceUpcall:
+class CAOSGovernanceReviewRequest:
     escalation_id: str
     domain_revision: str
     problem_ref: str
@@ -331,7 +331,7 @@ class ParentGuidanceUpcall:
     suspected_layer: str
     evidence_refs: tuple[str, ...]
     local_recovery_attempts: tuple[str, ...]
-    requested_parent_help: str
+    requested_caos_review: str
     can_continue_unaffected_work: bool
     failure_class: str | None = None
     capability_id: str | None = None
@@ -348,17 +348,17 @@ class ParentGuidanceUpcall:
             self.impact,
             self.blocking_scope,
             self.suspected_layer,
-            self.requested_parent_help,
+            self.requested_caos_review,
         )
         if not all(value.strip() for value in required):
-            raise ValueError("material parent-guidance upcall requires complete identity, impact, scope, layer and help request")
+            raise ValueError("material CAOS-governance review request requires complete identity, impact, scope, layer and help request")
         if self.severity not in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}:
             raise ValueError("invalid severity")
         if self.suspected_layer not in {
             "DOMAIN_BUSINESS",
             "DOMAIN_ARCHITECTURE",
             "COMMON_CAPABILITY",
-            "PARENT_CONTROL_PLANE",
+            "CAOS_GOVERNANCE",
             "HOST",
             "REQUIREMENT_OR_GOAL",
             "UNKNOWN",
@@ -381,7 +381,7 @@ class ParentGuidanceUpcall:
             "suspected_layer": self.suspected_layer,
             "evidence_refs": list(self.evidence_refs),
             "local_recovery_attempts": list(self.local_recovery_attempts),
-            "requested_parent_help": self.requested_parent_help,
+            "requested_caos_review": self.requested_caos_review,
             "can_continue_unaffected_work": self.can_continue_unaffected_work,
             "failure_class": self.failure_class,
             "capability_id": self.capability_id,

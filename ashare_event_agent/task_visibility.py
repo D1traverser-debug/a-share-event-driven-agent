@@ -18,9 +18,9 @@ def is_default_visible_candidate(state: MarketDayState) -> bool:
 def list_resumable_states(store: SQLiteStateStore, limit: int = 20) -> list[MarketDayState]:
     """List child-owned market-day checkpoints eligible for domain resume selection.
 
-    This function is not a cross-domain or parent task registry. The A-share domain
-    owns these child identities; UAOS may only route the domain and retain an opaque
-    selected child reference for parent continuity.
+    This function is not a cross-domain or parent task registry. The A-share domain owns these task identities and resumability decisions. CAOS
+    provides external chat governance only; it does not route runtime tasks or retain
+    a parent-side child reference.
     """
     scan_limit = max(1, min(max(limit, 20) * 5, 100))
     states = store.list_recent(scan_limit)

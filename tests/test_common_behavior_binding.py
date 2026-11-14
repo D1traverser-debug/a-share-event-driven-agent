@@ -8,58 +8,40 @@ def load(path: str):
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
-def test_manifest_and_capability_profile_bind_current_common_behavior_contract():
-    manifest = load(".uaos/MANIFEST.json")
-    capabilities = load(".uaos/CAPABILITIES.json")
-    controller = "D1traverser-debug/universal-agent-os@main"
-
-    assert tuple(int(part) for part in manifest["schema_version"].split(".")) >= (3, 3)
-    assert manifest["controller"] == controller
-    assert manifest["status"] == "DIRECT_DOMAIN_WORK_PLANE_ACTIVE"
-    assert manifest["binding_status"] == "UAOS_CONTROL_PLANE_ACTIVE"
-    assert manifest["binding"]["controller_ref"] == f"{controller}:CURRENT_SYSTEM.json"
-    assert manifest["binding"]["common_behavior_assurance_ref"].endswith("config/COMMON_BEHAVIOR_ASSURANCE.json")
-    assert manifest["binding"]["common_behavior_assurance_min"] == "1.3.0"
-    assert manifest["binding"]["deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
-    assert manifest["binding"]["domain_health_escalation_ref"].endswith("config/DOMAIN_HEALTH_ESCALATION_POLICY.json")
-    assert manifest["domain_authority"]["behavior_assurance_ref"] == "ashare_event_agent/behavior_assurance.py"
-    assert manifest["domain_authority"]["root_scope_admission_ref"].endswith("require_root_scope_admission")
-    assert manifest["domain_authority"]["evolution_evidence_entrypoint"] == "audits/EVOLUTION_INDEX.json"
-
-    assert tuple(int(part) for part in capabilities["schema_version"].split(".")) >= (3, 4)
-    assert capabilities["profile_version"] >= 8
-    assert capabilities["uaos_common_behavior_assurance_min"] == "1.3.0"
-    assert capabilities["uaos_common_capabilities_min"] == "1.6.0"
-    assert capabilities["uaos_deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
-    assert capabilities["hosted_cognition_semantics"] == {
-        "source": "CURRENT_UAOS_DELIBERATION_POLICY",
-        "local_overrides": "NONE",
-    }
+def test_caos_governance_contract_and_domain_owner_boundary():
+    governance = load("config/CAOS_GOVERNANCE.json")
+    capabilities = load("config/DOMAIN_CAPABILITIES.json")
+    authority = load("config/RUNTIME_AUTHORITY.json")
+    assert governance["governance"]["system"] == "CAOS"
+    assert governance["governance"]["mode"] == "CHAT_GOVERNED_EXTERNAL"
+    assert governance["governance"]["runtime_dependency"] is False
+    assert governance["governance"]["source_mutation"] == "FORBIDDEN"
+    assert governance["business_authority"]["repository"] == "D1traverser-debug/a-share-event-driven-agent@main"
+    assert governance["business_authority"]["identity"] == "ashare_event_agent/models.py:TaskContract.task_id"
+    assert governance["business_authority"]["state"] == "ashare_event_agent/models.py:MarketDayState"
+    assert governance["execution_boundary"]["direct_domain_activation"] is True
+    assert governance["execution_boundary"]["parent_task_identity"] is False
+    assert governance["execution_boundary"]["parent_business_state_mirror"] is False
+    assert governance["execution_boundary"]["runtime_upcall"] is False
+    assert capabilities["caos_governance_ref"] == "config/CAOS_GOVERNANCE.json"
+    assert capabilities["domain_id"] == "ashare"
+    assert capabilities["direct_domain_activation"] is True
     assert capabilities["owner_native_behavior_admission"] == "ashare_event_agent.behavior_assurance"
-    semantics = capabilities["hosted_behavior_semantics"]
-    assert "LOCAL_RECOVERY_ATTEMPT" in semantics["recover_before_user_escalation"]
-    assert "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY" in semantics["root_scope_admission"]
-    assert "TYPED_EVOLUTION_DISPOSITION" in semantics["evolution_before_action"]
-    assert "ROOT_SCOPE_AND_EVOLUTION_ADMISSION_PRECEDE" in semantics["problem_to_action_closure"]
-    assert "DURABLE_PROBLEM_REF" in semantics["parent_guidance"]
+    assert capabilities["domain_evolution_evidence_entrypoint"] == "audits/EVOLUTION_INDEX.json"
+    assert "LOCAL_RECOVERY_ATTEMPT" in capabilities["owner_native_behavior_semantics"]["recover_before_user_escalation"]
+    assert "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY" in capabilities["owner_native_behavior_semantics"]["root_scope_admission"]
+    assert "TYPED_EVOLUTION_DISPOSITION" in capabilities["owner_native_behavior_semantics"]["evolution_before_action"]
+    assert "CAOS_ACTIVE_CHAT" in capabilities["owner_native_behavior_semantics"]["caos_governance_review"]
+    assert authority["caos_runtime_dependency"] is False
+    assert authority["external_governance_may_mirror_market_day_business_state"] is False
+    assert not (ROOT / ".uaos").exists()
+    assert not (ROOT / "UAOS_SKILL.md").exists()
 
 
-def test_skill_requires_root_scope_evolution_recovery_closure_and_durable_problem_history():
-    skill = (ROOT / "UAOS_SKILL.md").read_text(encoding="utf-8")
-    assert "Common Behavior Assurance 1.3" in skill
-    assert "root-scope receipt" in skill
-    assert "TYPED_EVOLUTION_DISPOSITION" in skill
-    assert "recommendation-only is not terminal" in skill
-    assert "durable causal evidence" in skill
-    assert "does not transfer A-share market-day identity" in skill
-    assert "audits/EVOLUTION_INDEX.json" in skill
-
-
-def test_evolution_index_exposes_1_3_owner_adoption_and_rejects_declaration_only_path():
+def test_evolution_index_records_caos_migration_without_rewriting_history():
     index = load("audits/EVOLUTION_INDEX.json")
-    assert index["role"] == "OWNER_NATIVE_CANONICAL_EVOLUTION_EVIDENCE_ENTRYPOINT"
-    entries = {entry["evolution_id"]: entry for entry in index["entries"]}
-    entry = entries["EVO-20261016-COMMON-BEHAVIOR-1-3-ROOT-SCOPE-ADOPTION"]
-    assert entry["failure_class"] == "FC-COMMON-BEHAVIOR-1-3-OWNER-ADOPTION-OPEN"
-    assert "declaration-only version bump" in "\n".join(entry["rejected_paths"])
-    assert entry["parent_governance_ref"] == "UAOS:EVO-20261016-PROBLEM-COGNITION-ACTION-TRANSACTION"
+    rows = {row["evolution_id"]: row for row in index["entries"]}
+    entry = rows["EVO-20261114-CAOS-GOVERNANCE-MIGRATION"]
+    assert entry["status"] == "CANDIDATE__CI_PENDING"
+    assert entry["selected_architecture"] == "CAOS_CHAT_GOVERNANCE__A_SHARE_OWNS_MARKET_DAY_STATE"
+    assert "business state" in entry["preserved_invariants"].lower()

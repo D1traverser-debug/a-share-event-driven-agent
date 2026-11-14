@@ -55,51 +55,49 @@ if (ROOT / "config/policy.json").read_bytes() != (ROOT / "ashare_event_agent/res
 if (ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_bytes() != (ROOT / "ashare_event_agent/resources/market_day_orchestration.json").read_bytes():
     fail("market-day orchestration mirror drift")
 
-manifest = json.loads((ROOT / ".uaos/MANIFEST.json").read_text(encoding="utf-8"))
-adapter = json.loads((ROOT / ".uaos/ADAPTER.json").read_text(encoding="utf-8"))
-capability_profile = json.loads((ROOT / ".uaos/CAPABILITIES.json").read_text(encoding="utf-8"))
+governance = json.loads((ROOT / "config/CAOS_GOVERNANCE.json").read_text(encoding="utf-8"))
+capability_profile = json.loads((ROOT / "config/DOMAIN_CAPABILITIES.json").read_text(encoding="utf-8"))
 authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
 policy = json.loads((ROOT / "config/policy.json").read_text(encoding="utf-8"))
 product = (ROOT / "docs/product_requirements.md").read_text(encoding="utf-8")
 graph = json.loads((ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_text(encoding="utf-8"))
 validate_orchestration(graph)
 
-if manifest.get("status") != "DIRECT_DOMAIN_WORK_PLANE_ACTIVE": fail("manifest must declare direct A-share work plane")
-if not version_at_least(manifest.get("binding", {}).get("common_capabilities_min"), "1.6.0"): fail("A-share must consume UAOS common capabilities >=1.6.0")
-if not version_at_least(manifest.get("binding", {}).get("common_behavior_assurance_min"), "1.3.0"): fail("A-share must consume UAOS common behavior assurance >=1.3.0")
-if not str(manifest.get("binding", {}).get("domain_health_escalation_ref", "")).endswith("config/DOMAIN_HEALTH_ESCALATION_POLICY.json"): fail("A-share domain-health escalation binding missing")
-if manifest.get("domain_authority", {}).get("market_day_identity") != "ashare_event_agent/models.py:TaskContract.task_id": fail("manifest market-day identity owner drift")
-if manifest.get("domain_authority", {}).get("market_day_orchestration_ref") != "config/MARKET_DAY_ORCHESTRATION.json": fail("manifest orchestration authority drift")
-if manifest.get("domain_authority", {}).get("behavior_assurance_ref") != "ashare_event_agent/behavior_assurance.py": fail("manifest owner-native behavior assurance authority missing")
-if not str(manifest.get("domain_authority", {}).get("root_scope_admission_ref", "")).endswith("require_root_scope_admission"): fail("manifest owner-native root-scope admission missing")
-if manifest.get("domain_authority", {}).get("evolution_evidence_entrypoint") != "audits/EVOLUTION_INDEX.json": fail("canonical A-share evolution evidence entrypoint missing")
-if adapter.get("domain_market_day_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("adapter must keep market-day identity in the A-share domain")
-if adapter.get("parent_child_id_equality_required") is not False: fail("parent/child identity equality must remain forbidden")
-if "OPAQUE_CHILD" not in adapter.get("parent_reference_semantics", ""): fail("parent reference must remain opaque")
-if int(capability_profile.get("profile_version", 0)) < 8: fail("A-share capability profile must be >=8 for current UAOS cognition inheritance")
-if not version_at_least(capability_profile.get("uaos_common_capabilities_min"), "1.6.0"): fail("A-share common capability minimum drift")
-if not version_at_least(capability_profile.get("uaos_common_behavior_assurance_min"), "1.3.0"): fail("A-share common behavior assurance minimum must be >=1.3.0")
+if governance.get("domain_id") != "ashare": fail("CAOS governance domain identity drift")
+if governance.get("governance", {}).get("system") != "CAOS": fail("A-share must bind CAOS governance")
+if governance.get("governance", {}).get("mode") != "CHAT_GOVERNED_EXTERNAL": fail("CAOS governance must remain external chat governance")
+if governance.get("governance", {}).get("runtime_dependency") is not False: fail("CAOS runtime dependency must remain false")
+if governance.get("governance", {}).get("source_mutation") != "FORBIDDEN": fail("CAOS source must remain read-only")
+if governance.get("business_authority", {}).get("identity") != "ashare_event_agent/models.py:TaskContract.task_id": fail("A-share market-day identity owner drift")
+if governance.get("business_authority", {}).get("state") != "ashare_event_agent/models.py:MarketDayState": fail("A-share market-day state owner drift")
+if governance.get("execution_boundary", {}).get("parent_task_identity") is not False: fail("CAOS must not create a parent task identity")
+if governance.get("execution_boundary", {}).get("parent_business_state_mirror") is not False: fail("CAOS must not mirror A-share business state")
+if governance.get("execution_boundary", {}).get("runtime_upcall") is not False: fail("CAOS chat governance must not be represented as a runtime upcall")
+if int(capability_profile.get("profile_version", 0)) < 1: fail("A-share domain capability profile missing")
+if capability_profile.get("caos_governance_ref") != "config/CAOS_GOVERNANCE.json": fail("A-share capability profile must bind CAOS governance")
 if capability_profile.get("owner_native_behavior_admission") != "ashare_event_agent.behavior_assurance": fail("A-share owner-native behavior admission missing")
-if not str(capability_profile.get("uaos_deliberation_policy_ref", "")).endswith("config/DELIBERATION_POLICY.json"): fail("A-share canonical deliberation binding missing")
-hosted_cognition = capability_profile.get("hosted_cognition_semantics") or {}
-if hosted_cognition != {"source": "CURRENT_UAOS_DELIBERATION_POLICY", "local_overrides": "NONE"}: fail("A-share hosted cognition must be pointer-only to current UAOS deliberation policy")
-if "problem_response_floor" in capability_profile or "problem_response_rule" in capability_profile: fail("copied parent cognition semantics must not reappear in A-share capability profile")
-hosted_behavior = capability_profile.get("hosted_behavior_semantics") or {}
-if "LOCAL_RECOVERY_ATTEMPT" not in hosted_behavior.get("recover_before_user_escalation", ""): fail("recover-before-escalation behavior is not operationally bound")
-if "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY" not in hosted_behavior.get("root_scope_admission", ""): fail("root-scope behavior is not operationally bound")
-if "TYPED_EVOLUTION_DISPOSITION" not in hosted_behavior.get("evolution_before_action", ""): fail("typed evolution-before-action behavior is not operationally bound")
-if "RECOMMENDATION_ONLY_NOT_TERMINAL" not in hosted_behavior.get("problem_to_action_closure", ""): fail("problem-to-action closure behavior is not operationally bound")
-if "STRUCTURED_UPCALL" not in hosted_behavior.get("parent_guidance", ""): fail("structured parent guidance is not operationally bound")
+if capability_profile.get("domain_evolution_evidence_entrypoint") != "audits/EVOLUTION_INDEX.json": fail("canonical A-share evolution evidence entrypoint missing")
+semantics = capability_profile.get("owner_native_behavior_semantics") or {}
+for key, marker in {
+    "recover_before_user_escalation": "LOCAL_RECOVERY_ATTEMPT",
+    "root_scope_admission": "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY",
+    "evolution_before_action": "TYPED_EVOLUTION_DISPOSITION",
+    "problem_to_action_closure": "RECOMMENDATION_ONLY_NOT_TERMINAL",
+    "caos_governance_review": "CAOS_ACTIVE_CHAT",
+}.items():
+    if marker not in semantics.get(key, ""): fail(f"A-share owner-native behavior semantic missing: {key}")
 if not BEHAVIOR.exists(): fail("owner-native behavior assurance module missing")
 behavior_text = BEHAVIOR.read_text(encoding="utf-8")
-for marker in ["require_root_scope_admission", "root-scope admission must precede repair", "typed evolution disposition is required before action", "recoverable dependency must receive a proportionate local recovery attempt", "owner-authorized available repair must be attempted", "class ParentGuidanceUpcall"]:
+for marker in ["require_root_scope_admission", "root-scope admission must precede repair", "typed evolution disposition is required before action", "recoverable dependency must receive a proportionate local recovery attempt", "owner-authorized available repair must be attempted", "class CAOSGovernanceReviewRequest"]:
     if marker not in behavior_text: fail(f"owner-native behavior assurance guard missing: {marker}")
 if not (ROOT / "audits/EVOLUTION_INDEX.json").exists(): fail("canonical A-share evolution evidence index missing")
-if authority.get("domain_business_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("runtime authority must separate child business identity from host runtime promotion")
-if authority.get("parent_may_mirror_market_day_business_state") is not False: fail("UAOS must not mirror A-share market-day business state")
+if authority.get("domain_business_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("runtime authority must separate A-share business identity from hosted runtime promotion")
+if authority.get("caos_runtime_dependency") is not False: fail("A-share runtime must not require a CAOS service")
+if authority.get("external_governance_may_mirror_market_day_business_state") is not False: fail("external governance must not mirror A-share market-day business state")
+if (ROOT / ".uaos").exists() or (ROOT / "UAOS_SKILL.md").exists(): fail("retired UAOS active binding has reappeared")
 if "Acceptance map" not in product or "selection quality" not in product.lower(): fail("A-share product requirements/selection-quality acceptance map missing")
 if graph.get("business_owner") != "DOMAIN:ashare": fail("A-share market-day graph owner drift")
-if "NO_UNBOUNDED_PEER_CHAT" not in graph.get("decision_model", ""): fail("peer-chat debate must remain forbidden")
+if graph.get("governance_mode") != "CAOS_CHAT_GOVERNED_EXTERNAL__A_SHARE_OWNS_BUSINESS_GRAPH": fail("A-share market-day graph governance mode drift")
 
 by_id = {row["id"]: row for row in graph["nodes"]}
 if "buyability_execution_candidate_slate" in by_id: fail("risk/buyability must not be a competitive opportunity vote")
@@ -109,7 +107,7 @@ if "risk_feasibility_assessment" not in by_id.get("trade_decision_adjudication",
 if policy.get("orchestration", {}).get("risk_feasibility_is_constraint_not_candidate_vote") is not True: fail("policy must keep risk as constraint/veto, not candidate vote")
 if policy.get("review", {}).get("grade_recall_separately_from_final_selection") is not True: fail("post-close selection-quality policy missing")
 learning = policy.get("learning", {})
-if learning.get("problem_cognition_owner") != "CURRENT_UAOS_DELIBERATION_POLICY": fail("A-share policy generic cognition owner drift")
+if learning.get("problem_cognition_owner") != "CAOS_PARENT_CHATGPT_SKILL": fail("A-share policy generic cognition owner drift")
 if "LIGHTWEIGHT_MAY_USE_CURRENT_EVIDENCE" not in learning.get("problem_cognition_rule", ""): fail("A-share policy adaptive cognition pointer missing")
 if learning.get("domain_market_research_is_separate_from_generic_problem_cognition") is not True: fail("A-share market research/cognition ownership boundary missing")
 required_replay_metrics = {"u1_recall", "activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"}
@@ -168,10 +166,10 @@ if "audit-tool call" not in plugin_text or "does not by itself prove reviewer in
 package_init = (ROOT / "ashare_event_agent/__init__.py").read_text(encoding="utf-8")
 if "AgentRuntime" in package_init: fail("reference AgentRuntime must not be promoted through the package public API")
 
-active_semantic_surfaces = [ROOT / "README.md", ROOT / "UAOS_SKILL.md", ROOT / "docs/architecture.md", ROOT / "docs/product_requirements.md", ROOT / "references/recovery.md", ROOT / ".uaos/ADAPTER.json", ROOT / ".uaos/MANIFEST.json", ROOT / ".uaos/CAPABILITIES.json"]
+active_semantic_surfaces = [ROOT / "README.md", ROOT / "CAOS_ASHARE_ENTRY.md", ROOT / "docs/architecture.md", ROOT / "docs/product_requirements.md", ROOT / "references/recovery.md", ROOT / "config/CAOS_GOVERNANCE.json", ROOT / "config/DOMAIN_CAPABILITIES.json"]
 for path in active_semantic_surfaces:
     text = path.read_text(encoding="utf-8")
-    for obsolete in ["UAOS owns task identity", "UAOS resolves current task identity", "GITHUB_MAIN_CONTINUITY", "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"]:
+    for obsolete in ["CAOS owns task identity", "CAOS resolves current task identity", "GITHUB_MAIN_CONTINUITY", "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"]:
         if obsolete in text: fail(f"obsolete parent-owned A-share identity/control semantics reappeared: {obsolete} in {path.relative_to(ROOT)}")
 
 schema_text = SCHEMAS.read_text(encoding="utf-8"); model_text = MODELS.read_text(encoding="utf-8"); controller_text = CONTROLLER.read_text(encoding="utf-8"); integrity_text = INTEGRITY.read_text(encoding="utf-8")
@@ -188,4 +186,4 @@ if "premarket snapshot mutated after freeze" not in (ROOT / "ashare_event_agent/
 activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encoding="utf-8"))["cases"]
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation): fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; UAOS common capabilities >=1.6 + behavior assurance >=1.3; pointer-only current UAOS cognition; owner-native recovery/root-scope/evolution/closure/upcall admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")
+print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; CAOS chat governance; A-share-owned behavior admission; owner-native recovery/root-scope/evolution/closure/CAOS-review admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")

@@ -1,19 +1,19 @@
 # A-share Event-Driven Agent
 
-A-share domain system for current-day premarket recommendation, post-close review, replay-governed learning and evidence-preserving recovery under Universal Agent OS (UAOS).
+A-share domain system for current-day premarket recommendation, post-close review, replay-governed learning and evidence-preserving recovery under CAOS external chat governance, with A-share retaining all market-day business authority.
 
 ## Current authority
 
-- Parent control plane/common method: `D1traverser-debug/universal-agent-os@main`
-- Domain entry: `UAOS_SKILL.md`
+- CAOS governance entry: `CAOS_ASHARE_ENTRY.md`
+- CAOS governance contract: `config/CAOS_GOVERNANCE.json`
+- Domain capabilities: `config/DOMAIN_CAPABILITIES.json`
 - Product requirements: `docs/product_requirements.md`
 - A-share internal decision graph: `config/MARKET_DAY_ORCHESTRATION.json`
-- Binding: `.uaos/MANIFEST.json`, `.uaos/ADAPTER.json`, `.uaos/CAPABILITIES.json`
 - Hosted runtime promotion/assurance: `config/RUNTIME_AUTHORITY.json`
 - Canonical business rules: `references/`, `config/`, `ashare_event_agent/`
 - Public optional MCP/runtime surface: `ashare_event_agent/plugin_server.py`
 
-When selected, this domain runs directly as `DOMAIN:ashare`. UAOS is not a mandatory proxy for each business turn and does not own per-trading-day A-share business state. Child `TaskContract.task_id` + `MarketDayState` is the domain market-day/run identity/state model; parent and child IDs are distinct.
+When selected, this domain runs directly as `DOMAIN:ashare` under CAOS chat governance. CAOS is not a runtime proxy and does not own per-trading-day A-share business state. `TaskContract.task_id` + `MarketDayState` is the domain market-day/run identity/state model; no CAOS parent task ID is created.
 
 There is no domain-level second cross-domain controller, lease/resume-epoch protocol or peer-chat debate system. The retired `continuity/` namespace and old `config/cutover_status.json` remain absent.
 
@@ -58,7 +58,7 @@ Configured availability is not execution evidence. Missing hard/preferred capabi
 
 ## Runtime authority
 
-`config/RUNTIME_AUTHORITY.json` separates **domain business ownership** from **hosted runtime assurance**. `runtime_authority_enabled=false` does not return business ownership to UAOS; it only means hosted-runtime-only certification/durable runtime resume is not yet proven. Current chat/tool execution may still perform governed A-share research, decision, review and artifacts under the repository contracts.
+`config/RUNTIME_AUTHORITY.json` separates **domain business ownership** from **hosted runtime assurance**. `runtime_authority_enabled=false` does not change A-share business ownership; it only means hosted-runtime-only certification/durable runtime resume is not yet proven. Current chat/tool execution may still perform governed A-share research, decision, review and artifacts under the repository contracts.
 
 Notion/Google Drive are source/knowledge/artifact inputs only. They are never controller/task-state fallbacks.
 

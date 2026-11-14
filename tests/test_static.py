@@ -33,29 +33,24 @@ def test_policy_and_orchestration_mirrors_are_identical():
     validate_orchestration(json.loads((ROOT / "config/MARKET_DAY_ORCHESTRATION.json").read_text(encoding="utf-8")))
 
 
-def test_current_control_binding_keeps_parent_router_and_child_business_identity_separate():
-    manifest = json.loads((ROOT / ".uaos/MANIFEST.json").read_text(encoding="utf-8"))
-    adapter = json.loads((ROOT / ".uaos/ADAPTER.json").read_text(encoding="utf-8"))
+def test_caos_governance_binding_keeps_market_day_business_identity_domain_owned():
+    governance = json.loads((ROOT / "config/CAOS_GOVERNANCE.json").read_text(encoding="utf-8"))
+    capabilities = json.loads((ROOT / "config/DOMAIN_CAPABILITIES.json").read_text(encoding="utf-8"))
     authority = json.loads((ROOT / "config/RUNTIME_AUTHORITY.json").read_text(encoding="utf-8"))
-    controller = "D1traverser-debug/universal-agent-os@main"
-    assert manifest["controller"] == controller
-    assert manifest["parent_control_plane"] == controller
-    assert manifest["status"] == "DIRECT_DOMAIN_WORK_PLANE_ACTIVE"
-    assert manifest["binding_status"] == "UAOS_CONTROL_PLANE_ACTIVE"
-    assert manifest["binding"]["controller_ref"] == f"{controller}:CURRENT_SYSTEM.json"
-    assert manifest["session_activation"].startswith("DIRECT_ASHARE_WORK_PLANE")
-    assert manifest["domain_authority"]["market_day_identity"] == "ashare_event_agent/models.py:TaskContract.task_id"
-    assert adapter["controller"] == controller
-    assert adapter["parent_control_plane"] == controller
-    assert adapter["status"] == "DIRECT_DOMAIN_WORK_PLANE_ACTIVE"
-    assert adapter["binding_status"] == "UAOS_CONTROL_PLANE_ACTIVE"
-    assert adapter["session_activation"].startswith("DIRECT_ASHARE_WORK_PLANE")
-    assert adapter["parent_router_identity_authority"] == "UAOS"
-    assert adapter["domain_market_day_identity_authority"] == "ashare_event_agent/models.py:TaskContract.task_id"
-    assert adapter["parent_child_id_equality_required"] is False
-    assert authority["parent_may_mirror_market_day_business_state"] is False
-    assert authority["external_system_roles"]["notion"] == "SOURCE_OR_KNOWLEDGE_ONLY"
-    assert authority["external_system_roles"]["google_drive"] == "SOURCE_OR_ARTIFACT_ONLY"
+    assert governance["governance"]["system"] == "CAOS"
+    assert governance["governance"]["mode"] == "CHAT_GOVERNED_EXTERNAL"
+    assert governance["governance"]["runtime_dependency"] is False
+    assert governance["governance"]["source_mutation"] == "FORBIDDEN"
+    assert governance["business_authority"]["identity"] == "ashare_event_agent/models.py:TaskContract.task_id"
+    assert governance["business_authority"]["state"] == "ashare_event_agent/models.py:MarketDayState"
+    assert governance["execution_boundary"]["parent_task_identity"] is False
+    assert governance["execution_boundary"]["parent_business_state_mirror"] is False
+    assert capabilities["caos_governance_ref"] == "config/CAOS_GOVERNANCE.json"
+    assert capabilities["owner_native_behavior_admission"] == "ashare_event_agent.behavior_assurance"
+    assert authority["caos_runtime_dependency"] is False
+    assert authority["external_governance_may_mirror_market_day_business_state"] is False
+    assert not (ROOT / ".uaos").exists()
+    assert not (ROOT / "UAOS_SKILL.md").exists()
     assert not (ROOT / "continuity").exists()
     assert not (ROOT / "config/cutover_status.json").exists()
 
@@ -76,6 +71,6 @@ def test_runtime_promotion_is_separate_from_domain_business_ownership():
     assert authority["domain_business_ownership"].startswith("ALWAYS_ASHARE")
     if authority["runtime_authority_enabled"]:
         assert all(status == "PASS" for status in gates.values())
-    skill = (ROOT / "UAOS_SKILL.md").read_text(encoding="utf-8")
-    assert "UAOS router identity and A-share market-day" in skill
-    assert "Do not create a same-ID UAOS market-day task" in skill
+    entry = (ROOT / "CAOS_ASHARE_ENTRY.md").read_text(encoding="utf-8")
+    assert "CAOS" in entry and "does not create a parent task ID" in entry
+    assert "A-share" in entry

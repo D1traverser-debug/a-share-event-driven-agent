@@ -3,11 +3,32 @@
     "timezone": "Asia/Shanghai",
     "mainboard_only_default": true,
     "auction_used_default": false,
-    "horizon_days": [1, 2]
+    "horizon_days": [
+      1,
+      2
+    ]
   },
   "sources": {
-    "fixed_ids": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09"],
-    "retrieval_priority": ["STRUCTURED_API", "OFFICIAL", "STATIC_HTTP", "EMBEDDED_JSON", "DATABASE", "WEB", "BROWSER"],
+    "fixed_ids": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P06",
+      "P07",
+      "P08",
+      "P09"
+    ],
+    "retrieval_priority": [
+      "STRUCTURED_API",
+      "OFFICIAL",
+      "STATIC_HTTP",
+      "EMBEDDED_JSON",
+      "DATABASE",
+      "WEB",
+      "BROWSER"
+    ],
     "preferred_microstructure_lane": "TONGHUASHUN_LEVEL2",
     "dingpan_five_pool_lane": "XUANGUTONG_DINGPAN",
     "structured_market_fallback": "LONG_BRIDGE_OR_EQUIVALENT_SESSION_PROVEN",
@@ -24,7 +45,10 @@
   "orchestration": {
     "graph_ref": "config/MARKET_DAY_ORCHESTRATION.json",
     "parallel_only_when_dependencies_allow": true,
-    "opportunity_candidate_views": ["EVENT_ALPHA", "MARKET_STRUCTURE"],
+    "opportunity_candidate_views": [
+      "EVENT_ALPHA",
+      "MARKET_STRUCTURE"
+    ],
     "risk_feasibility_is_constraint_not_candidate_vote": true,
     "risk_assessment_covers_all_u1": true,
     "hard_risk_veto_cannot_enter_u3": true,
@@ -42,17 +66,26 @@
     "grade_recall_separately_from_final_selection": true,
     "selected_candidates_require_trigger_review": true,
     "activated_candidates_require_execution_feasibility_evidence": true,
-    "selection_quality_metrics": ["activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"]
+    "selection_quality_metrics": [
+      "activated_positive_rate",
+      "activated_downside_rate",
+      "execution_feasibility_rate"
+    ]
   },
   "learning": {
-    "problem_cognition_owner": "CURRENT_UAOS_DELIBERATION_POLICY",
-    "problem_cognition_rule": "RISK_ADAPTIVE__LIGHTWEIGHT_MAY_USE_CURRENT_EVIDENCE__CONTRASTIVE_COMPARES_ALTERNATIVES__STRUCTURED_REQUIRES_EXTERNAL_RESEARCH_AND_UPSTREAM_FALSIFICATION",
+    "problem_cognition_owner": "CAOS_PARENT_CHATGPT_SKILL",
+    "problem_cognition_rule": "RISK_ADAPTIVE__LIGHTWEIGHT_MAY_USE_CURRENT_EVIDENCE__CAOS_GOVERNANCE_FOR_CROSS_DOMAIN_OR_SYSTEMIC_DECISIONS__DOMAIN_OWNS_MARKET_RESEARCH",
     "domain_market_research_is_separate_from_generic_problem_cognition": true,
     "single_day_promotion_forbidden": true,
     "min_replay_cases": 5,
     "min_regimes": 2,
     "require_positive_and_negative_samples": true,
     "require_no_future_contamination": true,
-    "replay_required_metrics": ["u1_recall", "activated_positive_rate", "activated_downside_rate", "execution_feasibility_rate"]
+    "replay_required_metrics": [
+      "u1_recall",
+      "activated_positive_rate",
+      "activated_downside_rate",
+      "execution_feasibility_rate"
+    ]
   }
 }

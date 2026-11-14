@@ -78,7 +78,7 @@ mcp = MCPServer(
     "A-share Event-Driven Agent",
     instructions=(
         "Use for A-share premarket stock-recommendation research, post-close review, recall grading, and replay-governed learning. "
-        "UAOS is the cross-domain parent control plane; this runtime owns its child market-day task identity and business checkpoint state. "
+        "CAOS supplies external chat-based cognition governance; this runtime owns the A-share market-day task identity and business checkpoint state. "
         "After the A-share domain resolves the current or exact historical trading-day semantics, follow the child market-day next_action exactly. "
         "The runtime owns freeze integrity, legal transitions, schemas, StockBase permission boundaries, recall/completion gates, and rule-promotion eligibility. "
         "The model owns public research, industry reasoning, role hypotheses, red-team judgments, and attribution within those contracts. "

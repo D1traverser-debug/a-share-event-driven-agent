@@ -102,7 +102,7 @@ class TaskContract(BaseModel):
 
     # Domain-owned market-day runtime identity/continuity metadata. Defaults are
     # fail-closed so a legacy JSON checkpoint cannot silently become a current
-    # USER run. This child identity is distinct from the UAOS parent router ID.
+    # USER run. This child identity is distinct from the CAOS governance context.
     task_class: TaskClass = TaskClass.MIGRATION
     resume_eligible: bool = False
     resume_visibility: ResumeVisibility = ResumeVisibility.EXPLICIT_ONLY

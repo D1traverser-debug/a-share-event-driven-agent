@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "domain_id": "ashare",
+  "owner": "DOMAIN:ashare",
+  "governance": {
+    "system": "CAOS",
+    "source_repository": "D1traverser-debug/cognition-agent-os@main",
+    "mode": "CHAT_GOVERNED_EXTERNAL",
+    "entrypoint": "CAOS_ASHARE_ENTRY.md",
+    "skill": "cognition-parent-chatgpt-intake",
+    "runtime_dependency": false,
+    "api_dependency": false,
+    "source_mutation": "FORBIDDEN",
+    "scope": [
+      "COMPLETE_GOAL_AND_REQUIREMENT_RECOVERY",
+      "RECURSIVE_ROOT_CAUSE_AND_COUNTEREXAMPLE_ANALYSIS",
+      "PROFESSIONAL_METHOD_RESEARCH_AND_ALTERNATIVE_COMPARISON",
+      "DECISION_RECHALLENGE_BEFORE_ACTION",
+      "EXECUTION_DISCIPLINE",
+      "INDEPENDENT_ACCEPTANCE",
+      "DURABLE_LEARNING_AND_CROSS_DOMAIN_TRANSFER"
+    ]
+  },
+  "business_authority": {
+    "repository": "D1traverser-debug/a-share-event-driven-agent@main",
+    "identity": "ashare_event_agent/models.py:TaskContract.task_id",
+    "state": "ashare_event_agent/models.py:MarketDayState",
+    "orchestration": "config/MARKET_DAY_ORCHESTRATION.json",
+    "product_requirements": "docs/product_requirements.md",
+    "canonical_rules": [
+      "references/",
+      "config/",
+      "ashare_event_agent/"
+    ],
+    "evolution": "audits/EVOLUTION_INDEX.json"
+  },
+  "execution_boundary": {
+    "direct_domain_activation": true,
+    "business_owner": "DOMAIN:ashare",
+    "parent_task_identity": false,
+    "parent_business_state_mirror": false,
+    "runtime_upcall": false,
+    "caos_permission_grant": false
+  },
+  "legacy_cleanup": {
+    "uaos_binding": "REMOVED_FROM_ACTIVE_DEFAULT_BRANCH",
+    "retired_paths": [
+      ".uaos/",
+      "UAOS_SKILL.md"
+    ],
+    "historical_provenance": "PRESERVED_IN_GIT_HISTORY_AND_DATED_AUDIT_RECORDS",
+    "business_state_or_market_rules_changed": false
+  }
+}
