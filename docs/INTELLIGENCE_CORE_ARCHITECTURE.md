@@ -2,7 +2,7 @@
 
 Status: **future shared-research boundary / non-executable design**. This document does not create a Core, change current business authority, or promote the hosted runtime.
 
-Current authority is defined by ``config/CAOS_GOVERNANCE.json` and `config/DOMAIN_CAPABILITIES.json``, `config/RUNTIME_AUTHORITY.json`, `docs/product_requirements.md` and the A-share runtime/contracts. The A-share domain owns market-day business identity/state; CAOS is external chat governance, not a runtime parent controller and must not mirror per-day A-share business state.
+Current authority is defined by `config/CAOS_GOVERNANCE.json` and `config/DOMAIN_CAPABILITIES.json`, `config/RUNTIME_AUTHORITY.json`, `docs/product_requirements.md` and the A-share runtime/contracts. The A-share domain owns market-day business identity/state; CAOS is external chat governance, not a runtime parent controller and must not mirror per-day A-share business state.
 
 ## Purpose
 
