@@ -40,7 +40,7 @@
     "parent_task_identity": false,
     "parent_business_state_mirror": false,
     "runtime_upcall": false,
-    "caOS_permission_grant": false
+    "caos_permission_grant": false
   },
   "legacy_cleanup": {
     "uaos_binding": "REMOVED_FROM_ACTIVE_DEFAULT_BRANCH",

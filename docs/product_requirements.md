@@ -2,7 +2,7 @@
 
 Version: 0.3.0
 Authority: `A_SHARE_EVENT_DRIVEN_AGENT`
-Parent method dependency: `UAOS COMMON_CAPABILITIES >= 1.6.0`
+Governance: `CAOS_CHAT_GOVERNED_EXTERNAL__NO_RUNTIME_DEPENDENCY`
 
 ## Product mission
 
@@ -27,8 +27,8 @@ A user entering the A-share Agent should be able to:
 ## Business identity and ownership
 
 - A-share market-day/run identity is domain-owned. `TaskContract.task_id` plus its `MarketDayState` is the business-run identity used by the domain runtime.
-- `trading_date` is business time, not a UAOS task identity.
-- UAOS may own one domain router and may retain an opaque child reference for continuity, but must not create/adopt a same-ID market-day business task.
+- `trading_date` is business time, not a CAOS governance-context identity.
+- CAOS does not create a parent router, task identity or same-ID market-day business task; A-share owns the market-day run identity and state.
 - New current-day work creates a fresh child-owned run after resolving the China trading day and freeze boundary.
 - Historical runs are explicit-only unless the child domain proves a unique current compatible run; a prior premarket run never silently becomes today's task.
 
@@ -116,7 +116,7 @@ A PASS replay must report at least: `u1_recall`, `activated_positive_rate`, `act
 - treating risk/buyability as a third bullish vote that can be outvoted by opportunity research;
 - counting a never-triggered recommendation as if it were an executed trade;
 - optimizing recall while ignoring final-selection downside or execution feasibility;
-- letting UAOS own per-day A-share business identities/state;
+- letting CAOS own per-day A-share business identities/state;
 - creating persistent specialist Agents merely to simulate debate;
 - silently replacing missing Level-2/preferred data with weaker data while preserving the same assurance claim.
 
@@ -124,7 +124,7 @@ A PASS replay must report at least: `u1_recall`, `activated_positive_rate`, `act
 
 | Requirement | Owning surface | Mechanical / audit evidence |
 | --- | --- | --- |
-| Child-owned market-day identity | `models.py`, `.uaos/ADAPTER.json`, `UAOS_SKILL.md` | identity-boundary tests/static audit |
+| Child-owned market-day identity | `models.py`, `config/CAOS_GOVERNANCE.json`, `CAOS_ASHARE_ENTRY.md` | identity-boundary tests/static audit |
 | Point-in-time freeze | `schemas.py`, `engine.py`, `references/sources.md` | freeze and source tests |
 | Preferred THS/Level-2 + Dingpan roles | `source_contracts.py`, `references/sources.md` | source-role contract tests |
 | Broad recall before narrowing | `schemas.py`, `references/research.md`, integrity guards | U0/U1/U3 lineage tests |
@@ -135,4 +135,4 @@ A PASS replay must report at least: `u1_recall`, `activated_positive_rate`, `act
 | Final-selection and execution quality | `schemas.py`, `integrity.py`, `references/review.md` | selection-quality derivation tests |
 | Evidence-gated learning | `references/learning.md`, replay schema/evals | replay contract eval |
 | Replay covers recall + selection + execution metrics | `schemas.py`, `config/policy.json` | replay PASS validation |
-| Problem research/reflection floor | `.uaos/CAPABILITIES.json`, maintenance/learning references | architecture/static tests |
+| Problem research/reflection floor | `config/DOMAIN_CAPABILITIES.json`, maintenance/learning references | architecture/static tests |

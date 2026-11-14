@@ -2,7 +2,7 @@
 
 Status: **future shared-research boundary / non-executable design**. This document does not create a Core, change current business authority, or promote the hosted runtime.
 
-Current authority is defined by `.uaos/*`, `config/RUNTIME_AUTHORITY.json`, `docs/product_requirements.md` and the A-share runtime/contracts. The A-share domain owns market-day business identity/state; UAOS is the parent control plane and must not mirror per-day A-share business state.
+Current authority is defined by ``config/CAOS_GOVERNANCE.json` and `config/DOMAIN_CAPABILITIES.json``, `config/RUNTIME_AUTHORITY.json`, `docs/product_requirements.md` and the A-share runtime/contracts. The A-share domain owns market-day business identity/state; CAOS is external chat governance, not a runtime parent controller and must not mirror per-day A-share business state.
 
 ## Purpose
 
@@ -11,7 +11,7 @@ Premarket recommendation, post-close review and Financial Writing may need overl
 Target relationship:
 
 ```text
-UAOS common control/governance plane
+CAOS external chat-governance layer
         |
         +--> A-share Event-Driven Agent
         |      +-- Premarket recommendation
@@ -110,7 +110,7 @@ May read shared intelligence and submit knowledge candidates. It owns article id
 - **A-share GitHub `main`**: product/code/rules/tests/evals authority.
 - **A-share child market-day state**: domain business identity/state.
 - **Hosted runtime store**: durable executable checkpoint authority only if current promotion gates pass.
-- **UAOS**: cross-domain parent governance/common capabilities/optional parent guidance, not per-day market state.
+- **CAOS**: cross-domain parent governance/common capabilities/optional parent guidance, not per-day market state.
 - **StockBase/current knowledge inputs**: read/review-write under their receipt boundaries.
 - **Notion/Google Drive/external stores**: source/knowledge/artifact inputs only.
 

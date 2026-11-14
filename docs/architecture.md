@@ -6,22 +6,22 @@ Use a **deterministic market-day outer runtime + model-driven research/judgment 
 
 The model is useful for public research, deep industry reasoning, event synthesis, market-role hypotheses, counterfactual comparison and semantic red-team review. It is not trusted to decide whether a stage may be skipped, whether future data is legal, whether source counts reconcile, whether the frozen premarket snapshot changed, whether an unrecalled stock may enter U3, whether a hard-risk veto may be ignored, or whether a one-day lesson deserves durable promotion.
 
-This repository is an A-share recommendation/review product, not a generic orchestration framework. UAOS contributes common cognition/evolution/product-governance method; A-share owns the concrete market-day graph and all business state.
+This repository is an A-share recommendation/review product, not a generic orchestration framework. CAOS supplies external chat-based cognition and cross-domain governance; A-share owns the concrete market-day graph and all business state.
 
 ## Authority layers
 
 1. **A-share GitHub `main`** — executable code, product requirements and business-rule truth.
-2. **Child market-day identity/state** — `TaskContract.task_id` + `MarketDayState`; distinct from the UAOS parent router identity.
+2. **Child market-day identity/state** — `TaskContract.task_id` + `MarketDayState`; distinct from any CAOS chat-governance context.
 3. **Hosted MCP state store** — durable executable checkpoint authority only after the gates in `config/RUNTIME_AUTHORITY.json` pass and `runtime_authority_enabled=true`.
 4. **Frozen premarket artifact/cassette** — immutable decision evidence for later review/replay.
 5. **StockBase/Event knowledge** — shared cognition/knowledge input; premarket read, review write receipt only.
 6. **Notion/Google Drive** — source/knowledge/artifact inputs only; never task/control authority.
 
-When hosted runtime is not promoted, A-share business ownership does not revert to UAOS. Only hosted-runtime-specific claims/resume are blocked.
+When hosted runtime is not promoted, A-share business ownership does not change. Only hosted-runtime-specific claims/resume are blocked.
 
 ## Market-day internal orchestration
 
-`config/MARKET_DAY_ORCHESTRATION.json` is the business work graph. It specializes UAOS common orchestration semantics for A-share:
+`config/MARKET_DAY_ORCHESTRATION.json` is the business work graph. It specializes CAOS-governed decision discipline, while A-share owns its market-day graph for A-share:
 
 - trading day and freeze boundary are serial roots;
 - P01-P09, official facts, 同花顺/Level-2 market data, prior five-pool snapshot and StockBase context are independent source lanes when dependencies permit;

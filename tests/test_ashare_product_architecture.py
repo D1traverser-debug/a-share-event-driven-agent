@@ -89,17 +89,14 @@ def test_specialized_source_owners_are_not_collapsed_into_one_vendor():
     assert "XUANGUTONG_DINGPAN" not in MARKET_DATA_LANES["TONGHUASHUN_LEVEL2"].fallback_lanes
 
 
-def test_problem_cognition_is_parent_owned_while_domain_learning_and_quality_metrics_remain_mandatory():
-    profile = json.loads((ROOT / ".uaos/CAPABILITIES.json").read_text(encoding="utf-8"))
+def test_problem_cognition_is_caos_governed_while_domain_learning_remains_mandatory_while_domain_learning_and_quality_metrics_remain_mandatory():
+    profile = json.loads((ROOT / "config/DOMAIN_CAPABILITIES.json").read_text(encoding="utf-8"))
     policy = json.loads((ROOT / "config/policy.json").read_text(encoding="utf-8"))
-    assert profile["uaos_deliberation_policy_ref"].endswith("config/DELIBERATION_POLICY.json")
-    assert profile["hosted_cognition_semantics"] == {
-        "source": "CURRENT_UAOS_DELIBERATION_POLICY",
-        "local_overrides": "NONE",
-    }
+    assert profile["caos_governance_ref"].endswith("config/DELIBERATION_POLICY.json")
+    assert profile["caos_governance_mode"] == "CHAT_GOVERNED_EXTERNAL__NO_RUNTIME_OR_API_DEPENDENCY"
     assert "problem_response_floor" not in profile
     assert "problem_response_rule" not in profile
-    assert policy["learning"]["problem_cognition_owner"] == "CURRENT_UAOS_DELIBERATION_POLICY"
+    assert policy["learning"]["problem_cognition_owner"] == "CAOS_PARENT_CHATGPT_SKILL"
     assert "RISK_ADAPTIVE" in policy["learning"]["problem_cognition_rule"]
     assert policy["learning"]["domain_market_research_is_separate_from_generic_problem_cognition"] is True
     assert policy["learning"]["single_day_promotion_forbidden"] is True

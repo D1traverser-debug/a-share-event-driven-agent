@@ -17,7 +17,7 @@ def test_release_metadata_matches_runtime_contract():
 def test_user_facing_entries_describe_risk_as_gate_not_competing_vote():
     text = "\n".join([
         (ROOT / "README.md").read_text(encoding="utf-8"),
-        (ROOT / "UAOS_SKILL.md").read_text(encoding="utf-8"),
+        (ROOT / "CAOS_ASHARE_ENTRY.md").read_text(encoding="utf-8"),
     ]).lower()
     assert "risk/buyability is not a third bullish opinion" in text
     assert "block" in text and "cannot" in text and "u3" in text
