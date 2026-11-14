@@ -2,7 +2,7 @@
   "schema_version": "1.2",
   "domain_id": "ashare",
   "role": "OWNER_NATIVE_CANONICAL_EVOLUTION_EVIDENCE_ENTRYPOINT",
-  "updated_at": "2026-11-14",
+  "updated_at": "2026-11-15",
   "rules": [
     "Material or evolution-relevant detected problems preserve durable causal evidence here or in a linked record.",
     "Small local defects may use compact records; do not promote every incident into a permanent domain rule.",
@@ -105,7 +105,7 @@
     },
     {
       "evolution_id": "EVO-20261114-CAOS-GOVERNANCE-MIGRATION",
-      "status": "CANDIDATE__CI_PENDING",
+      "status": "PROMOTED__MAINLINE_CI_VERIFIED",
       "failure_class": "FC-LEGACY_PARENT_BINDING_AND_SPLIT_GOVERNANCE",
       "symptom": "Active A-share entry, runtime authority, policy, tests and static audits still bound UAOS even though CAOS is the selected cross-project governance system.",
       "selected_architecture": "CAOS_CHAT_GOVERNANCE__A_SHARE_OWNS_MARKET_DAY_STATE",
@@ -134,7 +134,18 @@
         "tests/test_common_behavior_binding.py",
         "scripts/static_audit.py"
       ],
-      "open_followup": "Run full exact-head CI, inspect independent review and verify live market-day behavior separately; no live market outcome is claimed."
+      "open_followup": "Live market-day behavior remains observation scope; CAOS governance migration is complete.",
+      "pull_request": 16,
+      "candidate_branch": "migration/caos-governance-20261114",
+      "candidate_head_sha": "69a8df8faeebc9f320ad42b72dd9fb908730743d",
+      "candidate_ci_run": 43613680433,
+      "candidate_tests_passed": 79,
+      "production_commit": "8d78e15ce3a11f1edeca1506ad9e718d29fc8dbd",
+      "production_ci_run": 43617636624,
+      "production_tests_passed": 79,
+      "codex_code_review": "NO_MAJOR_ISSUES",
+      "security_review": "MANUAL_AUTHORITY_AND_RUNTIME_BOUNDARY_REVIEW_PASS__NO_SEPARATE_CODEX_SECURITY_RECEIPT",
+      "result": "PASS"
     }
   ]
 }
