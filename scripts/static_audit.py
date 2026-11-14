@@ -94,7 +94,7 @@ if not (ROOT / "audits/EVOLUTION_INDEX.json").exists(): fail("canonical A-share 
 if authority.get("domain_business_identity_authority") != "ashare_event_agent/models.py:TaskContract.task_id": fail("runtime authority must separate A-share business identity from hosted runtime promotion")
 if authority.get("caos_runtime_dependency") is not False: fail("A-share runtime must not require a CAOS service")
 if authority.get("external_governance_may_mirror_market_day_business_state") is not False: fail("external governance must not mirror A-share market-day business state")
-if (ROOT / ".uaos").exists() or (ROOT / "CAOS_ASHARE_ENTRY.md").exists(): fail("retired CAOS active binding has reappeared")
+if (ROOT / ".uaos").exists() or (ROOT / "UAOS_SKILL.md").exists(): fail("retired UAOS active binding has reappeared")
 if "Acceptance map" not in product or "selection quality" not in product.lower(): fail("A-share product requirements/selection-quality acceptance map missing")
 if graph.get("business_owner") != "DOMAIN:ashare": fail("A-share market-day graph owner drift")
 if graph.get("governance_mode") != "CAOS_CHAT_GOVERNED_EXTERNAL__A_SHARE_OWNS_BUSINESS_GRAPH": fail("A-share market-day graph governance mode drift")
@@ -166,7 +166,7 @@ if "audit-tool call" not in plugin_text or "does not by itself prove reviewer in
 package_init = (ROOT / "ashare_event_agent/__init__.py").read_text(encoding="utf-8")
 if "AgentRuntime" in package_init: fail("reference AgentRuntime must not be promoted through the package public API")
 
-active_semantic_surfaces = [ROOT / "README.md", ROOT / "CAOS_ASHARE_ENTRY.md", ROOT / "docs/architecture.md", ROOT / "docs/product_requirements.md", ROOT / "references/recovery.md", ROOT / "config/CAOS_GOVERNANCE.json", ROOT / "config/CAOS_GOVERNANCE.json", ROOT / "config/DOMAIN_CAPABILITIES.json"]
+active_semantic_surfaces = [ROOT / "README.md", ROOT / "CAOS_ASHARE_ENTRY.md", ROOT / "docs/architecture.md", ROOT / "docs/product_requirements.md", ROOT / "references/recovery.md", ROOT / "config/CAOS_GOVERNANCE.json", ROOT / "config/DOMAIN_CAPABILITIES.json"]
 for path in active_semantic_surfaces:
     text = path.read_text(encoding="utf-8")
     for obsolete in ["CAOS owns task identity", "CAOS resolves current task identity", "GITHUB_MAIN_CONTINUITY", "GITHUB_CONTINUITY_TASK_MANIFEST_HANDOFF"]:
@@ -186,4 +186,4 @@ if "premarket snapshot mutated after freeze" not in (ROOT / "ashare_event_agent/
 activation = json.loads((ROOT / "evals/activation_cases.json").read_text(encoding="utf-8"))["cases"]
 if len(activation) < 8 or not any(x.get("should_activate") for x in activation) or not any(not x.get("should_activate") for x in activation): fail("activation inventory must contain enough positive and negative cases")
 
-print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; CAOS chat governance; A-share-owned behavior admission; owner-native recovery/root-scope/evolution/closure/upcall admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")
+print(f"PASS: {len(seen)} unique A-share rule keys; {len(src)} synchronized reference files; {len(tools)} typed tools; child-owned market-day identity; CAOS chat governance; A-share-owned behavior admission; owner-native recovery/root-scope/evolution/closure/CAOS-review admission; Tonghuashun/Level-2 + Dingpan roles; opportunity-risk separation; final-selection/execution grading; freeze + Universe/U0/U1/U3 + replay guards")

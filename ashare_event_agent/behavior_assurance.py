@@ -90,7 +90,7 @@ def require_root_scope_admission(
     architecture_reassessment_refs: tuple[str, ...] = (),
     direct_user_or_external_claim_promoted_without_test: bool = False,
 ) -> RootScopeReceipt:
-    """Owner-native Common Behavior 1.3 root-scope admission."""
+    """CAOS-governed owner-native root-scope admission."""
 
     if direct_user_or_external_claim_promoted_without_test:
         raise BehaviorAdmissionError(
@@ -351,7 +351,7 @@ class CAOSGovernanceReviewRequest:
             self.requested_caos_review,
         )
         if not all(value.strip() for value in required):
-            raise ValueError("material CAOS-governance review upcall requires complete identity, impact, scope, layer and help request")
+            raise ValueError("material CAOS-governance review request requires complete identity, impact, scope, layer and help request")
         if self.severity not in {"LOW", "MEDIUM", "HIGH", "CRITICAL"}:
             raise ValueError("invalid severity")
         if self.suspected_layer not in {

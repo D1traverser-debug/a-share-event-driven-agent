@@ -71,6 +71,6 @@ def test_runtime_promotion_is_separate_from_domain_business_ownership():
     assert authority["domain_business_ownership"].startswith("ALWAYS_ASHARE")
     if authority["runtime_authority_enabled"]:
         assert all(status == "PASS" for status in gates.values())
-    skill = (ROOT / "UAOS_SKILL.md").read_text(encoding="utf-8")
-    assert "UAOS router identity and A-share market-day" in skill
-    assert "Do not create a same-ID UAOS market-day task" in skill
+    entry = (ROOT / "CAOS_ASHARE_ENTRY.md").read_text(encoding="utf-8")
+    assert "CAOS" in entry and "does not create a parent task ID" in entry
+    assert "A-share" in entry
