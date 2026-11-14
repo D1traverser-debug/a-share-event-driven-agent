@@ -1,6 +1,6 @@
 # Recovery
 
-Chat history is not persistent authority. CAOS is the external chat-governance system; this repository owns A-share market-day business identity, rules, evidence and compatible business checkpoints. Parent and child identities are distinct.
+Chat history is not persistent authority. CAOS provides cross-project cognition governance in the active ChatGPT session; this repository owns A-share market-day business identity, rules, evidence and compatible business checkpoints. No CAOS parent task identity or runtime proxy exists.
 
 ## 1. Read current authority
 
