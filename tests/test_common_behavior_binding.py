@@ -42,6 +42,11 @@ def test_evolution_index_records_caos_migration_without_rewriting_history():
     index = load("audits/EVOLUTION_INDEX.json")
     rows = {row["evolution_id"]: row for row in index["entries"]}
     entry = rows["EVO-20261114-CAOS-GOVERNANCE-MIGRATION"]
-    assert entry["status"] == "CANDIDATE__CI_PENDING"
+    assert entry["status"] == "PROMOTED__MAINLINE_CI_VERIFIED"
+    assert entry["pull_request"] == 16
+    assert entry["production_commit"] == "8d78e15ce3a11f1edeca1506ad9e718d29fc8dbd"
+    assert entry["production_ci_run"] == 43617636624
+    assert entry["production_tests_passed"] == 79
+    assert entry["result"] == "PASS"
     assert entry["selected_architecture"] == "CAOS_CHAT_GOVERNANCE__A_SHARE_OWNS_MARKET_DAY_STATE"
     assert "business state" in entry["preserved_invariants"].lower()
