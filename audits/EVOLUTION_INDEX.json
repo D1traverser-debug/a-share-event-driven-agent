@@ -126,7 +126,7 @@
           "evidence": "Matches the established Video governance boundary while preserving A-share's market-day identity, evidence and local execution authority."
         }
       ],
-      "preserved_invariants": "A-share market-day TaskContract, MarketDayState, freeze, source lanes, recommendation workflow, post-close review, runtime-promotion gates and business evidence remain unchanged.",
+      "preserved_invariants": "A-share market-day TaskContract identity, MarketDayState business state, freeze, source lanes, recommendation workflow, post-close review, runtime-promotion gates and business evidence remain unchanged.",
       "verification_refs": [
         "config/CAOS_GOVERNANCE.json",
         "config/DOMAIN_CAPABILITIES.json",
