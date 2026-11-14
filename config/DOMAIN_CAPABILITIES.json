@@ -1,0 +1,154 @@
+{
+  "schema_version": "4.0",
+  "profile_version": 1,
+  "domain_id": "ashare",
+  "policy": "CURRENT_SESSION_HANDSHAKE__POINT_IN_TIME_DATA__FAIL_CLOSED_ON_MISSING_HARD_INPUTS",
+  "direct_domain_activation": true,
+  "domain_evolution_role": "DOMAIN_EVIDENCE_EVAL_REPLAY_AND_BUSINESS_OWNER_PROMOTION__CROSS_DOMAIN_GOVERNANCE_REVIEW_THROUGH_CAOS_CHAT__NO_RUNTIME_UPCALL",
+  "domain_evolution_evidence_entrypoint": "audits/EVOLUTION_INDEX.json",
+  "authority_context": "DOMAIN:ashare",
+  "owner_native_behavior_admission": "ashare_event_agent.behavior_assurance",
+  "product_governance_ref": "docs/product_requirements.md",
+  "domain_orchestration_ref": "config/MARKET_DAY_ORCHESTRATION.json",
+  "updated_at": "2026-11-14",
+  "capabilities": [
+    {
+      "capability_id": "market_day_identity_and_freeze",
+      "scope": "CURRENT_OR_EXPLICIT_MARKET_DAY",
+      "required": [
+        "current_china_trading_day_resolution",
+        "child_owned_task_contract",
+        "freeze_card"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "premarket_research_and_freeze",
+      "scope": "PREMARKET",
+      "required": [
+        "current_sources",
+        "timestamped_evidence",
+        "source_reconciliation",
+        "frozen_snapshot"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "ashare_market_day_orchestration",
+      "scope": "PREMARKET_AND_POST_CLOSE",
+      "required": [
+        "explicit_dependency_graph",
+        "bounded_artifact_handoffs",
+        "authorized_adjudication"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "opportunity_risk_separation",
+      "scope": "FINAL_RECOMMENDATION",
+      "required": [
+        "u1_bounded_opportunity_views",
+        "all_u1_risk_assessments",
+        "hard_veto_enforcement",
+        "single_final_adjudicator"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "preferred_market_microstructure",
+      "scope": "MARKET_STATE_AND_BUYABILITY",
+      "required": [
+        "session_proven_preferred_or_explicitly_degraded_lane"
+      ],
+      "preferred_lane": "TONGHUASHUN_LEVEL2",
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "dingpan_five_pool_reconciliation",
+      "scope": "PREMARKET_PRIOR_SNAPSHOT_AND_POST_CLOSE",
+      "required": [
+        "xuangutong_pool_semantics",
+        "trading_date_reconciliation",
+        "count_reconciliation"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "postclose_selection_quality",
+      "scope": "POST_CLOSE",
+      "required": [
+        "frozen_final_plan",
+        "trigger_review",
+        "execution_feasibility_evidence",
+        "selection_quality_grade"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "postclose_review",
+      "scope": "POST_CLOSE",
+      "required": [
+        "complete_postclose_data",
+        "frozen_premarket_snapshot",
+        "attribution",
+        "recall_grading",
+        "selection_quality_grading"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "source_reconciliation",
+      "scope": "SOURCE_CONFLICTS",
+      "required": [
+        "provenance",
+        "time_semantics",
+        "fact_owner_semantics"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "runtime_execution",
+      "scope": "HOSTED_OWNER_RUNTIME",
+      "required": [
+        "runtime_authority_enabled",
+        "current_session_runtime_proof"
+      ],
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "owner_native_problem_cognition_and_recovery",
+      "scope": "DETECTED_PROBLEM_RECOVERY_ROOT_SCOPE_EVOLUTION_CLOSURE_AND_CAOS_REVIEW",
+      "required": [
+        "ashare_event_agent.behavior_assurance",
+        "audits/EVOLUTION_INDEX.json",
+        "owner_behavior_trajectory_tests"
+      ],
+      "assurance_ceiling": "EXECUTABLE_POLICY_AND_UNIT_TRAJECTORY_VERIFIED_UNTIL_LIVE_MARKET_DAY_OBSERVATION",
+      "side_channel_allowed": false
+    },
+    {
+      "capability_id": "learning_promotion",
+      "scope": "POSTMORTEM_OR_EVALUATED_KNOWLEDGE_TO_RULE",
+      "required": [
+        "canonical_deliberation_receipt",
+        "root_scope_receipt",
+        "typed_evolution_disposition",
+        "replay_or_cross_case_evidence",
+        "recall_selection_execution_metrics",
+        "regression_ci"
+      ],
+      "side_channel_allowed": false
+    }
+  ],
+  "caos_governance_ref": "config/CAOS_GOVERNANCE.json",
+  "caos_governance_mode": "CHAT_GOVERNED_EXTERNAL__NO_RUNTIME_OR_API_DEPENDENCY",
+  "owner_native_behavior_semantics": {
+    "recover_before_user_escalation": "OWNER_NATIVE_EXECUTABLE_ADMISSION__RECOVERABLE_DEPENDENCY_REQUIRES_LOCAL_RECOVERY_ATTEMPT_UNLESS_REAL_USER_OR_SAFETY_DEPENDENCY",
+    "root_scope_admission": "USER_OR_EXTERNAL_FRAMING_IS_EVIDENCE_NOT_ROOT_AUTHORITY__MATERIAL_REPEATED_CROSS_SUBSYSTEM_ARCHITECTURE_COMPLEXITY_OR_SCOPE_SIGNALS_REQUIRE_CROSS_LAYER_HYPOTHESES_AND_UPSTREAM_REASSESSMENT",
+    "evolution_before_action": "TYPED_EVOLUTION_DISPOSITION_PRECEDES_REPAIR_NO_CHANGE_OR_PARENT_GUIDANCE__MATERIAL_OR_EVOLUTION_RELEVANT_PROBLEMS_REQUIRE_DURABLE_CAUSAL_EVIDENCE",
+    "problem_to_action_closure": "ROOT_SCOPE_AND_EVOLUTION_ADMISSION_PRECEDE_REPAIR_EXECUTED_OR_BLOCKED_WITH_REASON_OR_NO_CHANGE_WITH_EVIDENCE_OR_STRUCTURED_CAOS_GOVERNANCE_REVIEW__RECOMMENDATION_ONLY_NOT_TERMINAL_WHEN_REPAIR_AVAILABLE",
+    "parent_guidance": "STRUCTURED_UPCALL_WITH_DOMAIN_REVISION_PROBLEM_IMPACT_LAYER_EVIDENCE_LOCAL_ATTEMPTS_DURABLE_PROBLEM_REF_AND_UNAFFECTED_WORK_SIGNAL",
+    "assurance_ceiling": "EXECUTABLE_POLICY_AND_UNIT_TRAJECTORY_VERIFIED_UNTIL_LIVE_MARKET_DAY_OBSERVATION",
+    "caos_governance_review": "STRUCTURED_REVIEW_REQUEST_FOR_CAOS_ACTIVE_CHAT__NO_AUTOMATIC_RUNTIME_UPCALL_OR_PERMISSION_GRANT"
+  }
+}
