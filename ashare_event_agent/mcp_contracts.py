@@ -35,7 +35,7 @@ class MarketDaySummary(PublicModel):
     artifacts: dict[str, ArtifactSummary] | None = None
 
     # Child-owned market-day resume/discovery metadata. Contract/runtime versioning
-    # is domain-local and does not turn the child task ID into a UAOS router ID.
+    # is domain-local and does not turn the child task ID into a CAOS governance context ID.
     task_class: Literal["USER", "TEST", "FIXTURE", "EVAL", "SYSTEM_INFRA", "MIGRATION"] = "MIGRATION"
     resume_eligible: bool = False
     resume_visibility: Literal["DEFAULT", "EXPLICIT_ONLY", "HIDDEN"] = "EXPLICIT_ONLY"

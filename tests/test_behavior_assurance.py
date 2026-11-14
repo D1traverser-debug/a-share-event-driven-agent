@@ -5,7 +5,7 @@ from ashare_event_agent.behavior_assurance import (
     BehaviorProblemSignals,
     EvolutionDisposition,
     HypothesisDisposition,
-    ParentGuidanceUpcall,
+    CAOSGovernanceReviewRequest,
     ProblemDisposition,
     ProblemLayer,
     RootScopeHypothesis,
@@ -53,7 +53,7 @@ def test_recoverable_dependency_must_be_attempted_before_escalation():
                 problem_id="provider-gap",
                 problem_detected=True,
                 recoverable_dependency=True,
-                parent_help_needed=True,
+                caos_review_needed=True,
                 evidence_refs=("evidence:provider-gap",),
             )
         )
@@ -162,24 +162,24 @@ def test_material_problem_requires_durable_causal_evidence_before_repair():
         )
 
 
-def test_parent_guidance_requires_root_scope_upcall_disposition_and_durable_problem_ref():
+def test_caos_governance_review_requires_root_scope_upcall_disposition_and_durable_problem_ref():
     receipt = require_behavior_problem_closure(
         BehaviorProblemSignals(
             problem_id="common-gap",
             problem_detected=True,
-            parent_help_needed=True,
+            caos_review_needed=True,
             evidence_refs=("evidence:common-gap",),
             root_scope_receipt=systemic_receipt(),
-            evolution_disposition=EvolutionDisposition.PARENT_OR_COMMON_UPCALL,
+            evolution_disposition=EvolutionDisposition.CAOS_GOVERNANCE_REVIEW,
             durable_problem_ref="audits/EVOLUTION_INDEX.json#EVO-20261016-COMMON-BEHAVIOR-1-3",
         )
     )
-    assert receipt.disposition == ProblemDisposition.PARENT_GUIDANCE_REQUIRED
+    assert receipt.disposition == ProblemDisposition.CAOS_GOVERNANCE_REVIEW_REQUIRED
     assert receipt.durable_problem_ref
 
 
-def test_parent_guidance_envelope_preserves_unaffected_work_signal():
-    upcall = ParentGuidanceUpcall(
+def test_caos_governance_review_envelope_preserves_unaffected_work_signal():
+    upcall = CAOSGovernanceReviewRequest(
         escalation_id="ashare-escalation-001",
         domain_revision="0.3.0/profile7@candidate",
         problem_ref="audits/EVOLUTION_INDEX.json#EVO-20261016-COMMON-BEHAVIOR-1-3",
@@ -187,9 +187,9 @@ def test_parent_guidance_envelope_preserves_unaffected_work_signal():
         impact="child root-scope adoption",
         blocking_scope="common behavior admission only",
         suspected_layer="COMMON_CAPABILITY",
-        evidence_refs=(".uaos/CAPABILITIES.json", "tests/test_behavior_assurance.py"),
+        evidence_refs=("config/DOMAIN_CAPABILITIES.json", "tests/test_behavior_assurance.py"),
         local_recovery_attempts=("owner-native root-scope admission implemented",),
-        requested_parent_help="confirm common behavior 1.3 compatibility",
+        requested_caos_review="confirm CAOS governance compatibility",
         can_continue_unaffected_work=True,
         failure_class="FC-COMMON-BEHAVIOR-1-3-OWNER-ADOPTION-OPEN",
         capability_id="governed_self_evolution",

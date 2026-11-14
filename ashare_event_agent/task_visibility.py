@@ -19,7 +19,7 @@ def list_resumable_states(store: SQLiteStateStore, limit: int = 20) -> list[Mark
     """List child-owned market-day checkpoints eligible for domain resume selection.
 
     This function is not a cross-domain or parent task registry. The A-share domain
-    owns these child identities; UAOS may only route the domain and retain an opaque
+    owns these child identities; CAOS may only route the domain and retain an opaque
     selected child reference for parent continuity.
     """
     scan_limit = max(1, min(max(limit, 20) * 5, 100))
